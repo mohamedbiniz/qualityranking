@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+                            "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                            "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<!-- DO NOT EDIT: This is a generated file that is synchronized -->
+<!-- by MyEclipse Hibernate tool integration.                   -->
+<!-- Created Tue Mar 28 10:48:59 BRT 2006                         -->
+<hibernate-mapping package="br.ufrj.htmlbase.extractor.metadata">
+
+    <class name="MetadataCrawler" table="METADATA_CRAWLER">
+        <!-- <id name="id" column="ID" type="long">
+            <generator class="assigned"/>
+        </id>
+ 		-->
+ 		<id name="id" column="ID" type="long" />
+        <property name="idPage" column="IdPagina" type="long" />
+        <property name="name" column="NAME" type="java.lang.String" />
+        <property name="value" column="VALUE" type="java.lang.String" />
+        <property name="dateCreate" column="DATE_CREATE" type="java.util.Date" />
+        <property name="lastModified" column="LAST_MODIFIED" type="java.util.Date" />
+    </class>
+    
+</hibernate-mapping>
+
+<!--
+<?xml version="1.0" encoding='UTF-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+                            "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                            "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping package="br.ufrj.htmlbase.extractor.metadata">
+
+    <class name="Metadata" table="METADATA">
+ 
+        <id name="id" column="ID" >
+ 			<generator class="assigned" />
+ 		</id>
+        <property name="idPage" column="IDPAGE" type="long" />
+        <property name="property" column="PROPERTY" type="java.lang.String" />
+        <property name="value" column="VALUE" type="java.lang.String" />
+    </class>
+    
+</hibernate-mapping>
+-->
