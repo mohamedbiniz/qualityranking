@@ -1,6 +1,7 @@
 package br.ufrj.cos.bri.db;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -11,6 +12,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.criterion.Example;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
 import br.ufrj.cos.bri.bean.Answer;
@@ -31,6 +34,7 @@ import br.ufrj.cos.bri.bean.SeedDocument;
 import br.ufrj.cos.bri.bean.SubSet;
 import br.ufrj.cos.bri.bean.SubSetQualityDimension;
 import br.ufrj.cos.bri.bean.SubSetQuery;
+import br.ufrj.cos.bri.util.helper.ReflectionHelper;
 
 /**
  * Faz a persist√™ncia dos Beans no banco de dados utilizando Hibernate..
@@ -245,33 +249,49 @@ public class HibernateDAO {
 	 *            busca.
 	 * @return - Uma lista de objetos que satisfaz os crit√©rios de busca.
 	 */
-	/*
-	 * @SuppressWarnings("unchecked") public List<Object> findByExample(final
-	 * Object example, List<String> excludeParams) { initTransaction();
-	 * Criteria criteria = session.createCriteria(example.getClass()); //
-	 * criando um exemplo Example exampleObject = Example.create(example); //
-	 * habilitando ignore case exampleObject.ignoreCase(); // habilitando
-	 * procura por like exampleObject.enableLike(MatchMode.ANYWHERE); //
-	 * retirando os zeros e nulos da pesquisa // exampleObject.excludeZeroes(); //
-	 * removendo do example os atributos que n√£o est√£o no formulario // de
-	 * pesquisa for (String exclude : excludeParams) {
-	 * exampleObject.excludeProperty(exclude); }
-	 * 
-	 * criteria.add(exampleObject);
-	 * 
-	 * Field key = ReflectHelper.getIdField(example.getClass()); if
-	 * (!excludeParams.contains(key.getName())) { Object fieldValue =
-	 * ReflectHelper.getFieldValue(example, key);
-	 * criteria.add(Restrictions.eq(key.getName(), fieldValue)); } // procurando
-	 * por composi√ß√£o dentro da class for (Field field :
-	 * ReflectHelper.listAllFields(example.getClass())) { if
-	 * (ReflectHelper.inheritsFrom(field.getType(), BaseBean.class)) { Object
-	 * fieldValue = ReflectHelper.getFieldValue(example, field); if (fieldValue !=
-	 * null) { criteria.add(Restrictions.eq(field.getName(), fieldValue)); } } //
-	 * TODO vericar procedimento caso campo seja uma Collection }
-	 * 
-	 * final List<Object> result = criteria.list(); return result; }
-	 */
+
+	@SuppressWarnings("unchecked")
+	public List<Object> findByExample(final Object example,
+			List<String> excludeParams) {
+		initTransaction();
+		Criteria criteria = session.createCriteria(example.getClass());
+		// criando um exemplo
+		Example exampleObject = Example.create(example);
+		// habilitando ignore case
+		exampleObject.ignoreCase();
+		// habilitando procura por like
+		exampleObject.enableLike(MatchMode.ANYWHERE);
+		// retirando os zeros e nulos da pesquisa
+		exampleObject.excludeZeroes();
+		// removendo do example os atributos que n„o est„o no formulario de
+		// pesquisa
+		for (String exclude : excludeParams) {
+			exampleObject.excludeProperty(exclude);
+		}
+
+		criteria.add(exampleObject);
+
+		Field key = ReflectionHelper.getIdField(example.getClass());
+		if (!excludeParams.contains(key.getName())) {
+			Object fieldValue = ReflectionHelper.getFieldValue(example, key);
+			criteria.add(Restrictions.eq(key.getName(), fieldValue));
+		}
+		// procurando por composiÁ„o dentro da class
+		for (Field field : ReflectionHelper.listAllFields(example.getClass())) {
+			if (ReflectionHelper.inheritsFrom(field.getType(), Object.class)) {
+				Object fieldValue = ReflectionHelper.getFieldValue(example,
+						field);
+				if (fieldValue != null) {
+					criteria.add(Restrictions.eq(field.getName(), fieldValue));
+				}
+			}
+			// TODO vericar procedimento caso campo seja uma Collection
+		}
+
+		final List<Object> result = criteria.list();
+		return result;
+	}
+
 	/**
 	 * Encontra um objeto no banco baseado em um objeto de exemplo. Esse m√©todo
 	 * pode ser utilizado quando se precisa adicionar manualmente outros

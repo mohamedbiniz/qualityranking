@@ -288,4 +288,9 @@ public class Document implements Serializable, Comparable<Document> {
 	public boolean removeQuery(Query query) {
 		return getQueries().remove(query);
 	}
+
+	@Override
+	public String toString() {
+		return String.format("%s", getUrl());
+	}
 }
