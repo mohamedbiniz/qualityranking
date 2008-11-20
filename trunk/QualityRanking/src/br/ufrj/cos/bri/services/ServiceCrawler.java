@@ -6,8 +6,12 @@ package br.ufrj.cos.bri.services;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,6 +53,8 @@ public class ServiceCrawler extends Service {
 	private boolean pausado;
 
 	private int qtdSubThread = 1;
+
+	private Date now = null;
 
 	public ServiceCrawler() {
 		// super(DataSet.STATUS_CRAWLING, DataSet.STATUS_AUTOMATIC_EVALUATION,
@@ -95,6 +101,7 @@ public class ServiceCrawler extends Service {
 		Collection<Document> documents = loadDocuments(dataSet);
 		// generatePajekFormat();
 		// generateJungScores();
+		setNow(new Date());
 		for (Document document : documents) {
 			Collection<QualityDimension> qualityDimensions = getQualityDimensions(
 					dataSet, loadContextQualityDimensionWeights(dataSet));
@@ -117,6 +124,63 @@ public class ServiceCrawler extends Service {
 
 		}
 
+	}
+
+	private double getCompleteness(Document document) throws SQLException,
+			IOException {
+		double score = 0;
+		// TODO Auto-generated method stub
+
+		getCompletenessFromPajek(document);
+
+		score = document.getUrl().length() / 255.0;
+
+		return score;
+	}
+
+	private double getReputation(Document document) {
+		double score = document.getUrl().length() / 255.0;
+		// TODO Auto-generated method stub
+		return score;
+	}
+
+	private double getTimeliness(Document document) {
+		double score = 0;
+		byte[] metadata = getMetadata(document, MetadataType.DATE);
+		if (metadata != null) {
+			DateFormat dateFormat = new SimpleDateFormat(
+					MetadataExtract.DATE_FORMAT);
+			Date lastModified = null;
+			try {
+				lastModified = dateFormat.parse(new String(metadata));
+			} catch (ParseException e) {
+				System.err.println(String.format(
+						"Este documento (%s) não possui o metadado, "
+								+ "ou o mesmo não está no formato correto, "
+								+ "para calcular o timeliness", document
+								.toString()));
+			}
+			if (lastModified != null) {
+				double diffDates = getNow().getTime() - lastModified.getTime();
+				try {
+					score = 1 / diffDates;
+				} catch (ArithmeticException ae) {
+					score = Double.MAX_VALUE;
+				}
+			}
+		}
+		return score;
+	}
+
+	private byte[] getMetadata(Document document, MetadataType metadataType) {
+		byte[] value = null;
+		List<Metadata> list = (List<Metadata>) getDao().loadByField(
+				Metadata.class, "type", metadataType);
+		if (!list.isEmpty()) {
+			Metadata metadata = list.get(0);
+			value = metadata.getValue();
+		}
+		return value;
 	}
 
 	private void generateJungScores() {
@@ -144,30 +208,6 @@ public class ServiceCrawler extends Service {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private double getTimeliness(Document document) {
-		double score = document.getUrl().length() / 255.0;
-		// TODO Auto-generated method stub
-		return score;
-	}
-
-	private double getReputation(Document document) {
-		double score = document.getUrl().length() / 255.0;
-		// TODO Auto-generated method stub
-		return score;
-	}
-
-	private double getCompleteness(Document document) throws SQLException,
-			IOException {
-		double score = 0;
-		// TODO Auto-generated method stub
-
-		getCompletenessFromPajek(document);
-
-		score = document.getUrl().length() / 255.0;
-
-		return score;
 	}
 
 	private void getCompletenessFromPajek(Document document) {
@@ -366,5 +406,20 @@ public class ServiceCrawler extends Service {
 		// sempre isso seria verdadeiro.
 		if (!this.pausado)
 			notifyAll();
+	}
+
+	/**
+	 * @return the now
+	 */
+	private Date getNow() {
+		return now;
+	}
+
+	/**
+	 * @param now
+	 *            the now to set
+	 */
+	private void setNow(Date now) {
+		this.now = now;
 	}
 }

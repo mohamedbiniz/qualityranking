@@ -27,7 +27,7 @@ import br.ufrj.cos.bri.enume.MetadataType;
  */
 public class MetadataExtract {
 
-	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	private URL url;
 
