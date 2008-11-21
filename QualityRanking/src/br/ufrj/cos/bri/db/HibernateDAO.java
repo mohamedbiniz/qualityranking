@@ -251,7 +251,7 @@ public class HibernateDAO {
 	 */
 
 	@SuppressWarnings("unchecked")
-	public List<Object> findByExample(final Object example,
+	public List<?> findByExample(final Object example,
 			List<String> excludeParams) {
 		initTransaction();
 		Criteria criteria = session.createCriteria(example.getClass());
@@ -288,7 +288,7 @@ public class HibernateDAO {
 			// TODO vericar procedimento caso campo seja uma Collection
 		}
 
-		final List<Object> result = criteria.list();
+		final List<?> result = criteria.list();
 		return result;
 	}
 

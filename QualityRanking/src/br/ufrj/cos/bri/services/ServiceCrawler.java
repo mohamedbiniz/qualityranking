@@ -10,8 +10,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -161,21 +163,57 @@ public class ServiceCrawler extends Service {
 								.toString()));
 			}
 			if (lastModified != null) {
-				double diffDates = getNow().getTime() - lastModified.getTime();
-				try {
-					score = 1 / diffDates;
-				} catch (ArithmeticException ae) {
-					score = Double.MAX_VALUE;
-				}
+				double diffDates = calcDiffDays(getNow(), lastModified);
+				double quo = (diffDates + 1);
+				score = 1 / (quo > 1 ? quo : 1);
 			}
 		}
 		return score;
 	}
 
+	private double calcDiffDays(Date dateEnd, Date dateInit) {
+		// Creates two calendars instances
+		Calendar calInit = new GregorianCalendar();
+		Calendar calEnd = new GregorianCalendar();
+
+		// Set the date for both of the calendar instance
+		calInit.setTime(dateInit);
+		calEnd.setTime(dateEnd);
+
+		// Get the represented date in milliseconds
+		long milisInit = calInit.getTimeInMillis();
+		long milisEnd = calEnd.getTimeInMillis();
+
+		// Calculate difference in milliseconds
+		double diff = milisEnd - milisInit;
+
+		//
+		// // Calculate difference in seconds
+		// double diffSeconds = diff / 1000;
+		//
+		// // Calculate difference in minutes
+		// double diffMinutes = diff / (60 * 1000);
+		//
+		// // Calculate difference in hours
+		// double diffHours = diff / (60 * 60 * 1000);
+
+		// Calculate difference in days
+		double diffDays = diff / (24 * 60 * 60 * 1000);
+		return diffDays;
+	}
+
 	private byte[] getMetadata(Document document, MetadataType metadataType) {
 		byte[] value = null;
-		List<Metadata> list = (List<Metadata>) getDao().loadByField(
-				Metadata.class, "type", metadataType);
+		Metadata metadataExample = new Metadata();
+		metadataExample.setDocument(document);
+		metadataExample.setType(metadataType);
+		List<String> listExcludeParams = new ArrayList<String>();
+		listExcludeParams.add("id");
+		listExcludeParams.add("value");
+		List<Metadata> list = (List<Metadata>) getDao().findByExample(
+				metadataExample, listExcludeParams);
+		// List<Metadata> list = (List<Metadata>) getDao().loadByField(
+		// Metadata.class, "type", metadataType);
 		if (!list.isEmpty()) {
 			Metadata metadata = list.get(0);
 			value = metadata.getValue();
