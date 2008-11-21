@@ -48,6 +48,8 @@ public class PageCrawler {
 
 	private long idDataSet;
 
+	private long idPage;
+
 	// Url da pagina
 	protected String url;
 
@@ -84,7 +86,8 @@ public class PageCrawler {
 
 	protected boolean allOk;
 
-	public PageCrawler(String url) throws IOException {
+	public PageCrawler(OutputLinkCrawler link) throws IOException {
+		String url = link.getUrl();
 
 		setUrl(url);
 		setDateCreate(new Date());
@@ -96,6 +99,8 @@ public class PageCrawler {
 		String path = makePath(url);
 
 		setPath(path);
+
+		setIdPage(link.getIdPage());
 
 		downloadFile(url, path);
 	}
@@ -365,4 +370,24 @@ public class PageCrawler {
 		this.idDataSet = idDataSet;
 	}
 
+	/**
+	 * @return the idPage
+	 */
+	public long getIdPage() {
+		return idPage;
+	}
+
+	/**
+	 * @param idPage
+	 *            the idPage to set
+	 */
+	public void setIdPage(long idPage) {
+		this.idPage = idPage;
+	}
+
+	@Override
+	public String toString() {
+
+		return String.format("%d\t%s\t%d", getId(), getUrl(), getIdPage());
+	}
 }

@@ -65,8 +65,8 @@ public class HtmlBase extends Thread {
 			qtdPage = pageDao.listAll(PageCrawler.class).size();
 			while (qtdPage < numeroMaximoPaginas) {
 
-				String url = Frontier.getInstance().getNextURL();
-				PageCrawler page = new PageCrawler(url);
+				OutputLinkCrawler link = Frontier.getInstance().getNextURL();
+				PageCrawler page = new PageCrawler(link);
 
 				if (page.process()) {
 

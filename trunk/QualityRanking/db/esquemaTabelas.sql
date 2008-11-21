@@ -31,6 +31,7 @@ DROP TABLE IF EXISTS `foxset`.`page_CRAWLER`;
 CREATE TABLE  `foxset`.`page_CRAWLER` (
   `ID` bigint(20) NOT NULL,
   `IdDataSet` bigint(20) default NULL,
+  `page_id` bigint(20) default NULL,
   `SCORE` double default NULL,
   `VERSION` bigint(20) default NULL,
   `URL` varchar(255) default NULL,

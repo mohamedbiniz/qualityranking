@@ -51,6 +51,16 @@ public class Document implements Serializable, Comparable<Document> {
 	@JoinColumn(nullable = false)
 	private DataSet dataSet;
 
+	// No caso da instância ser um dos filhos
+	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST,
+			CascadeType.MERGE })
+	@PrimaryKeyJoinColumn
+	private Document document;
+
+	// No caso da instância ser o pai
+	@OneToMany(mappedBy = "document", cascade = CascadeType.MERGE)
+	private Collection<Document> documents;
+
 	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
 	private Collection<DocumentData> documentDatas;
 
@@ -100,6 +110,54 @@ public class Document implements Serializable, Comparable<Document> {
 	 */
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	/**
+	 * @return the document
+	 */
+	public Document getDocument() {
+		return document;
+	}
+
+	/**
+	 * @param document
+	 *            the document to set
+	 */
+	public void setDocument(Document document) {
+		this.document = document;
+	}
+
+	/**
+	 * @return the documents
+	 */
+	public Collection<Document> getDocuments() {
+		return documents;
+	}
+
+	/**
+	 * @param documents
+	 *            the documents to set
+	 */
+	public void setDocuments(Collection<Document> documents) {
+		this.documents = documents;
+	}
+
+	/**
+	 * 
+	 * @param document
+	 * @return
+	 */
+	public boolean addDocument(Document document) {
+		return getDocuments().add(document);
+	}
+
+	/**
+	 * 
+	 * @param document
+	 * @return
+	 */
+	public boolean removeDocument(Document document) {
+		return getDocuments().remove(document);
 	}
 
 	/**
@@ -293,4 +351,5 @@ public class Document implements Serializable, Comparable<Document> {
 	public String toString() {
 		return String.format("%s", getUrl());
 	}
+
 }
