@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 
 import br.ufrj.cos.bri.bean.DataSet;
+import br.ufrj.htmlbase.OutputLinkCrawler;
 import br.ufrj.htmlbase.PageCrawler;
 import br.ufrj.htmlbase.db.FactoryBD;
 import br.ufrj.htmlbase.db.PageBD;
@@ -37,7 +38,7 @@ public class PageTest extends TestCase {
 				+ numeroMaximoPaginas);
 		int i;
 		for (i = 0; i < numeroMaximoPaginas; i++) {
-			String url = null;
+			OutputLinkCrawler url = null;
 
 			try {
 				url = Frontier.getInstance().getNextURL();// "http://www.aprendendoingles.com.br/ebooks/";

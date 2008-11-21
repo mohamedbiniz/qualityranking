@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -81,7 +82,7 @@ public class PageHibernateImpl implements PageBD {
 			link.setUrl(seedDocument.getUrl());
 			link.setDataSet(seedDocument.getDataSet());
 			link.setVisited(false);
-			link.setIdPage(++idPage);
+			link.setIdPage(0);
 			Date date = new Date();
 			link.setDateCreate(date);
 			link.setLastModified(date);
@@ -350,14 +351,28 @@ public class PageHibernateImpl implements PageBD {
 			throws Exception {
 		Collection<PageCrawler> pages = (Collection<PageCrawler>) listAll(PageCrawler.class);
 		Collection<Document> documents = new ArrayList<Document>();
+		HashMap<Long, Document> documentsMap = new HashMap<Long, Document>();
 		for (PageCrawler pageCrawler : pages) {
 			Document document = new Document();
 			document.setDataSet(dataSet);
 			document.setUrl(pageCrawler.getUrl());
 			dao.create(document);
+			documentsMap.put(pageCrawler.getId(), document);
 			documents.add(document);
 		}
+
+		updateLinks(documentsMap, pages, dao);
+
 		return documents;
+	}
+
+	private void updateLinks(HashMap<Long, Document> documentsMap,
+			Collection<PageCrawler> pages, HibernateDAO dao) throws Exception {
+		for (PageCrawler pageCrawler : pages) {
+			Document document = documentsMap.get(pageCrawler.getId());
+			document.setDocument(documentsMap.get(pageCrawler.getIdPage()));
+			dao.update(document);
+		}
 	}
 
 	public Collection<?> loadByField(Class<?> klass, String fieldName,

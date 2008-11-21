@@ -2,6 +2,7 @@ package br.test.htmlcapture;
 
 import junit.framework.TestCase;
 import br.ufrj.cos.bri.bean.DataSet;
+import br.ufrj.htmlbase.OutputLinkCrawler;
 import br.ufrj.htmlbase.exception.HtmlBaseException;
 import br.ufrj.htmlbase.frontier.Frontier;
 
@@ -22,7 +23,7 @@ public class FrontierTest extends TestCase {
 		try {
 
 			for (;;) {
-				String u = Frontier.getInstance().getNextURL();
+				OutputLinkCrawler link = Frontier.getInstance().getNextURL();
 				Frontier.getInstance().testeFim(dataSet);
 			}
 

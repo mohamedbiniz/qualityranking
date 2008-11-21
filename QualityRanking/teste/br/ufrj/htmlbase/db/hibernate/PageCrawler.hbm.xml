@@ -13,6 +13,7 @@
         </id>
  
  		<property name="idDataSet" column="IdDataSet" type="long" />
+ 		<property name="idPage" column="page_id" type="long" />
         <property name="score" column="SCORE" type="double" />
         <property name="version" column="VERSION" type="long" />
         <property name="url" column="URL" type="java.lang.String" />

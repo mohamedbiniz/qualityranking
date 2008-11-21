@@ -60,7 +60,7 @@ public class Frontier {
 
 	}
 
-	public synchronized String getNextURL() throws HtmlBaseException {
+	public synchronized OutputLinkCrawler getNextURL() throws HtmlBaseException {
 
 		// TODO precisa melhorar isso, falha caso a tabela de links fique vazia
 		if (!lista.iterator().hasNext()) {
@@ -77,13 +77,13 @@ public class Frontier {
 
 		OutputLinkCrawler o = (OutputLinkCrawler) lista.iterator().next();
 
-		String url = o.getUrl();
+		// String url = o.getUrl();
 
 		listaUpdate.add(new Long(o.getIdTest()));
 
 		lista.remove(o);
 
-		return url;
+		return o;
 	}
 
 	public void sendListUpdate() {
