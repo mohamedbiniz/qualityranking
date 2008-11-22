@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import br.ufrj.cos.bri.bean.DataSet;
 import br.ufrj.cos.bri.db.HibernateDAO;
 import br.ufrj.htmlbase.OutputLinkCrawler;
+import br.ufrj.htmlbase.PageCrawler;
 import br.ufrj.htmlbase.db.FactoryBD;
 import br.ufrj.htmlbase.db.PageBD;
 import br.ufrj.htmlbase.exception.HtmlBaseException;
@@ -83,7 +84,11 @@ public class Frontier {
 
 		lista.remove(o);
 
-		return o;
+		if (o.getUrl().contains(PageCrawler.TEMP_PATH)
+				|| o.getUrl().endsWith(".pdf") || o.getUrl().contains("?"))
+			return getNextURL();
+		else
+			return o;
 	}
 
 	public void sendListUpdate() {

@@ -37,7 +37,9 @@ import br.ufrj.cos.bri.matlab.JobSend;
 import br.ufrj.cos.bri.matlab.client.MatClient;
 import br.ufrj.cos.bri.services.process.MetadataExtract;
 import br.ufrj.htmlbase.Capture;
+import edu.uci.ics.jung.algorithms.importance.AbstractRanker;
 import edu.uci.ics.jung.algorithms.importance.HITS;
+import edu.uci.ics.jung.algorithms.importance.NodeRanking;
 import edu.uci.ics.jung.algorithms.importance.PageRank;
 import edu.uci.ics.jung.algorithms.transformation.DirectionTransformer;
 import edu.uci.ics.jung.graph.DirectedGraph;
@@ -102,12 +104,14 @@ public class ServiceCrawler extends Service {
 
 	private void derivacaoMetadados(DataSet dataSet) throws Exception {
 		DocumentQualityDimension documentQualityDimension = null;
-		generateJungScores(dataSet, generatePajekFormat(dataSet));
+		long diff = generatePajekFormat(dataSet);
+		HashMap<String, HashMap<Long, Double>> scoresHubAutority = generateJungScores(
+				dataSet, diff);
 		Collection<Document> documents = loadDocuments(dataSet);
+		Collection<QualityDimension> qualityDimensions = getQualityDimensions(
+				dataSet, loadContextQualityDimensionWeights(dataSet));
 		setNow(new Date());
 		for (Document document : documents) {
-			Collection<QualityDimension> qualityDimensions = getQualityDimensions(
-					dataSet, loadContextQualityDimensionWeights(dataSet));
 			for (QualityDimension qualityDimension : qualityDimensions) {
 				documentQualityDimension = new DocumentQualityDimension();
 				documentQualityDimension.setDocument(document);
@@ -115,9 +119,9 @@ public class ServiceCrawler extends Service {
 				double score = 0;
 				String code = new String(qualityDimension.getCode());
 				if (code.equals(QualityDimension.COM)) {
-					score = getCompleteness(document);
+					score = getCompleteness(document, scoresHubAutority);
 				} else if (code.equals(QualityDimension.REP)) {
-					score = getReputation(document);
+					score = getReputation(document, scoresHubAutority);
 				} else if (code.equals(QualityDimension.TIM)) {
 					score = getTimeliness(document);
 				}
@@ -182,7 +186,7 @@ public class ServiceCrawler extends Service {
 		GraphInstance graphInstance = new GraphInstance();
 		Graph graph = graphInstance.load(String.format(PAJEK_FILE_NAME_FORMAT,
 				dataSet.getId()));
-		graphInstance.displayGraph(graph);
+		// graphInstance.displayGraph(graph);
 		// graphInstance.save(graph,"C:/eclipse/workspace/jung/graphTestOut.txt");
 		System.out.println(" Ranking usando Authorities ");
 		HITS rankerAuthorities = new HITS(graph, true);
@@ -205,29 +209,70 @@ public class ServiceCrawler extends Service {
 		// e.printStackTrace();
 		// }
 
-		// Set<Vertex> vertices = graph.getVertices();
-		// HashMap<Vertex, Double> rankingMap = new HashMap<Vertex, Double>();
-		// for (Vertex vertex : vertices) {
-		// rankingMap.put(vertex, rankerAuthorities.getRankScore(vertex));
-		// }
+		HashMap<String, HashMap<Long, Double>> result = new HashMap<String, HashMap<Long, Double>>();
 
-		return null;
+		result.put(rankerAuthorities.getRankScoreKey(), getRankingByDocumentId(
+				diffIdOfDocuments, rankerAuthorities));
+
+		result.put(rankerHubs.getRankScoreKey(), getRankingByDocumentId(
+				diffIdOfDocuments, rankerHubs));
+
+		return result;
 
 	}
 
-	private double getCompleteness(Document document) throws SQLException,
-			IOException {
+	/**
+	 * @param diffIdOfDocuments
+	 * @param rankerAuthorities
+	 * @return
+	 */
+	private HashMap<Long, Double> getRankingByDocumentId(
+			long diffIdOfDocuments, AbstractRanker ranker) {
+		List<NodeRanking> listRankings = null;
+		HashMap<Long, Double> rankingMap = null;
+		rankingMap = new HashMap<Long, Double>();
+		listRankings = ranker.getRankings();
+		for (NodeRanking nodeRanking : listRankings) {
+			rankingMap.put(nodeRanking.originalPos + diffIdOfDocuments,
+					nodeRanking.rankScore);
+
+		}
+		return rankingMap;
+	}
+
+	private double getCompleteness(Document document,
+			HashMap<String, HashMap<Long, Double>> scoresHubAutority)
+			throws SQLException, IOException {
+		String name_ranking = "AUTHORITY";
+		return getRankingScore(document, scoresHubAutority, name_ranking);
+	}
+
+	private double getReputation(Document document,
+			HashMap<String, HashMap<Long, Double>> scoresHubAutority) {
+		String name_ranking = "HUB";
+		return getRankingScore(document, scoresHubAutority, name_ranking);
+	}
+
+	/**
+	 * @param document
+	 * @param scoresHubAutority
+	 * @param name_ranking
+	 * @return
+	 */
+	private double getRankingScore(Document document,
+			HashMap<String, HashMap<Long, Double>> scoresHubAutority,
+			String name_ranking) {
 		double score = 0;
-		// TODO Auto-generated method stub
+		HashMap<Long, Double> mapRanking = null;
+		for (String key : scoresHubAutority.keySet()) {
+			if (key.contains(name_ranking)) {
+				mapRanking = scoresHubAutority.get(key);
+			}
+		}
 
-		score = document.getUrl().length() / 255.0;
+		if (mapRanking != null)
+			score = mapRanking.get(document.getId());
 
-		return score;
-	}
-
-	private double getReputation(Document document) {
-		double score = document.getUrl().length() / 255.0;
-		// TODO Auto-generated method stub
 		return score;
 	}
 
