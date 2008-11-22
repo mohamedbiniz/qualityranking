@@ -23,7 +23,8 @@ public class FrontierTest extends TestCase {
 		try {
 
 			for (;;) {
-				OutputLinkCrawler link = Frontier.getInstance().getNextURL();
+				OutputLinkCrawler link = Frontier.getInstance().getNextURL(
+						dataSet);
 				Frontier.getInstance().testeFim(dataSet);
 			}
 

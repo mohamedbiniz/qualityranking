@@ -65,7 +65,8 @@ public class HtmlBase extends Thread {
 			qtdPage = pageDao.listAll(PageCrawler.class).size();
 			while (qtdPage < numeroMaximoPaginas) {
 
-				OutputLinkCrawler link = Frontier.getInstance().getNextURL();
+				OutputLinkCrawler link = Frontier.getInstance().getNextURL(
+						dataSet);
 				PageCrawler page = new PageCrawler(link);
 
 				if (page.process()) {
@@ -111,7 +112,7 @@ public class HtmlBase extends Thread {
 							+ " Inicio da execucao para atualizar ultimos links em memoria ");
 
 			Frontier frontier = Frontier.getInstance();
-			frontier.sendListUpdate();
+			frontier.sendListUpdate(dataSet);
 			synchronized (this) {
 				if (qtdThreads > 0)
 					qtdThreads--;
