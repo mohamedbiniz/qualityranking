@@ -26,8 +26,8 @@ import br.ufrj.htmlbase.io.MD5Hash;
  */
 public class PageCrawler {
 
-	public static final String TEMP_PATH = System.getProperty("user.home")
-			.concat("/Temp_Crawler/");
+	public static final String TEMP_PATH = (System.getProperty("user.home"))
+			.replaceAll("\\\\", "/").concat("/Temp_Crawler/");
 
 	private static Logger logger = Logger.getLogger(PageCrawler.class);
 
