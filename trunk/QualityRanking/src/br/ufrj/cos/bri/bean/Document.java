@@ -58,7 +58,8 @@ public class Document implements Serializable, Comparable<Document> {
 	private Document document;
 
 	// No caso da instância ser o pai
-	@OneToMany(mappedBy = "document", cascade = CascadeType.MERGE)
+	@OneToMany(mappedBy = "document", cascade = { CascadeType.MERGE,
+			CascadeType.REFRESH })
 	private Collection<Document> documents;
 
 	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
@@ -77,6 +78,7 @@ public class Document implements Serializable, Comparable<Document> {
 
 	public Document() {
 		setActive(true);
+		setDocuments(new ArrayList<Document>());
 		setDocumentDatas(new ArrayList<DocumentData>());
 		setQualityDimensions(new ArrayList<QualityDimension>());
 		setQueries(new ArrayList<Query>());

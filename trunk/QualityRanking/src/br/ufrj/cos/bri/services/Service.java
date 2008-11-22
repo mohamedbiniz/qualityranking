@@ -9,7 +9,6 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
@@ -98,13 +97,10 @@ public abstract class Service extends Thread {
 	}
 
 	public DataSet getDataSetTo(int max) {
-
-		Transaction tx = null;
 		List<DataSet> result = null;
 		try {
-			tx = getDao().openSession().beginTransaction();
 			Query q = getDao()
-					.getSession()
+					.openSession()
 					.createQuery(
 							String
 									.format(
@@ -113,10 +109,7 @@ public abstract class Service extends Thread {
 											getDataSetInitStatus()));
 			q.setMaxResults(max);
 			result = q.list();
-			tx.commit();
 		} catch (HibernateException he) {
-			if (tx != null)
-				tx.rollback();
 			throw he;
 		}
 		if (result == null || result.isEmpty())

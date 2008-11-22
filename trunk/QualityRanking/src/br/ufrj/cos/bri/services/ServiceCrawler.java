@@ -3,7 +3,9 @@
  */
 package br.ufrj.cos.bri.services;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -18,9 +20,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 import br.ufrj.cos.bri.GraphInstance;
 import br.ufrj.cos.bri.bean.ContextQualityDimensionWeight;
@@ -34,7 +37,6 @@ import br.ufrj.cos.bri.matlab.JobSend;
 import br.ufrj.cos.bri.matlab.client.MatClient;
 import br.ufrj.cos.bri.services.process.MetadataExtract;
 import br.ufrj.htmlbase.Capture;
-import br.ufrj.htmlbase.db.hibernate.PageHibernateImpl;
 import edu.uci.ics.jung.algorithms.importance.HITS;
 import edu.uci.ics.jung.algorithms.importance.PageRank;
 import edu.uci.ics.jung.algorithms.transformation.DirectionTransformer;
@@ -47,6 +49,8 @@ import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
  * 
  */
 public class ServiceCrawler extends Service {
+
+	private static final String PAJEK_FILE_NAME_FORMAT = "pajek%s.txt";
 
 	private static final long PAUSA_CRAWLER = 30000;
 
@@ -97,12 +101,9 @@ public class ServiceCrawler extends Service {
 	}
 
 	private void derivacaoMetadados(DataSet dataSet) throws Exception {
-		// TODO Auto-generated method stub
-		// long minIdDocument = getMinIdDocument(dataSet);
 		DocumentQualityDimension documentQualityDimension = null;
+		generateJungScores(dataSet, generatePajekFormat(dataSet));
 		Collection<Document> documents = loadDocuments(dataSet);
-		// generatePajekFormat();
-		// generateJungScores();
 		setNow(new Date());
 		for (Document document : documents) {
 			Collection<QualityDimension> qualityDimensions = getQualityDimensions(
@@ -128,12 +129,96 @@ public class ServiceCrawler extends Service {
 
 	}
 
+	private long generatePajekFormat(DataSet dataSet) throws SQLException,
+			IOException {
+		long diffIdOfDocuments = getMinIdDocument(dataSet) - 1;
+		List<Document> documents = loadDocuments(dataSet);
+		PrintWriter writer = new PrintWriter(new FileWriter(String.format(
+				PAJEK_FILE_NAME_FORMAT, dataSet.getId())));
+		writer.println(String.format("*Vertices %d", documents.size()));
+		for (Document document : documents) {
+			writer.println(String.format("%d \"%s\"", document.getId()
+					- diffIdOfDocuments, document.getUrl()));
+		}
+		writer.println("*Arcs");
+		goTree(dataSet, writer, diffIdOfDocuments);
+		writer.close();
+		return diffIdOfDocuments;
+	}
+
+	private void goTree(DataSet dataSet, PrintWriter writer,
+			long diffIdOfDocuments) {
+		List<Document> rootDocuments = findRootDocuments(dataSet);
+		for (Document rootDocument : rootDocuments) {
+			toVisitDocument(rootDocument, writer, diffIdOfDocuments);
+		}
+	}
+
+	private void toVisitDocument(Document fatherDocument, PrintWriter writer,
+			long diffIdOfDocuments) {
+		int pesoArco = 1;
+		List<Document> childDocuments = loadDocumentsByFather(fatherDocument);
+		for (Document childDocument : childDocuments) {
+			writer.println(String.format("%d %d %d", fatherDocument.getId()
+					- diffIdOfDocuments, childDocument.getId()
+					- diffIdOfDocuments, pesoArco));
+			toVisitDocument(childDocument, writer, diffIdOfDocuments);
+		}
+
+	}
+
+	private List<Document> findRootDocuments(DataSet dataSet) {
+		Criteria criteria = getDao().openSession().createCriteria(
+				Document.class).add(Restrictions.eq("dataSet", dataSet)).add(
+				Restrictions.isNull("document"));
+
+		List<Document> list = (List<Document>) criteria.list();
+
+		return list;
+	}
+
+	private HashMap<String, HashMap<Long, Double>> generateJungScores(
+			DataSet dataSet, long diffIdOfDocuments) {
+		GraphInstance graphInstance = new GraphInstance();
+		Graph graph = graphInstance.load(String.format(PAJEK_FILE_NAME_FORMAT,
+				dataSet.getId()));
+		graphInstance.displayGraph(graph);
+		// graphInstance.save(graph,"C:/eclipse/workspace/jung/graphTestOut.txt");
+		System.out.println(" Ranking usando Authorities ");
+		HITS rankerAuthorities = new HITS(graph, true);
+		rankerAuthorities.evaluate();
+		rankerAuthorities.printRankings(true, true);
+		System.out.println(" Ranking usando Hubs ");
+		HITS rankerHubs = new HITS(graph, false);
+		rankerHubs.evaluate();
+		rankerHubs.printRankings(true, true);
+		System.out.println(" Ranking usando Pagerank ");
+		DirectedGraph directedGraph = new DirectedSparseGraph();
+		directedGraph = DirectionTransformer.toDirected(graph);
+		// directedGraph= (DirectedSparseGraph)graph;
+		PageRank rankerPageRank = new PageRank(directedGraph, 0.15);
+		rankerPageRank.evaluate();
+		rankerPageRank.printRankings(true, true);
+		// try {
+		// Thread.sleep(200000);
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// }
+
+		// Set<Vertex> vertices = graph.getVertices();
+		// HashMap<Vertex, Double> rankingMap = new HashMap<Vertex, Double>();
+		// for (Vertex vertex : vertices) {
+		// rankingMap.put(vertex, rankerAuthorities.getRankScore(vertex));
+		// }
+
+		return null;
+
+	}
+
 	private double getCompleteness(Document document) throws SQLException,
 			IOException {
 		double score = 0;
 		// TODO Auto-generated method stub
-
-		getCompletenessFromPajek(document);
 
 		score = document.getUrl().length() / 255.0;
 
@@ -221,59 +306,17 @@ public class ServiceCrawler extends Service {
 		return value;
 	}
 
-	private void generateJungScores() {
-		GraphInstance graphInstance = new GraphInstance();
-		Graph graph = graphInstance.load("pajek.txt");
-		graphInstance.displayGraph(graph);
-		// graphInstance.save(graph,"C:/eclipse/workspace/jung/graphTestOut.txt");
-		System.out.println(" Ranking usando Authorities ");
-		HITS rankerAuthorities = new HITS(graph, true);
-		rankerAuthorities.evaluate();
-		rankerAuthorities.printRankings(true, true);
-		System.out.println(" Ranking usando Hubs ");
-		HITS rankerHubs = new HITS(graph, false);
-		rankerHubs.evaluate();
-		rankerHubs.printRankings(true, true);
-		System.out.println(" Ranking usando Pagerank ");
-		DirectedGraph directedGraph = new DirectedSparseGraph();
-		directedGraph = DirectionTransformer.toDirected(graph);
-		// directedGraph= (DirectedSparseGraph)graph;
-		PageRank rankerPageRank = new PageRank(directedGraph, 0.15);
-		rankerPageRank.evaluate();
-		rankerPageRank.printRankings(true, true);
-		try {
-			Thread.sleep(200000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void getCompletenessFromPajek(Document document) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void generatePajekFormat() throws SQLException, IOException {
-		PageHibernateImpl pageDao = new PageHibernateImpl();
-
-		pageDao.generatePajek();
-
-	}
-
 	private long getMinIdDocument(DataSet dataSet) {
-		Transaction tx = null;
 		List<Document> result = null;
 		try {
-			tx = getDao().openSession().beginTransaction();
-			Query q = getDao().getSession().createQuery(
-					String.format("from Document order by id",
+			Query q = getDao().openSession().createQuery(
+					String.format(
+							"from Document where dataSet_id=? order by id",
 							getDataSetInitStatus()));
+			q.setParameter(0, dataSet.getId());
 			q.setMaxResults(1);
 			result = q.list();
-			tx.commit();
 		} catch (HibernateException he) {
-			if (tx != null)
-				tx.rollback();
 			throw he;
 		}
 		if (result == null || result.isEmpty())
@@ -319,16 +362,21 @@ public class ServiceCrawler extends Service {
 
 	}
 
-	private Collection<Document> loadDocuments(DataSet dataSet) {
-		Collection<Document> list = (Collection<Document>) getDao().listAll(
-				Document.class);
+	private List<Document> loadDocuments(DataSet dataSet) {
+		List<Document> list = (List<Document>) getDao().loadByField(
+				Document.class, "dataSet", dataSet);
 
-		for (Iterator<Document> iterator = list.iterator(); iterator.hasNext();) {
-			Document document = (Document) iterator.next();
-			if (document.getDataSet().getId() != dataSet.getId()) {
-				iterator.remove();
-			}
-		}
+		return list;
+	}
+
+	private List<Document> loadDocumentsByFather(Document fatherDocument) {
+
+		Criteria criteria = getDao().openSession().createCriteria(
+				Document.class).add(
+				Restrictions.eq("dataSet", fatherDocument.getDataSet())).add(
+				Restrictions.eq("document", fatherDocument));
+		List<Document> list = criteria.list();
+
 		return list;
 	}
 
