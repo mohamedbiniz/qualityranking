@@ -18,7 +18,7 @@ public interface PageBD {
 	void save(PageCrawler p, DataSet dataSet) throws SQLException,
 			java.sql.BatchUpdateException;
 
-	void updateLinks(Collection c) throws SQLException,
+	void updateLinks(Collection c, DataSet dataSet) throws SQLException,
 			java.sql.BatchUpdateException;
 
 }

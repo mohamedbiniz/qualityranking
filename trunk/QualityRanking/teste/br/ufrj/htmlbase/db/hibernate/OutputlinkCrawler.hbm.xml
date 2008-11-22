@@ -17,6 +17,7 @@
         
         <property name="idPage" column="IdPagina" type="long"/>
         <property name="idDataSet" column="IdDataSet" type="long"/>
+        <property name="ordemDownload" column="ordem_download" type="long" />
         <property name="score" column="SCORE" type="double" />
         <property name="url" column="URL" type="java.lang.String" />
         <property name="domain" column="DOMAIN" type="java.lang.String" />

@@ -41,7 +41,7 @@ public class PageTest extends TestCase {
 			OutputLinkCrawler url = null;
 
 			try {
-				url = Frontier.getInstance().getNextURL();// "http://www.aprendendoingles.com.br/ebooks/";
+				url = Frontier.getInstance().getNextURL(dataSet);// "http://www.aprendendoingles.com.br/ebooks/";
 			} catch (Exception e) {
 				e.printStackTrace(); // To change body of catch statement use
 				// File | Settings | File Templates.

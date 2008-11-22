@@ -87,7 +87,8 @@ public class PageBDImpl implements PageBD {
 		return lista;
 	}
 
-	public synchronized void save(PageCrawler p, DataSet dataSet) throws SQLException {
+	public synchronized void save(PageCrawler p, DataSet dataSet)
+			throws SQLException {
 
 		PreparedStatement stmt = conn
 				.prepareStatement("INSERT INTO PAGE(IdPagina, content, url, path_page, IdDataSet) values(?,?,?,?,?)");
@@ -153,7 +154,7 @@ public class PageBDImpl implements PageBD {
 	}
 
 	// TODO melhorar implementacao
-	public void updateLinks(Collection c) throws SQLException {
+	public void updateLinks(Collection c, DataSet dataSet) throws SQLException {
 
 		Statement stmt = conn.createStatement();
 

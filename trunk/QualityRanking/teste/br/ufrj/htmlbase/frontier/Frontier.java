@@ -61,12 +61,13 @@ public class Frontier {
 
 	}
 
-	public synchronized OutputLinkCrawler getNextURL() throws HtmlBaseException {
+	public synchronized OutputLinkCrawler getNextURL(DataSet dataSet)
+			throws HtmlBaseException {
 
 		// TODO precisa melhorar isso, falha caso a tabela de links fique vazia
 		if (!lista.iterator().hasNext()) {
 
-			sendListUpdate();
+			sendListUpdate(dataSet);
 
 			lista = getOutputLinkList();
 
@@ -86,19 +87,19 @@ public class Frontier {
 
 		if (o.getUrl().contains(PageCrawler.TEMP_PATH)
 				|| o.getUrl().endsWith(".pdf") || o.getUrl().contains("?"))
-			return getNextURL();
+			return getNextURL(dataSet);
 		else
 			return o;
 	}
 
-	public void sendListUpdate() {
+	public void sendListUpdate(DataSet dataSet) {
 
 		if (!listaUpdate.isEmpty()) {
 
 			PageBD bd = FactoryBD.getInstance().createPage();
 
 			try {
-				bd.updateLinks(listaUpdate);
+				bd.updateLinks(listaUpdate, dataSet);
 				listaUpdate.clear();
 
 			} catch (java.sql.BatchUpdateException bue) {

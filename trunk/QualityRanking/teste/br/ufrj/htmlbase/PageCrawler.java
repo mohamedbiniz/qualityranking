@@ -50,6 +50,8 @@ public class PageCrawler {
 
 	private long idPage;
 
+	private long ordemDownload;
+
 	// Url da pagina
 	protected String url;
 
@@ -101,6 +103,7 @@ public class PageCrawler {
 		setPath(path);
 
 		setIdPage(link.getIdPage());
+		setOrdemDownload(link.getOrdemDownload());
 
 		downloadFile(url, path);
 	}
@@ -389,5 +392,20 @@ public class PageCrawler {
 	public String toString() {
 
 		return String.format("%d\t%s\t%d", getId(), getUrl(), getIdPage());
+	}
+
+	/**
+	 * @return the ordemDownload
+	 */
+	public long getOrdemDownload() {
+		return ordemDownload;
+	}
+
+	/**
+	 * @param ordemDownload
+	 *            the ordemDownload to set
+	 */
+	public void setOrdemDownload(long ordemDownload) {
+		this.ordemDownload = ordemDownload;
 	}
 }

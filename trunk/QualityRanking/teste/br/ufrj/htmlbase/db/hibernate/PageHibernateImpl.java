@@ -25,6 +25,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import br.ufrj.cos.bri.bean.DataSet;
@@ -46,6 +47,14 @@ public class PageHibernateImpl implements PageBD {
 	private static final String OUTPUTLINK_CRAWLER = "outputlink_crawler";
 	private static final String METADATA_CRAWLER = "METADATA_crawler";
 	private static Logger logger = Logger.getLogger(PageHibernateImpl.class);
+
+	private static long idDataSet;
+	private static long ordemDownload;
+
+	static {
+		idDataSet = 0;
+		ordemDownload = 0;
+	}
 
 	/** Creates a new instance of PageHibernateImpl */
 	public PageHibernateImpl() {
@@ -185,6 +194,10 @@ public class PageHibernateImpl implements PageBD {
 
 	public synchronized void save(PageCrawler p, DataSet dataSet)
 			throws java.sql.BatchUpdateException {
+		if (dataSet.getId() != idDataSet) {
+			idDataSet = dataSet.getId();
+			ordemDownload = 0;
+		}
 
 		try {
 
@@ -192,6 +205,8 @@ public class PageHibernateImpl implements PageBD {
 			Transaction tx = ss.beginTransaction();
 
 			p.setIdDataSet(dataSet.getId());
+			p.setOrdemDownload(ordemDownload++);
+
 			ss.saveOrUpdate(p);
 			logger.debug(new java.util.Date() + " URL persistida :: "
 					+ p.getUrl());
@@ -289,8 +304,13 @@ public class PageHibernateImpl implements PageBD {
 		}
 	}
 
-	public synchronized void updateLinks(Collection c)
+	public synchronized void updateLinks(Collection c, DataSet dataSet)
 			throws java.sql.BatchUpdateException {
+
+		// if (dataSet.getId() != idDataSet) {
+		// idDataSet = dataSet.getId();
+		// ordemDownload = 0;
+		// }
 
 		try {
 			Session session = HibernateSessionFactory.currentSession();
@@ -306,6 +326,7 @@ public class PageHibernateImpl implements PageBD {
 
 					OutputLinkCrawler u = (OutputLinkCrawler) result.get(i);
 					u.setVisited(true);
+					// u.setOrdemDownload(ordemDownload++);
 					session.update(u);
 
 					logger.debug(u.getUrl() + " - Foi visitado -> "
@@ -344,7 +365,8 @@ public class PageHibernateImpl implements PageBD {
 
 	public Collection<Document> exportPages(DataSet dataSet, HibernateDAO dao)
 			throws Exception {
-		Collection<PageCrawler> pages = (Collection<PageCrawler>) listAll(PageCrawler.class);
+		Collection<PageCrawler> pages = (Collection<PageCrawler>) listAllOrderBy(
+				PageCrawler.class, "ordemDownload");
 		Collection<Document> documents = new ArrayList<Document>();
 		HashMap<Long, Document> documentsMap = new HashMap<Long, Document>();
 		for (PageCrawler pageCrawler : pages) {
@@ -377,6 +399,20 @@ public class PageHibernateImpl implements PageBD {
 
 		Criteria criteria = ss.createCriteria(klass).add(
 				Restrictions.eq(fieldName, value));
+		Collection<?> listResult = criteria.list();
+
+		ss.flush();
+		tx.commit();
+		HibernateSessionFactory.closeSession();
+		return listResult;
+	}
+
+	public Collection<?> listAllOrderBy(Class<?> klass, String orderPropertyName) {
+		Session ss = HibernateSessionFactory.currentSession();
+		Transaction tx = ss.beginTransaction();
+
+		Criteria criteria = ss.createCriteria(klass).addOrder(
+				Order.asc(orderPropertyName));
 		Collection<?> listResult = criteria.list();
 
 		ss.flush();
