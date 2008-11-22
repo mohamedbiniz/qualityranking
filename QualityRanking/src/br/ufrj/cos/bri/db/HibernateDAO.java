@@ -2,6 +2,8 @@ package br.ufrj.cos.bri.db;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -250,6 +252,17 @@ public class HibernateDAO {
 	 * @return - Uma lista de objetos que satisfaz os critérios de busca.
 	 */
 
+	public List<?> findByExampleClass(Class<?> klass, final Object example,
+			List<String> includeParams) {
+		List<String> excludeParams = new ArrayList<String>();
+		Field[] fields = klass.getFields();
+		for (Field field : fields) {
+			if (!includeParams.contains(field.getName()))
+				excludeParams.add(field.getName());
+		}
+		return findByExample(example, excludeParams);
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<?> findByExample(final Object example,
 			List<String> excludeParams) {
@@ -475,6 +488,13 @@ public class HibernateDAO {
 		sqlQuery.setParameter(0, value);
 
 		return sqlQuery.list();
+	}
+
+	public int countAll(String tableName) {
+		String queryString = String.format("SELECT count(*) FROM %s;",
+				tableName);
+		SQLQuery sqlQuery = session.createSQLQuery(queryString);
+		return ((BigInteger) sqlQuery.uniqueResult()).intValue();
 	}
 
 	/**

@@ -9,12 +9,7 @@
 
 package br.ufrj.htmlbase.db.hibernate;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -401,44 +396,6 @@ public class PageHibernateImpl implements PageBD {
 		tx.commit();
 		HibernateSessionFactory.closeSession();
 		return listResult;
-	}
-
-	public void generatePajek() throws SQLException, IOException {
-		Session ss = HibernateSessionFactory.currentSession();
-		// Transaction tx = ss.beginTransaction();
-		Connection conn = ss.connection();
-
-		ResultSet rs = conn.createStatement().executeQuery(
-				"SELECT COUNT(id) AS rows FROM  " + PAGE_CRAWLER);
-		rs.next();
-		int rows = rs.getInt("rows");
-		PrintWriter writer = new PrintWriter(new FileWriter("pajek.txt"));
-		writer.println("*Vertices " + rows);
-		rs = conn.createStatement().executeQuery(
-				"SELECT id, url FROM " + PAGE_CRAWLER);
-		while (rs.next()) {
-			writer.println(rs.getLong("id") + " \"" + rs.getString("url")
-					+ "\"");
-		}
-		writer.println("*Arcs");
-		rs = conn.createStatement().executeQuery(
-				"SELECT pai.id AS ordem_pai, filho.id AS ordem_filho "
-						+ "FROM " + PAGE_CRAWLER + " AS pai " + "INNER JOIN "
-						+ OUTPUTLINK_CRAWLER
-						+ " AS link ON (link.idPagina = pai.id) "
-						+ "INNER JOIN " + PAGE_CRAWLER
-						+ " AS filho ON (filho.id = link.id) "
-						+ "ORDER BY pai.id, filho.id");
-		while (rs.next()) {
-			writer.println(rs.getLong("ordem_pai") + " "
-					+ rs.getLong("ordem_filho") + " 1");
-		}
-		writer.close();
-
-		ss.flush();
-
-		HibernateSessionFactory.closeSession();
-
 	}
 
 }
