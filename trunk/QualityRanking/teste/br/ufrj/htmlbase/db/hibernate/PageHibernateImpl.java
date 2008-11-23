@@ -10,6 +10,7 @@
 package br.ufrj.htmlbase.db.hibernate;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +23,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.ObjectNotFoundException;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
@@ -432,6 +434,16 @@ public class PageHibernateImpl implements PageBD {
 		tx.commit();
 		HibernateSessionFactory.closeSession();
 		return listResult;
+	}
+
+	public int countAll(String tableName) {
+		Session ss = HibernateSessionFactory.currentSession();
+		Transaction tx = ss.beginTransaction();
+
+		String queryString = String.format("SELECT count(*) FROM %s;",
+				tableName);
+		SQLQuery sqlQuery = ss.createSQLQuery(queryString);
+		return ((BigInteger) sqlQuery.uniqueResult()).intValue();
 	}
 
 }

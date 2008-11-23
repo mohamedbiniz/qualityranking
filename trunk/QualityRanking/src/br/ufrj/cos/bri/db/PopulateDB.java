@@ -57,7 +57,7 @@ public class PopulateDB {
 		dataSet.setCreationDate(new Date());
 		dataSet.setDescription("economia");
 		dataSet.setLanguage(language);
-		dataSet.setMinQuantityPages(10);
+		dataSet.setMinQuantityPages(50);
 		dataSet.setStatus(DataSet.STATUS_CRAWLING);
 		dataSet.setCrawler(true);
 		dataSet = (DataSet) create(dataSet);
@@ -69,19 +69,34 @@ public class PopulateDB {
 		seedDocument.setUrl("http://www.ufpi.br/");
 
 		seedDocument = (SeedDocument) create(seedDocument);
-		// seedDocument = new SeedDocument();
-		// seedDocument.setDataSet(dataSet);
-		// seedDocument.setDomain("www.economist.com");
-		// seedDocument.setUrl("http://www.economist.com/");
-		//
-		// seedDocument = (SeedDocument) create(seedDocument);
-		//
-		// seedDocument = new SeedDocument();
-		// seedDocument.setDataSet(dataSet);
-		// seedDocument.setDomain("www.economiabr.net");
-		// seedDocument.setUrl("http://www.economiabr.net/");
-		//
-		// seedDocument = (SeedDocument) create(seedDocument);
+
+		seedDocument = new SeedDocument();
+		seedDocument.setDataSet(dataSet);
+		seedDocument.setDomain("www.ufc.br");
+		seedDocument.setUrl("http://www.ufc.br/");
+
+		seedDocument = (SeedDocument) create(seedDocument);
+
+		seedDocument = new SeedDocument();
+		seedDocument.setDataSet(dataSet);
+		seedDocument.setDomain("www.ufrj.br");
+		seedDocument.setUrl("http://www.ufrj.br/");
+
+		seedDocument = (SeedDocument) create(seedDocument);
+
+		seedDocument = new SeedDocument();
+		seedDocument.setDataSet(dataSet);
+		seedDocument.setDomain("www.ufrgs.br");
+		seedDocument.setUrl("http://www.ufrgs.br/");
+
+		seedDocument = (SeedDocument) create(seedDocument);
+
+		seedDocument = new SeedDocument();
+		seedDocument.setDataSet(dataSet);
+		seedDocument.setDomain("www.cos.ufrj.br");
+		seedDocument.setUrl("http://www.cos.ufrj.br/");
+
+		seedDocument = (SeedDocument) create(seedDocument);
 
 		QualityDimension qualityDimension = null;
 		QualityDimensionWeight qualityDimensionWeight = null;
