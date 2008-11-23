@@ -62,7 +62,7 @@ public class HtmlBase extends Thread {
 			PageHibernateImpl pageDao = new PageHibernateImpl();
 
 			// for (i = 0; i < numeroMaximoPaginas; i++) {
-			qtdPage = pageDao.listAll(PageCrawler.class).size();
+			qtdPage = pageDao.countAll("Page_Crawler");
 			while (qtdPage < numeroMaximoPaginas) {
 
 				OutputLinkCrawler link = Frontier.getInstance().getNextURL(
@@ -83,7 +83,7 @@ public class HtmlBase extends Thread {
 				logger.debug(new Date() + " - Thread " + workerNumber
 						+ " - Executando o download de numero :: " + ++i);
 
-				qtdPage = pageDao.listAll(PageCrawler.class).size();
+				qtdPage = pageDao.countAll("Page_Crawler");
 			}
 
 			// }

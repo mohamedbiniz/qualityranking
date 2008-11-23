@@ -60,7 +60,7 @@ public class ServiceCrawler extends Service {
 
 	private boolean pausado;
 
-	private int qtdSubThread = 1;
+	private int qtdSubThread = 4;
 
 	private Date now = null;
 
