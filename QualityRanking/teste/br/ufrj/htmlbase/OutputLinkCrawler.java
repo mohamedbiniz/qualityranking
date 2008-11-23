@@ -20,7 +20,6 @@ public class OutputLinkCrawler implements Serializable {
 	private String url;
 	private String domain;
 	private boolean visited;
-	private long ordemDownload;
 	private boolean seed;
 	private long idTest;
 	private long idPage;
@@ -40,7 +39,6 @@ public class OutputLinkCrawler implements Serializable {
 		setScore(SCORE);
 		setIdDataSet(idDataSet);
 		setSeed(false);
-		setOrdemDownload(0);
 	}
 
 	public OutputLinkCrawler() {
@@ -161,21 +159,6 @@ public class OutputLinkCrawler implements Serializable {
 	 */
 	public void setSeed(boolean seed) {
 		this.seed = seed;
-	}
-
-	/**
-	 * @return the ordemDownload
-	 */
-	public long getOrdemDownload() {
-		return ordemDownload;
-	}
-
-	/**
-	 * @param ordemDownload
-	 *            the ordemDownload to set
-	 */
-	public void setOrdemDownload(long ordemDownload) {
-		this.ordemDownload = ordemDownload;
 	}
 
 }

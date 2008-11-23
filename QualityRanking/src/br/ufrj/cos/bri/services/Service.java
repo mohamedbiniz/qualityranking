@@ -57,6 +57,7 @@ public abstract class Service extends Thread {
 					if (session != null)
 						getDao().closeSession();
 				}
+				System.gc();
 				try {
 					sleep(getPauseTime());
 				} catch (InterruptedException e) {

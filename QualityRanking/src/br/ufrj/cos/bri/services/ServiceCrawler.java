@@ -60,7 +60,7 @@ public class ServiceCrawler extends Service {
 
 	private boolean pausado;
 
-	private int qtdSubThread = 4;
+	private int qtdSubThread = 10;
 
 	private Date now = null;
 
@@ -92,6 +92,7 @@ public class ServiceCrawler extends Service {
 			HashMap<MetadataType, byte[]> listMetadatas = metadataExtract
 					.extract();
 			for (MetadataType metadataType : listMetadatas.keySet()) {
+				System.gc();
 				byte[] valueMetadata = listMetadatas.get(metadataType);
 				Metadata metadata = new Metadata();
 				metadata.setDocument(document);
@@ -112,6 +113,7 @@ public class ServiceCrawler extends Service {
 				dataSet, loadContextQualityDimensionWeights(dataSet));
 		setNow(new Date());
 		for (Document document : documents) {
+			System.gc();
 			for (QualityDimension qualityDimension : qualityDimensions) {
 				documentQualityDimension = new DocumentQualityDimension();
 				documentQualityDimension.setDocument(document);
@@ -163,6 +165,7 @@ public class ServiceCrawler extends Service {
 		int pesoArco = 1;
 		List<Document> childDocuments = loadDocumentsByFather(fatherDocument);
 		for (Document childDocument : childDocuments) {
+			System.gc();
 			writer.println(String.format("%d %d %d", fatherDocument.getId()
 					- diffIdOfDocuments, childDocument.getId()
 					- diffIdOfDocuments, pesoArco));

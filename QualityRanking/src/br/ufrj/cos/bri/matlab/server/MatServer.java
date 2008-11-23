@@ -43,6 +43,7 @@ public class MatServer {
 
 				while (listening) {
 					new workerThread(serverSocket.accept()).run();
+					System.gc();
 				}
 				serverSocket.close();
 			} // end_run
@@ -68,6 +69,7 @@ public class MatServer {
 				while ((inputObj = in.readObject()) != null) {
 					outputObj = processInput(inputObj);
 					out.writeObject(outputObj);
+					System.gc();
 					if (outputObj.equals("bye"))
 						break;
 				}
