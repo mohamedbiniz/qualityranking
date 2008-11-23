@@ -221,7 +221,7 @@ public class PageCrawler {
 
 			setContent(processContent());
 			setUrls(processLinks());
-			processMetadata();
+			// processMetadata();
 		}
 		return isAllOk();
 	}
