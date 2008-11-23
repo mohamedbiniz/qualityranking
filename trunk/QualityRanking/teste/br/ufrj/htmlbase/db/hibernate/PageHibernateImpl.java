@@ -257,45 +257,45 @@ public class PageHibernateImpl implements PageBD {
 					+ " Links persistidos com sucesso : " + urls.size());
 			urls = null;
 
-			Collection metadatas = p.getMetadata().getMetadatas();
-
-			for (Object metadata : metadatas) {
-
-				ss = HibernateSessionFactory.currentSession();
-				tx = ss.beginTransaction();
-
-				MetadataCrawler m = (MetadataCrawler) metadata;
-
-				Criteria criteria = ss.createCriteria(MetadataCrawler.class)
-						.add(Restrictions.eq("id", m.getId()));
-				List result = criteria.list();
-
-				// List result = ss.createCriteria(OutputLinkCrawler.class).add(
-				// Expression.eq("id", link.getIdTest())).add(
-				// Expression.eq("idPage", p.getId())).list();
-
-				if (result.isEmpty()) {
-
-					m.setIdPage(p.getId());
-					ss.save(m);
-				}
-				try {
-					ss.flush();
-					tx.commit();
-				} catch (Exception e) {
-					tx.rollback();
-					// e.printStackTrace();
-				} finally {
-					System.out.println(m.getName());
-					System.out.println(m.getValue());
-				}
-
-				HibernateSessionFactory.closeSession();
-			}
-			logger.debug(new java.util.Date()
-					+ " Metadados persistidos com sucesso : "
-					+ metadatas.size());
-			metadatas = null;
+			// Collection metadatas = p.getMetadata().getMetadatas();
+			//
+			// for (Object metadata : metadatas) {
+			//
+			// ss = HibernateSessionFactory.currentSession();
+			// tx = ss.beginTransaction();
+			//
+			// MetadataCrawler m = (MetadataCrawler) metadata;
+			//
+			// Criteria criteria = ss.createCriteria(MetadataCrawler.class)
+			// .add(Restrictions.eq("id", m.getId()));
+			// List result = criteria.list();
+			//
+			// // List result = ss.createCriteria(OutputLinkCrawler.class).add(
+			// // Expression.eq("id", link.getIdTest())).add(
+			// // Expression.eq("idPage", p.getId())).list();
+			//
+			// if (result.isEmpty()) {
+			//
+			// m.setIdPage(p.getId());
+			// ss.save(m);
+			// }
+			// try {
+			// ss.flush();
+			// tx.commit();
+			// } catch (Exception e) {
+			// tx.rollback();
+			// // e.printStackTrace();
+			// } finally {
+			// System.out.println(m.getName());
+			// System.out.println(m.getValue());
+			// }
+			//
+			// HibernateSessionFactory.closeSession();
+			// }
+			// logger.debug(new java.util.Date()
+			// + " Metadados persistidos com sucesso : "
+			// + metadatas.size());
+			// metadatas = null;
 
 		} catch (org.hibernate.exception.ConstraintViolationException cve) {
 			logger.debug(new java.util.Date()

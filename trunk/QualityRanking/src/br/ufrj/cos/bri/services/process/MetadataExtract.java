@@ -35,8 +35,7 @@ public class MetadataExtract {
 		setUrlPath(url);
 	}
 
-	public HashMap<MetadataType, byte[]> extract() throws IOException,
-			ParserException {
+	public HashMap<MetadataType, byte[]> extract() throws IOException {
 		HashMap<MetadataType, byte[]> listMetadatas = new HashMap<MetadataType, byte[]>();
 		MetadataType[] metadataTypes = MetadataType.values();
 		HttpURLConnection connection = null;
@@ -45,7 +44,16 @@ public class MetadataExtract {
 		connection.setUseCaches(false);
 
 		for (MetadataType metadataType : metadataTypes) {
-			byte[] value = extractMetadata(metadataType, connection);
+			byte[] value = null;
+			try {
+				value = extractMetadata(metadataType, connection);
+			} catch (ParserException pe) {
+				System.err
+						.println(String
+								.format(
+										"Erro ao capturar metadado (%s) com formato indevido na url %s !",
+										metadataType.toString(), getUrlPath()));
+			}
 			if (value != null)
 				listMetadatas.put(metadataType, value);
 		}
