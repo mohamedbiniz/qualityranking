@@ -68,7 +68,7 @@ public class HtmlBase extends Thread {
 				OutputLinkCrawler link = Frontier.getInstance().getNextURL(
 						dataSet);
 				PageCrawler page = new PageCrawler(link);
-
+				System.gc();
 				if (page.process()) {
 
 					PageBD dao = FactoryBD.getInstance().createPage();
@@ -84,6 +84,7 @@ public class HtmlBase extends Thread {
 						+ " - Executando o download de numero :: " + ++i);
 
 				qtdPage = pageDao.countAll("Page_Crawler");
+				System.gc();
 			}
 
 			// }
@@ -114,10 +115,12 @@ public class HtmlBase extends Thread {
 			Frontier frontier = Frontier.getInstance();
 			frontier.sendListUpdate(dataSet);
 			synchronized (this) {
-				if (qtdThreads > 0)
+				if (qtdThreads > 0) {
 					qtdThreads--;
-				if (qtdThreads == 0)
+				}
+				if (qtdThreads == 0 && serviceCrawler != null) {
 					serviceCrawler.setPausado(false);
+				}
 			}
 
 		}

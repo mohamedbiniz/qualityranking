@@ -103,7 +103,6 @@ public class PageCrawler {
 		setPath(path);
 
 		setIdPage(link.getIdPage());
-		setOrdemDownload(link.getOrdemDownload());
 
 		downloadFile(url, path);
 	}

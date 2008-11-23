@@ -57,7 +57,7 @@ public class PopulateDB {
 		dataSet.setCreationDate(new Date());
 		dataSet.setDescription("economia");
 		dataSet.setLanguage(language);
-		dataSet.setMinQuantityPages(50);
+		dataSet.setMinQuantityPages(10);
 		dataSet.setStatus(DataSet.STATUS_CRAWLING);
 		dataSet.setCrawler(true);
 		dataSet = (DataSet) create(dataSet);

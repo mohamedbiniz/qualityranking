@@ -175,7 +175,8 @@ public class PageHibernateImpl implements PageBD {
 		Session session = HibernateSessionFactory.currentSession();
 
 		List result = session.createCriteria(OutputLinkCrawler.class).add(
-				Expression.eq("visited", false)).setMaxResults(top).list();
+				Restrictions.eq("visited", false)).addOrder(
+				Order.asc("dateCreate")).setMaxResults(top).list();
 
 		HibernateSessionFactory.closeSession();
 
@@ -320,7 +321,7 @@ public class PageHibernateImpl implements PageBD {
 			logger.debug("=============== Links Visitados =================");
 
 			for (Object url : c) {
-
+				System.gc();
 				List result = session.createCriteria(OutputLinkCrawler.class)
 						.add(Expression.eq("idTest", url)).list();
 
@@ -367,18 +368,41 @@ public class PageHibernateImpl implements PageBD {
 
 	public Collection<Document> exportPages(DataSet dataSet, HibernateDAO dao)
 			throws Exception {
-		Collection<PageCrawler> pages = (Collection<PageCrawler>) listAllOrderBy(
-				PageCrawler.class, "ordemDownload");
+
+		long maxDownload = maxPropertyValue("Page_Crawler", "ordem_download");
+
+		Collection<PageCrawler> pages = new ArrayList<PageCrawler>();
 		Collection<Document> documents = new ArrayList<Document>();
 		HashMap<Long, Document> documentsMap = new HashMap<Long, Document>();
-		for (PageCrawler pageCrawler : pages) {
-			Document document = new Document();
-			document.setDataSet(dataSet);
-			document.setUrl(pageCrawler.getUrl());
-			dao.create(document);
-			documentsMap.put(pageCrawler.getId(), document);
-			documents.add(document);
+
+		for (long i = 0; i <= maxDownload; i++) {
+			System.gc();
+			List<?> list = loadByFields(PageCrawler.class, "ordemDownload", i,
+					"idDataSet", dataSet.getId());
+			if (!list.isEmpty()) {
+				PageCrawler pageCrawler = (PageCrawler) list.get(0);
+				pages.add(pageCrawler);
+				Document document = new Document();
+				document.setDataSet(dataSet);
+				document.setUrl(pageCrawler.getUrl());
+				dao.create(document);
+				documentsMap.put(pageCrawler.getId(), document);
+				documents.add(document);
+			}
 		}
+		// Collection<PageCrawler> pages = (Collection<PageCrawler>)
+		// listAllOrderBy(
+		// PageCrawler.class, "ordemDownload");
+		// Collection<Document> documents = new ArrayList<Document>();
+		// HashMap<Long, Document> documentsMap = new HashMap<Long, Document>();
+		// for (PageCrawler pageCrawler : pages) {
+		// Document document = new Document();
+		// document.setDataSet(dataSet);
+		// document.setUrl(pageCrawler.getUrl());
+		// dao.create(document);
+		// documentsMap.put(pageCrawler.getId(), document);
+		// documents.add(document);
+		// }
 
 		updateLinks(documentsMap, pages, dao);
 
@@ -388,10 +412,28 @@ public class PageHibernateImpl implements PageBD {
 	private void updateLinks(HashMap<Long, Document> documentsMap,
 			Collection<PageCrawler> pages, HibernateDAO dao) throws Exception {
 		for (PageCrawler pageCrawler : pages) {
+			System.gc();
 			Document document = documentsMap.get(pageCrawler.getId());
 			document.setDocument(documentsMap.get(pageCrawler.getIdPage()));
 			dao.update(document);
 		}
+	}
+
+	public List<?> loadByFields(Class<?> klass, String fieldName1,
+			Object value1, String fieldName2, Object value2) {
+		Session ss = HibernateSessionFactory.currentSession();
+		Transaction tx = ss.beginTransaction();
+
+		Criteria criteria = ss.createCriteria(klass).add(
+				Restrictions.eq(fieldName1, value1)).add(
+				Restrictions.eq(fieldName2, value2));
+		List<?> listResult = criteria.list();
+
+		ss.flush();
+		tx.commit();
+		HibernateSessionFactory.closeSession();
+		return listResult;
+
 	}
 
 	public Collection<?> loadByField(Class<?> klass, String fieldName,
@@ -444,6 +486,16 @@ public class PageHibernateImpl implements PageBD {
 				tableName);
 		SQLQuery sqlQuery = ss.createSQLQuery(queryString);
 		return ((BigInteger) sqlQuery.uniqueResult()).intValue();
+	}
+
+	public long maxPropertyValue(String tableName, String propertyName) {
+		Session ss = HibernateSessionFactory.currentSession();
+		Transaction tx = ss.beginTransaction();
+
+		String queryString = String.format("SELECT max(%s) FROM %s;",
+				propertyName, tableName);
+		SQLQuery sqlQuery = ss.createSQLQuery(queryString);
+		return ((BigInteger) sqlQuery.uniqueResult()).longValue();
 	}
 
 }

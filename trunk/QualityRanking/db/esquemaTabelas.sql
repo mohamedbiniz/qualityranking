@@ -6,7 +6,6 @@ CREATE TABLE  `foxset`.`outputlink_CRAWLER` (
   `IdDataSet` bigint(20) default 0,
   `IdPagina` bigint(20)  default 0,
   `ID_MD5` bigint(20)  default 0,
-  `ordem_download` bigint(20) default NULL,
   `LAST_MODIFIED` datetime default NULL,
   `NEXT_FETCH` datetime default NULL,
   `ORDEM_DOWNLOAD_PAI` bigint(20) default 0,
