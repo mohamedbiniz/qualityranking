@@ -45,10 +45,10 @@ if (length(cdq)==QD && length(qds)==QD )
 	
 	yTotal = max(min(yPoorMax, yPoor), max(min(yBadMax,yBad),max(min(yRegularMax,yRegular),max(min(yGoodMax,yGood), min(yExcellentMax, yExcellent)))));
 	
-	plot(x,yPoor,':c',x,yBad,':c',x,yGood,':c',x,yExcellent,':c',x,yRegular,':c',x,yTotal,'b');
-	axis([0,1,0,1]);
+	%plot(x,yPoor,':c',x,yBad,':c',x,yGood,':c',x,yExcellent,':c',x,yRegular,':c',x,yTotal,'b');
+	%axis([0,1,0,1]);
 	xCentroid = defuzz(x,yTotal,'centroid');
-	text(xCentroid,0.05,['\downarrow Xcentroid = ',num2str(xCentroid),' '],'HorizontalAlignment','left'); 
+	%text(xCentroid,0.05,['\downarrow Xcentroid = ',num2str(xCentroid),' '],'HorizontalAlignment','left'); 
 
 else
     fprintf('Erro. Argumento inválido.\n');
