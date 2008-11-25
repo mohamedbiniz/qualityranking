@@ -7,57 +7,58 @@ package br.ufrj.cos.foxset.search;
 import java.util.List;
 
 /**
- *
+ * 
  * @author Heraldo
  */
 public abstract class SearchEngine {
 
-    public static class Result {
+	public static class Result {
 
-        private String title,  URL,  summary;
+		private String title, URL, summary;
 
-        public String getURL() {
-            return URL;
-        }
+		public String getURL() {
+			return URL;
+		}
 
-        public void setURL(String URL) {
-            this.URL = URL;
-        }
+		public void setURL(String URL) {
+			this.URL = URL;
+		}
 
-        public String getSummary() {
-            return summary;
-        }
+		public String getSummary() {
+			return summary;
+		}
 
-        public void setSummary(String summary) {
-            this.summary = summary;
-        }
+		public void setSummary(String summary) {
+			this.summary = summary;
+		}
 
-        public String getTitle() {
-            return title;
-        }
+		public String getTitle() {
+			return title;
+		}
 
-        public void setTitle(String title) {
-            this.title = title;
-        }
-    }
-    private String appID;
-    private int maxResults;
+		public void setTitle(String title) {
+			this.title = title;
+		}
+	}
 
-    public String getAppID() {
-        return appID;
-    }
+	private String appID;
+	private int maxResults;
 
-    public void setAppID(String appID) {
-        this.appID = appID;
-    }
+	public String getAppID() {
+		return appID;
+	}
 
-    public int getMaxResults() {
-        return maxResults;
-    }
+	public void setAppID(String appID) {
+		this.appID = appID;
+	}
 
-    public void setMaxResults(int maxResults) {
-        this.maxResults = maxResults;
-    }
+	public int getMaxResults() {
+		return maxResults;
+	}
 
-    public abstract List<Result> search(String query) throws SearchException;
+	public void setMaxResults(int maxResults) {
+		this.maxResults = maxResults;
+	}
+
+	public abstract List<Result> search(String query) throws SearchException;
 }
