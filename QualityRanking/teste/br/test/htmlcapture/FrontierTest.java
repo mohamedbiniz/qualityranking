@@ -1,7 +1,7 @@
 package br.test.htmlcapture;
 
 import junit.framework.TestCase;
-import br.ufrj.cos.bri.bean.DataSet;
+import br.ufrj.cos.bean.DataSet;
 import br.ufrj.htmlbase.OutputLinkCrawler;
 import br.ufrj.htmlbase.exception.HtmlBaseException;
 import br.ufrj.htmlbase.frontier.Frontier;

@@ -1,4 +1,4 @@
-import br.ufrj.cos.bri.services.ServicesManager;
+import br.ufrj.cos.services.ServicesManager;
 
 public class Main {
 	public static void main(String[] args) {
