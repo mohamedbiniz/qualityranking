@@ -7,6 +7,7 @@ package br.ufrj.cos.foxset.search;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,71 +26,83 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * 
  * @author Heraldo
  */
 public class SOAPCall {
 
-    private String endpoint;
-    private SOAPConnection connection;
-    private SOAPMessage message;
-    private SOAPElement bodyElement;
+	private String endpoint;
+	private SOAPConnection connection;
+	private SOAPMessage message;
+	private SOAPElement bodyElement;
 
-    public SOAPCall(String endpoint, String localName) throws SOAPException {
-        this(endpoint, localName, null, null);
-    }
-    
-    public SOAPCall(String endpoint, String localName, String prefix, String uri) throws SOAPException {
-        this.endpoint = endpoint;
+	public SOAPCall(String endpoint, String localName) throws SOAPException {
+		this(endpoint, localName, null, null);
+	}
 
-        SOAPConnectionFactory soapConnFactory = SOAPConnectionFactory.newInstance();
-        connection = soapConnFactory.createConnection();
+	public SOAPCall(String endpoint, String localName, String prefix, String uri)
+			throws SOAPException {
+		this.endpoint = endpoint;
 
-        MessageFactory messageFactory = MessageFactory.newInstance();
-        message = messageFactory.createMessage();
+		SOAPConnectionFactory soapConnFactory = SOAPConnectionFactory
+				.newInstance();
+		connection = soapConnFactory.createConnection();
 
-        SOAPPart soapPart = message.getSOAPPart();
-        SOAPEnvelope envelope = soapPart.getEnvelope();
-        envelope.addNamespaceDeclaration("xsd", "http://www.w3.org/2001/XMLSchema");
-        envelope.addNamespaceDeclaration("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        envelope.addNamespaceDeclaration("enc", "http://schemas.xmlsoap.org/soap/encoding/");
-        envelope.addNamespaceDeclaration("env", "http://schemas.xmlsoap.org/soap/envelop/");
-        envelope.setEncodingStyle("http://schemas.xmlsoap.org/soap/encoding/");
+		MessageFactory messageFactory = MessageFactory.newInstance();
+		message = messageFactory.createMessage();
 
-        SOAPBody body = envelope.getBody();
-        if (prefix == null && uri == null) {
-            bodyElement = body.addChildElement(envelope.createName(localName));
-        } else {
-            bodyElement = body.addChildElement(envelope.createName(localName, prefix, uri));
-        }
-    }
+		SOAPPart soapPart = message.getSOAPPart();
+		SOAPEnvelope envelope = soapPart.getEnvelope();
+		envelope.addNamespaceDeclaration("xsd",
+				"http://www.w3.org/2001/XMLSchema");
+		envelope.addNamespaceDeclaration("xsi",
+				"http://www.w3.org/2001/XMLSchema-instance");
+		envelope.addNamespaceDeclaration("enc",
+				"http://schemas.xmlsoap.org/soap/encoding/");
+		envelope.addNamespaceDeclaration("env",
+				"http://schemas.xmlsoap.org/soap/envelop/");
+		envelope.setEncodingStyle("http://schemas.xmlsoap.org/soap/encoding/");
 
-    public Document call() throws SOAPException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException, IOException {
-        message.saveChanges();
-        SOAPMessage response = connection.call(message, endpoint);
-        
-        StringWriter writer = new StringWriter();
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-        Source sourceContent = response.getSOAPPart().getContent();
-        StreamResult streamResult = new StreamResult(writer);
-        transformer.transform(sourceContent, streamResult);
-        String content = writer.getBuffer().toString();
-        System.out.println(content);
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(false);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(new InputSource(new StringReader(content)));
-        
-        connection.close();
-        return doc;
-    }
+		SOAPBody body = envelope.getBody();
+		if (prefix == null && uri == null) {
+			bodyElement = body.addChildElement(envelope.createName(localName));
+		} else {
+			bodyElement = body.addChildElement(envelope.createName(localName,
+					prefix, uri));
+		}
+	}
 
-    public SOAPElement getBodyElement() {
-        return bodyElement;
-    }
+	public Document call() throws SOAPException,
+			TransformerConfigurationException, TransformerException,
+			ParserConfigurationException, SAXException, IOException {
+		message.saveChanges();
+		SOAPMessage response = connection.call(message, endpoint);
+
+		StringWriter writer = new StringWriter();
+		Transformer transformer = TransformerFactory.newInstance()
+				.newTransformer();
+		Source sourceContent = response.getSOAPPart().getContent();
+		StreamResult streamResult = new StreamResult(writer);
+		transformer.transform(sourceContent, streamResult);
+		String content = writer.getBuffer().toString();
+		System.out.println(content);
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(false);
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder
+				.parse(new InputSource(new StringReader(content)));
+
+		connection.close();
+		return doc;
+	}
+
+	public SOAPElement getBodyElement() {
+		return bodyElement;
+	}
 }
