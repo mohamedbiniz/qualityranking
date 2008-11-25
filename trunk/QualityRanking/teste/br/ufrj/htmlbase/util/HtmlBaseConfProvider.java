@@ -9,7 +9,7 @@
 
 package br.ufrj.htmlbase.util;
 
-import br.ufrj.cos.bri.bean.DataSet;
+import br.ufrj.cos.bean.DataSet;
 
 /**
  * 

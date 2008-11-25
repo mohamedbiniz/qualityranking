@@ -10,7 +10,7 @@ import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import br.ufrj.cos.bri.WebFile;
+import br.ufrj.cos.WebFile;
 
 
 /**

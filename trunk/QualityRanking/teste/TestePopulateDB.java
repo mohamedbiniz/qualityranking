@@ -1,4 +1,4 @@
-import br.ufrj.cos.bri.db.PopulateDB;
+import br.ufrj.cos.db.PopulateDB;
 
 /**
  * 

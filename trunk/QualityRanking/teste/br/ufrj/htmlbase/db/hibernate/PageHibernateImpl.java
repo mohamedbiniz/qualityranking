@@ -30,10 +30,10 @@ import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import br.ufrj.cos.bri.bean.DataSet;
-import br.ufrj.cos.bri.bean.Document;
-import br.ufrj.cos.bri.bean.SeedDocument;
-import br.ufrj.cos.bri.db.HibernateDAO;
+import br.ufrj.cos.bean.DataSet;
+import br.ufrj.cos.bean.Document;
+import br.ufrj.cos.bean.SeedDocument;
+import br.ufrj.cos.db.HibernateDAO;
 import br.ufrj.htmlbase.OutputLinkCrawler;
 import br.ufrj.htmlbase.PageCrawler;
 import br.ufrj.htmlbase.db.PageBD;

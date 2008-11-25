@@ -2,8 +2,8 @@ package matlab;
 
 import java.io.IOException;
 
-import br.ufrj.cos.bri.matlab.JobSend;
-import br.ufrj.cos.bri.matlab.client.MatClient;
+import br.ufrj.cos.matlab.JobSend;
+import br.ufrj.cos.matlab.client.MatClient;
 
 public class TesteML {
 	// No Servidor Matlab rodar:

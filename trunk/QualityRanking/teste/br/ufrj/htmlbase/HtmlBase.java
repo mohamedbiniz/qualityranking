@@ -6,8 +6,8 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import br.ufrj.cos.bri.bean.DataSet;
-import br.ufrj.cos.bri.services.ServiceCrawler;
+import br.ufrj.cos.bean.DataSet;
+import br.ufrj.cos.services.ServiceCrawler;
 import br.ufrj.htmlbase.db.FactoryBD;
 import br.ufrj.htmlbase.db.PageBD;
 import br.ufrj.htmlbase.db.hibernate.PageHibernateImpl;

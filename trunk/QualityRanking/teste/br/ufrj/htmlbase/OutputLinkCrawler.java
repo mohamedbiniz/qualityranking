@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.Date;
 
-import br.ufrj.cos.bri.bean.DataSet;
+import br.ufrj.cos.bean.DataSet;
 import br.ufrj.htmlbase.io.MD5Hash;
 
 /**

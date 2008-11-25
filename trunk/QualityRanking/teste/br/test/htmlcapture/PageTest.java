@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
 
-import br.ufrj.cos.bri.bean.DataSet;
+import br.ufrj.cos.bean.DataSet;
 import br.ufrj.htmlbase.OutputLinkCrawler;
 import br.ufrj.htmlbase.PageCrawler;
 import br.ufrj.htmlbase.db.FactoryBD;

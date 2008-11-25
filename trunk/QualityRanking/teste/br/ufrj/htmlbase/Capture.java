@@ -14,11 +14,11 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import br.ufrj.cos.bri.bean.DataSet;
-import br.ufrj.cos.bri.bean.Document;
-import br.ufrj.cos.bri.bean.SeedDocument;
-import br.ufrj.cos.bri.db.HibernateDAO;
-import br.ufrj.cos.bri.services.ServiceCrawler;
+import br.ufrj.cos.bean.DataSet;
+import br.ufrj.cos.bean.Document;
+import br.ufrj.cos.bean.SeedDocument;
+import br.ufrj.cos.db.HibernateDAO;
+import br.ufrj.cos.services.ServiceCrawler;
 import br.ufrj.htmlbase.db.hibernate.PageHibernateImpl;
 
 public class Capture {

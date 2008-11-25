@@ -3,7 +3,7 @@ package br.ufrj.htmlbase.db;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import br.ufrj.cos.bri.bean.DataSet;
+import br.ufrj.cos.bean.DataSet;
 import br.ufrj.htmlbase.PageCrawler;
 
 /**
