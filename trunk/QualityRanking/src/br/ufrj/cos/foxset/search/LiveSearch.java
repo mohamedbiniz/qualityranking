@@ -77,4 +77,9 @@ public class LiveSearch extends SearchEngine {
 			throw new SearchException("Unable to perform MSN Live search", se);
 		}
 	}
+
+	@Override
+	public String getSearchEngineCode() {
+		return "LIVE";
+	}
 }

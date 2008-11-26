@@ -45,6 +45,8 @@ public class DataSet implements Serializable {
 	public static final char STATUS_FINALIZED = 'F';
 	@Transient
 	public static final char STATUS_SEARCH = 'S';
+	@Transient
+	public static final char STATUS_UNDEFINED = 'U';
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

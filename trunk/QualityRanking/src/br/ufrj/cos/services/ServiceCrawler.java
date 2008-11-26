@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -79,27 +80,36 @@ public class ServiceCrawler extends Service {
 		setPausado(true);
 		verificaPausa();
 		Collection<Document> documents = crawler.exportPages(dataSet, getDao());
-		extractMetadatas(documents);
+		extractMetadatasOfDocuments(documents);
 		derivacaoMetadados(dataSet);
 		fuzzy(dataSet);
 	}
 
-	private void extractMetadatas(Collection<Document> documents)
+	private void extractMetadatasOfDocuments(Collection<Document> documents)
 			throws Exception {
 		for (Document document : documents) {
-			MetadataExtract metadataExtract = new MetadataExtract(document
-					.getUrl());
-			HashMap<MetadataType, byte[]> listMetadatas = metadataExtract
-					.extract();
-			for (MetadataType metadataType : listMetadatas.keySet()) {
-				System.gc();
-				byte[] valueMetadata = listMetadatas.get(metadataType);
-				Metadata metadata = new Metadata();
-				metadata.setDocument(document);
-				metadata.setType(metadataType);
-				metadata.setValue(valueMetadata);
-				getDao().create(metadata);
-			}
+			extractMetadatas(document);
+		}
+	}
+
+	/**
+	 * @param document
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws Exception
+	 */
+	static void extractMetadatas(Document document)
+			throws MalformedURLException, IOException, Exception {
+		MetadataExtract metadataExtract = new MetadataExtract(document.getUrl());
+		HashMap<MetadataType, byte[]> listMetadatas = metadataExtract.extract();
+		for (MetadataType metadataType : listMetadatas.keySet()) {
+			System.gc();
+			byte[] valueMetadata = listMetadatas.get(metadataType);
+			Metadata metadata = new Metadata();
+			metadata.setDocument(document);
+			metadata.setType(metadataType);
+			metadata.setValue(valueMetadata);
+			getDao().create(metadata);
 		}
 	}
 
@@ -109,7 +119,7 @@ public class ServiceCrawler extends Service {
 		HashMap<String, HashMap<Long, Double>> scoresHubAutority = generateJungScores(
 				dataSet, diff);
 		Collection<Document> documents = loadDocuments(dataSet);
-		Collection<QualityDimension> qualityDimensions = getQualityDimensions(
+		Collection<QualityDimension> qualityDimensions = loadQualityDimensions(
 				dataSet, loadContextQualityDimensionWeights(dataSet));
 		setNow(new Date());
 		for (Document document : documents) {
@@ -376,8 +386,8 @@ public class ServiceCrawler extends Service {
 
 		Collection<ContextQualityDimensionWeight> listCQDWeights = loadContextQualityDimensionWeights(dataSet);
 
-		int qtdQualityDimensions = getQualityDimensions(dataSet, listCQDWeights)
-				.size();
+		int qtdQualityDimensions = loadQualityDimensions(dataSet,
+				listCQDWeights).size();
 		double contextWeights[] = getWeights(listCQDWeights);
 
 		Collection<Document> documents = loadDocuments(dataSet);
@@ -428,7 +438,7 @@ public class ServiceCrawler extends Service {
 		return list;
 	}
 
-	private Collection<QualityDimension> getQualityDimensions(DataSet dataSet,
+	static Collection<QualityDimension> loadQualityDimensions(DataSet dataSet,
 			Collection<ContextQualityDimensionWeight> listCQDWeights) {
 		HashMap<Long, QualityDimension> listMap = new HashMap<Long, QualityDimension>();
 		for (ContextQualityDimensionWeight contextQualityDimensionWeight : listCQDWeights) {
@@ -441,7 +451,7 @@ public class ServiceCrawler extends Service {
 		return listMap.values();
 	}
 
-	private Collection<ContextQualityDimensionWeight> loadContextQualityDimensionWeights(
+	static Collection<ContextQualityDimensionWeight> loadContextQualityDimensionWeights(
 			DataSet dataSet) {
 		Collection<ContextQualityDimensionWeight> list = (Collection<ContextQualityDimensionWeight>) getDao()
 				.listAll(ContextQualityDimensionWeight.class);
