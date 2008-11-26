@@ -75,4 +75,9 @@ public class GoogleSearch extends SearchEngine {
 			throw new SearchException("Unable to perform Google search", se);
 		}
 	}
+
+	@Override
+	public String getSearchEngineCode() {
+		return "GOOGLE";
+	}
 }

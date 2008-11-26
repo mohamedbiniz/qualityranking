@@ -60,4 +60,9 @@ public class YahooSearch extends SearchEngine {
 			throw new SearchException("Unable to perform Yahoo search", e);
 		}
 	}
+
+	@Override
+	public String getSearchEngineCode() {
+		return "YAHOO";
+	}
 }

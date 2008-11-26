@@ -151,7 +151,7 @@ public abstract class Service extends Thread {
 	/**
 	 * @return the dao
 	 */
-	public HibernateDAO getDao() {
+	public static HibernateDAO getDao() {
 		return dao;
 	}
 

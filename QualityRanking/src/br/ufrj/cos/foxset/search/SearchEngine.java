@@ -61,4 +61,6 @@ public abstract class SearchEngine {
 	}
 
 	public abstract List<Result> search(String query) throws SearchException;
+
+	public abstract String getSearchEngineCode();
 }
