@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 public class ServicesManager {
 
 	public void execute() {
-		int qtdServices = 1;
+		int qtdServices = 2;
 		Service[] services = new Service[qtdServices];
 		ServiceCrawler serviceCrawler;
 		// ServiceAutomaticEvaluation serviceAvaliacaoAutomatica;
@@ -21,6 +21,9 @@ public class ServicesManager {
 		// serviceAvaliacaoAutomatica = new ServiceAutomaticEvaluation();
 		services[0] = serviceCrawler;
 		// services[1] = serviceAvaliacaoAutomatica;
+		ServiceSearch serviceSearch;
+		serviceSearch = new ServiceSearch();
+		services[1] = serviceSearch;
 
 		try {
 

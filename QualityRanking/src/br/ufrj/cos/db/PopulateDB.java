@@ -21,6 +21,9 @@ import br.ufrj.cos.bean.Language;
 import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.bean.QualityDimensionWeight;
 import br.ufrj.cos.bean.SeedDocument;
+import br.ufrj.cos.foxset.search.GoogleSearch;
+import br.ufrj.cos.foxset.search.LiveSearch;
+import br.ufrj.cos.foxset.search.YahooSearch;
 
 /**
  * @author Fabricio
@@ -35,106 +38,219 @@ public class PopulateDB {
 		setDao(HibernateDAO.getInstance()); // TODO
 	}
 
-	public final void popular() throws Exception {
+	public final void popularTradicional() throws Exception {
 		// limparDB();
 
-		Language language = new Language();
-		language.setName("português");
-		language = (Language) create(language);
+		Language language = createLanguage("português");
 
-		Collaborator collaborator = new Collaborator();
-		collaborator.setAdministrator(true);
-		collaborator.setCoordinator(true);
-		collaborator.setEmail("fulano@fulano.com");
-		collaborator.setName("fulano da Silva");
-		collaborator.setPassword("12345");
-		collaborator.setUsername("fulano");
-		collaborator = (Collaborator) create(collaborator);
+		Collaborator collaborator = createCollaborator(true, true,
+				"fulano@fulano.com", "fulano da Silva", "12345", "fulano");
 
-		DataSet dataSet = new DataSet();
-		dataSet.setCollaborator(collaborator);
-		dataSet.setContext("economia");
-		dataSet.setCreationDate(new Date());
-		dataSet.setDescription("economia");
-		dataSet.setLanguage(language);
-		dataSet.setMinQuantityPages(100);
-		dataSet.setStatus(DataSet.STATUS_CRAWLING);
-		dataSet.setCrawler(true);
-		dataSet = (DataSet) create(dataSet);
+		DataSet dataSet = createDataSet(collaborator, "economia", "economia",
+				language, 10, DataSet.STATUS_CRAWLING);
 
-		SeedDocument seedDocument = null;
-		seedDocument = new SeedDocument();
-		seedDocument.setDataSet(dataSet);
-		seedDocument.setDomain("www.ufpi.br");
-		seedDocument.setUrl("http://www.ufpi.br/");
+		createSeedDocument(dataSet, "www.ufpi.br", "http://www.ufpi.br/");
 
-		seedDocument = (SeedDocument) create(seedDocument);
+		createSeedDocument(dataSet, "www.ufc.br", "http://www.ufc.br/");
 
-		seedDocument = new SeedDocument();
-		seedDocument.setDataSet(dataSet);
-		seedDocument.setDomain("www.ufc.br");
-		seedDocument.setUrl("http://www.ufc.br/");
+		createSeedDocument(dataSet, "www.ufrj.br", "http://www.ufrj.br/");
 
-		seedDocument = (SeedDocument) create(seedDocument);
+		createSeedDocument(dataSet, "www.ufrgs.br", "http://www.ufrgs.br/");
 
-		seedDocument = new SeedDocument();
-		seedDocument.setDataSet(dataSet);
-		seedDocument.setDomain("www.ufrj.br");
-		seedDocument.setUrl("http://www.ufrj.br/");
-
-		seedDocument = (SeedDocument) create(seedDocument);
-
-		seedDocument = new SeedDocument();
-		seedDocument.setDataSet(dataSet);
-		seedDocument.setDomain("www.ufrgs.br");
-		seedDocument.setUrl("http://www.ufrgs.br/");
-
-		seedDocument = (SeedDocument) create(seedDocument);
-
-		seedDocument = new SeedDocument();
-		seedDocument.setDataSet(dataSet);
-		seedDocument.setDomain("www.cos.ufrj.br");
-		seedDocument.setUrl("http://www.cos.ufrj.br/");
-
-		seedDocument = (SeedDocument) create(seedDocument);
+		createSeedDocument(dataSet, "www.cos.ufrj.br",
+				"http://www.cos.ufrj.br/");
 
 		QualityDimension qualityDimension = null;
 		QualityDimensionWeight qualityDimensionWeight = null;
-		ContextQualityDimensionWeight contextQualityDimensionWeight = null;
 
 		HashMap<String, String> variaveisLinguisticas = new HashMap<String, String>();
 		variaveisLinguisticas.put(QualityDimension.COM, "Completeness");
 		variaveisLinguisticas.put(QualityDimension.REP, "Reputation");
 		variaveisLinguisticas.put(QualityDimension.TIM, "Timeleness");
-		int i = 1;
 		for (Iterator<String> iterator = variaveisLinguisticas.keySet()
 				.iterator(); iterator.hasNext();) {
 			String code = (String) iterator.next();
 
-			qualityDimension = new QualityDimension();
-			qualityDimension.setName(variaveisLinguisticas.get(code));
-			qualityDimension.setCode(code.toCharArray());
+			qualityDimension = createQualityDimension(variaveisLinguisticas,
+					code);
 
-			qualityDimension = (QualityDimension) create(qualityDimension);
+			qualityDimensionWeight = createQualityDimensionWeight(
+					variaveisLinguisticas, code);
 
-			qualityDimensionWeight = new QualityDimensionWeight();
-			qualityDimensionWeight.setDescription(variaveisLinguisticas
-					.get(code));
-			qualityDimensionWeight.setWeight(1);
-			// qualityDimensionWeight.addDataSet(dataSet);
-			// qualityDimensionWeight.addQualityDimension(qualityDimension);
-
-			qualityDimensionWeight = (QualityDimensionWeight) create(qualityDimensionWeight);
-
-			contextQualityDimensionWeight = new ContextQualityDimensionWeight();
-			contextQualityDimensionWeight.setDataSet(dataSet);
-			contextQualityDimensionWeight.setQualityDimension(qualityDimension);
-			contextQualityDimensionWeight
-					.setQualityDimensionWeight(qualityDimensionWeight);
-
-			contextQualityDimensionWeight = (ContextQualityDimensionWeight) create(contextQualityDimensionWeight);
+			createContextQualityDimensionWeight(dataSet, qualityDimension,
+					qualityDimensionWeight);
 		}
 
+	}
+
+	public final void popularSearch() throws Exception {
+		// limparDB();
+
+		Language language = createLanguage("português");
+
+		Collaborator collaborator = createCollaborator(true, true,
+				"fulano@fulano.com", "fulano da Silva", "12345", "fulano");
+
+		DataSet dataSet = createDataSet(collaborator, "economia", "economia",
+				language, 100, DataSet.STATUS_SEARCH);
+
+		createSeedDocument(dataSet, "economia", "economia");
+
+		QualityDimension qualityDimension = null;
+		QualityDimensionWeight qualityDimensionWeight = null;
+
+		HashMap<String, String> variaveisLinguisticas = new HashMap<String, String>();
+		GoogleSearch googleSearch = new GoogleSearch();
+		variaveisLinguisticas.put(googleSearch.getSearchEngineCode().substring(
+				0, 3), googleSearch.getSearchEngineCode());
+
+		YahooSearch yahooSearch = new YahooSearch();
+		variaveisLinguisticas.put(yahooSearch.getSearchEngineCode().substring(
+				0, 3), yahooSearch.getSearchEngineCode());
+		LiveSearch liveSearch = new LiveSearch();
+		variaveisLinguisticas.put(liveSearch.getSearchEngineCode().substring(0,
+				3), liveSearch.getSearchEngineCode());
+		for (Iterator<String> iterator = variaveisLinguisticas.keySet()
+				.iterator(); iterator.hasNext();) {
+			String code = (String) iterator.next();
+
+			qualityDimension = createQualityDimension(variaveisLinguisticas,
+					code);
+
+			qualityDimensionWeight = createQualityDimensionWeight(
+					variaveisLinguisticas, code);
+
+			createContextQualityDimensionWeight(dataSet, qualityDimension,
+					qualityDimensionWeight);
+		}
+
+	}
+
+	/**
+	 * @param dataSet
+	 * @param qualityDimension
+	 * @param qualityDimensionWeight
+	 * @throws Exception
+	 */
+	private ContextQualityDimensionWeight createContextQualityDimensionWeight(
+			DataSet dataSet, QualityDimension qualityDimension,
+			QualityDimensionWeight qualityDimensionWeight) throws Exception {
+		ContextQualityDimensionWeight contextQualityDimensionWeight = null;
+		contextQualityDimensionWeight = new ContextQualityDimensionWeight();
+		contextQualityDimensionWeight.setDataSet(dataSet);
+		contextQualityDimensionWeight.setQualityDimension(qualityDimension);
+		contextQualityDimensionWeight
+				.setQualityDimensionWeight(qualityDimensionWeight);
+
+		contextQualityDimensionWeight = (ContextQualityDimensionWeight) create(contextQualityDimensionWeight);
+		return contextQualityDimensionWeight;
+	}
+
+	/**
+	 * @param variaveisLinguisticas
+	 * @param code
+	 * @return
+	 * @throws Exception
+	 */
+	private QualityDimensionWeight createQualityDimensionWeight(
+			HashMap<String, String> variaveisLinguisticas, String code)
+			throws Exception {
+		QualityDimensionWeight qualityDimensionWeight = null;
+		qualityDimensionWeight = new QualityDimensionWeight();
+		qualityDimensionWeight.setDescription(variaveisLinguisticas.get(code));
+		qualityDimensionWeight.setWeight(1);
+		qualityDimensionWeight = (QualityDimensionWeight) create(qualityDimensionWeight);
+		return qualityDimensionWeight;
+	}
+
+	/**
+	 * @param variaveisLinguisticas
+	 * @param code
+	 * @return
+	 * @throws Exception
+	 */
+	private QualityDimension createQualityDimension(
+			HashMap<String, String> variaveisLinguisticas, String code)
+			throws Exception {
+		QualityDimension qualityDimension = null;
+		qualityDimension = new QualityDimension();
+		qualityDimension.setName(variaveisLinguisticas.get(code));
+		qualityDimension.setCode(code.toCharArray());
+
+		qualityDimension = (QualityDimension) create(qualityDimension);
+		return qualityDimension;
+	}
+
+	/**
+	 * @param dataSet
+	 * @param domain
+	 * @param url
+	 * @throws Exception
+	 */
+	private SeedDocument createSeedDocument(DataSet dataSet, String domain,
+			String url) throws Exception {
+		SeedDocument seedDocument = null;
+		seedDocument = new SeedDocument();
+		seedDocument.setDataSet(dataSet);
+		seedDocument.setDomain(domain);
+		seedDocument.setUrl(url);
+
+		seedDocument = (SeedDocument) create(seedDocument);
+
+		return seedDocument;
+	}
+
+	/**
+	 * @param language
+	 * @param collaborator
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	private DataSet createDataSet(Collaborator collaborator, String context,
+			String description, Language language, int minQuantityPages,
+			char status) throws Exception {
+		DataSet dataSet = new DataSet();
+		dataSet.setCollaborator(collaborator);
+		dataSet.setContext(context);
+		dataSet.setCreationDate(new Date());
+		dataSet.setDescription(description);
+		dataSet.setLanguage(language);
+		dataSet.setMinQuantityPages(minQuantityPages);
+		dataSet.setStatus(status);
+		dataSet.setCrawler(true);
+		dataSet = (DataSet) create(dataSet);
+		return dataSet;
+	}
+
+	/**
+	 * @return
+	 * @throws Exception
+	 */
+	private Collaborator createCollaborator(boolean administrator,
+			boolean coordinator, String email, String name, String password,
+			String username) throws Exception {
+		Collaborator collaborator = new Collaborator();
+		collaborator.setAdministrator(administrator);
+		collaborator.setCoordinator(coordinator);
+		collaborator.setEmail(email);
+		collaborator.setName(name);
+		collaborator.setPassword(password);
+		collaborator.setUsername(username);
+
+		collaborator = (Collaborator) create(collaborator);
+		return collaborator;
+	}
+
+	/**
+	 * @return
+	 * @throws Exception
+	 */
+	private Language createLanguage(String name) throws Exception {
+		Language language = new Language();
+		language.setName(name);
+		language = (Language) create(language);
+		return language;
 	}
 
 	public void limparDB() throws Exception {

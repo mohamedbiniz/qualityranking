@@ -49,7 +49,7 @@ public class HibernateDAO {
 
 	private SessionFactory sessionFactory;
 
-	public static HibernateDAO dao;
+	private static HibernateDAO dao;
 
 	public static HibernateDAO getInstance() {
 		if (dao == null) {
