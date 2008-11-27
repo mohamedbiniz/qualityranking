@@ -18,24 +18,19 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.criterion.Restrictions;
 
 import br.ufrj.cos.GraphInstance;
-import br.ufrj.cos.bean.ContextQualityDimensionWeight;
 import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.DocumentQualityDimension;
 import br.ufrj.cos.bean.Metadata;
 import br.ufrj.cos.bean.QualityDimension;
+import br.ufrj.cos.db.HelperAcessDB;
 import br.ufrj.cos.enume.MetadataType;
-import br.ufrj.cos.matlab.JobSend;
-import br.ufrj.cos.matlab.client.MatClient;
 import br.ufrj.cos.services.process.MetadataExtract;
 import br.ufrj.htmlbase.Capture;
 import edu.uci.ics.jung.algorithms.importance.AbstractRanker;
@@ -118,9 +113,9 @@ public class ServiceCrawler extends Service {
 		long diff = generatePajekFormat(dataSet);
 		HashMap<String, HashMap<Long, Double>> scoresHubAutority = generateJungScores(
 				dataSet, diff);
-		Collection<Document> documents = loadDocuments(dataSet);
-		Collection<QualityDimension> qualityDimensions = loadQualityDimensions(
-				dataSet, loadContextQualityDimensionWeights(dataSet));
+		Collection<Document> documents = HelperAcessDB.loadDocuments(dataSet);
+		Collection<QualityDimension> qualityDimensions = HelperAcessDB
+				.loadQualityDimensions(dataSet);
 		setNow(new Date());
 		for (Document document : documents) {
 			System.gc();
@@ -148,7 +143,7 @@ public class ServiceCrawler extends Service {
 	private long generatePajekFormat(DataSet dataSet) throws SQLException,
 			IOException {
 		long diffIdOfDocuments = getMinIdDocument(dataSet) - 1;
-		List<Document> documents = loadDocuments(dataSet);
+		List<Document> documents = HelperAcessDB.loadDocuments(dataSet);
 		PrintWriter writer = new PrintWriter(new FileWriter(String.format(
 				PAJEK_FILE_NAME_FORMAT, dataSet.getId())));
 		writer.println(String.format("*Vertices %d", documents.size()));
@@ -164,7 +159,7 @@ public class ServiceCrawler extends Service {
 
 	private void goTree(DataSet dataSet, PrintWriter writer,
 			long diffIdOfDocuments) {
-		List<Document> rootDocuments = findRootDocuments(dataSet);
+		List<Document> rootDocuments = HelperAcessDB.findRootDocuments(dataSet);
 		for (Document rootDocument : rootDocuments) {
 			toVisitDocument(rootDocument, writer, diffIdOfDocuments);
 		}
@@ -173,7 +168,8 @@ public class ServiceCrawler extends Service {
 	private void toVisitDocument(Document fatherDocument, PrintWriter writer,
 			long diffIdOfDocuments) {
 		int pesoArco = 1;
-		List<Document> childDocuments = loadDocumentsByFather(fatherDocument);
+		List<Document> childDocuments = HelperAcessDB
+				.loadDocumentsByFather(fatherDocument);
 		for (Document childDocument : childDocuments) {
 			System.gc();
 			writer.println(String.format("%d %d %d", fatherDocument.getId()
@@ -182,16 +178,6 @@ public class ServiceCrawler extends Service {
 			toVisitDocument(childDocument, writer, diffIdOfDocuments);
 		}
 
-	}
-
-	private List<Document> findRootDocuments(DataSet dataSet) {
-		Criteria criteria = getDao().openSession().createCriteria(
-				Document.class).add(Restrictions.eq("dataSet", dataSet)).add(
-				Restrictions.isNull("document"));
-
-		List<Document> list = (List<Document>) criteria.list();
-
-		return list;
 	}
 
 	private HashMap<String, HashMap<Long, Double>> generateJungScores(
@@ -380,125 +366,6 @@ public class ServiceCrawler extends Service {
 		if (result == null || result.isEmpty())
 			return 0;
 		return result.get(0).getId();
-	}
-
-	private void fuzzy(DataSet dataSet) throws Exception {
-
-		Collection<ContextQualityDimensionWeight> listCQDWeights = loadContextQualityDimensionWeights(dataSet);
-
-		int qtdQualityDimensions = loadQualityDimensions(dataSet,
-				listCQDWeights).size();
-		double contextWeights[] = getWeights(listCQDWeights);
-
-		Collection<Document> documents = loadDocuments(dataSet);
-		for (Document document : documents) {
-
-			double[] qds = loadDocumentQualityDimensionScores(document);
-
-			JobSend jobSend = new JobSend("fuzzyDocument",
-					qtdQualityDimensions, contextWeights, qds);
-			MatClient c = null;
-			double documentScore = 0;
-			try {
-				c = MatClient.getInstance();
-				documentScore = c.createJob(jobSend);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-
-			}
-			document.setScore(new BigDecimal(documentScore));
-			getDao().update(document);
-		}
-
-	}
-
-	private List<Document> loadDocuments(DataSet dataSet) {
-		List<Document> list = (List<Document>) getDao().loadByField(
-				Document.class, "dataSet", dataSet);
-
-		return list;
-	}
-
-	private List<Document> loadDocumentsByFather(Document fatherDocument) {
-
-		Criteria criteria = getDao().openSession().createCriteria(
-				Document.class).add(
-				Restrictions.eq("dataSet", fatherDocument.getDataSet())).add(
-				Restrictions.eq("document", fatherDocument));
-		List<Document> list = criteria.list();
-
-		return list;
-	}
-
-	static Collection<QualityDimension> loadQualityDimensions(DataSet dataSet,
-			Collection<ContextQualityDimensionWeight> listCQDWeights) {
-		HashMap<Long, QualityDimension> listMap = new HashMap<Long, QualityDimension>();
-		for (ContextQualityDimensionWeight contextQualityDimensionWeight : listCQDWeights) {
-			QualityDimension qualityDimension = contextQualityDimensionWeight
-					.getQualityDimension();
-			if (!listMap.containsKey(qualityDimension.getId())) {
-				listMap.put(qualityDimension.getId(), qualityDimension);
-			}
-		}
-		return listMap.values();
-	}
-
-	static Collection<ContextQualityDimensionWeight> loadContextQualityDimensionWeights(
-			DataSet dataSet) {
-		Collection<ContextQualityDimensionWeight> list = (Collection<ContextQualityDimensionWeight>) getDao()
-				.listAll(ContextQualityDimensionWeight.class);
-
-		for (Iterator<ContextQualityDimensionWeight> iterator = list.iterator(); iterator
-				.hasNext();) {
-			ContextQualityDimensionWeight contextQualityDimensionWeight = (ContextQualityDimensionWeight) iterator
-					.next();
-			if (contextQualityDimensionWeight.getDataSet().getId() != dataSet
-					.getId()) {
-				iterator.remove();
-			}
-		}
-		return list;
-	}
-
-	private double[] loadDocumentQualityDimensionScores(Document document) {
-		Collection<DocumentQualityDimension> list = (Collection<DocumentQualityDimension>) getDao()
-				.listAll(DocumentQualityDimension.class);
-
-		List<Double> scores = new ArrayList<Double>();
-		for (Iterator<DocumentQualityDimension> iterator = list.iterator(); iterator
-				.hasNext();) {
-			DocumentQualityDimension documentQualityDimension = (DocumentQualityDimension) iterator
-					.next();
-			if (documentQualityDimension.getDocument().getId() == document
-					.getId()) {
-				scores.add(documentQualityDimension.getScore().doubleValue());
-			}
-		}
-
-		double[] scoresVector = new double[scores.size()];
-		int i = 0;
-		for (Double d : scores) {
-			scoresVector[i++] = d;
-		}
-		return scoresVector;
-	}
-
-	private double[] getWeights(
-			Collection<ContextQualityDimensionWeight> listCQDWeights) {
-		double[] weights = new double[listCQDWeights.size()];
-		int i = 0;
-		for (ContextQualityDimensionWeight w : listCQDWeights) {
-			weights[i++] = w.getQualityDimensionWeight().getWeight();
-		}
-		return weights;
 	}
 
 	/**

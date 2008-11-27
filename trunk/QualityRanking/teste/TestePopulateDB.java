@@ -13,7 +13,8 @@ public class TestePopulateDB {
 		try {
 			PopulateDB populate = (new PopulateDB());
 			populate.limparDB();
-			populate.popular();
+			populate.popularSearch();
+			// populate.popularTradicional();
 			// populate.teste();
 		} catch (Exception e) {
 			e.printStackTrace();
