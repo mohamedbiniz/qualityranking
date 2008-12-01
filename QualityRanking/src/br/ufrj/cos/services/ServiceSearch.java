@@ -52,7 +52,6 @@ public class ServiceSearch extends Service {
 	protected void execute(DataSet dataSet) throws Exception {
 		String keyWords = getKeywords(dataSet);
 		for (int i = 0; i < se.length; i++) {
-			se[i].setMaxResults(dataSet.getMinQuantityPages());
 			searchAndPersistPages(dataSet, se[i], keyWords);
 		}
 
@@ -61,6 +60,7 @@ public class ServiceSearch extends Service {
 
 	private void searchAndPersistPages(DataSet dataSet, SearchEngine se,
 			String keyWords) throws Exception {
+		se.setMaxResults(dataSet.getMinQuantityPages());
 		List<Result> results = se.search(keyWords);
 		QualityDimension qualityDimension = HelperAcessDB.loadQualityDimension(
 				dataSet, se.getSearchEngineCode());
