@@ -38,27 +38,48 @@ public class PopulateDB {
 		setDao(HibernateDAO.getInstance()); // TODO
 	}
 
-	public final void popularTradicional() throws Exception {
+	// http://en.wikipedia.org/wiki/Relational_databases
+	//
+	// http://computer.howstuffworks.com/framed.htm?parent=relational-database.htm&url=http://www.edm2.com/0612/msql7.html
+	//
+	// http://education-portal.com/articles/Database_Administrator_Certification%3A_Certificate_Program_Overview.html
+	//
+	// http://fyi.oreilly.com/2008/11/relational-database-technology.html#normalization
+	//
+	//
+	// http://redbook.cs.berkeley.edu/redbook3/lecs.html
+
+	public final void popularTradicionalBDR() throws Exception {
 		// limparDB();
 
-		Language language = createLanguage("português");
+		Language language = createLanguage("english");
 
 		Collaborator collaborator = createCollaborator(true, true,
 				"fulano@fulano.com", "fulano da Silva", "12345", "fulano");
 
-		DataSet dataSet = createDataSet(collaborator, "economia", "economia",
-				language, 10, DataSet.STATUS_CRAWLING);
+		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
+				language, 100, DataSet.STATUS_CRAWLING);
 
-		createSeedDocument(dataSet, "www.ufpi.br", "http://www.ufpi.br/");
+		createSeedDocument(dataSet, "redbook.cs.berkeley.edu",
+				"http://redbook.cs.berkeley.edu/redbook3/lecs.html");
 
-		createSeedDocument(dataSet, "www.ufc.br", "http://www.ufc.br/");
+		createSeedDocument(dataSet, "en.wikipedia.org",
+				"http://en.wikipedia.org/wiki/Relational_databases");
 
-		createSeedDocument(dataSet, "www.ufrj.br", "http://www.ufrj.br/");
+		createSeedDocument(
+				dataSet,
+				"computer.howstuffworks.com",
+				"http://computer.howstuffworks.com/framed.htm?parent=relational-database.htm&url=http://www.edm2.com/0612/msql7.html");
 
-		createSeedDocument(dataSet, "www.ufrgs.br", "http://www.ufrgs.br/");
+		createSeedDocument(
+				dataSet,
+				"education-portal.com",
+				"http://education-portal.com/articles/Database_Administrator_Certification%3A_Certificate_Program_Overview.html");
 
-		createSeedDocument(dataSet, "www.cos.ufrj.br",
-				"http://www.cos.ufrj.br/");
+		createSeedDocument(
+				dataSet,
+				"fyi.oreilly.com",
+				"http://fyi.oreilly.com/2008/11/relational-database-technology.html#normalization");
 
 		QualityDimension qualityDimension = null;
 		QualityDimensionWeight qualityDimensionWeight = null;
@@ -74,8 +95,89 @@ public class PopulateDB {
 			qualityDimension = createQualityDimension(variaveisLinguisticas,
 					code);
 
+			int weight = 1;
+
+			if (code.equals(QualityDimension.COM)) {
+				weight = 4;
+			} else if (code.equals(QualityDimension.REP)) {
+				weight = 3;
+			} else if (code.equals(QualityDimension.TIM)) {
+				weight = 2;
+			}
+
 			qualityDimensionWeight = createQualityDimensionWeight(
-					variaveisLinguisticas, code);
+					variaveisLinguisticas, code, weight);
+
+			createContextQualityDimensionWeight(dataSet, qualityDimension,
+					qualityDimensionWeight);
+		}
+
+	}
+
+	public final void popularTradicionalEconomia() throws Exception {
+		// limparDB();
+
+		Language language = createLanguage("english");
+
+		Collaborator collaborator = createCollaborator(true, true,
+				"fulano@fulano.com", "fulano da Silva", "12345", "fulano");
+
+		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
+				language, 600, DataSet.STATUS_CRAWLING);
+
+		// http://www.economist.com
+		createSeedDocument(dataSet, "www.economist.com",
+				"http://www.economist.com/");
+
+		// http://www.economypedia.com/
+		createSeedDocument(dataSet, "www.economypedia.com",
+				"http://www.economypedia.com/");
+
+		// http://www.economywatch.com/
+		createSeedDocument(dataSet, "www.economywatch.com",
+				"http://www.economywatch.com/");
+
+		// http://www.economy.com/
+		createSeedDocument(dataSet, "www.economy.com",
+				"http://www.economy.com/");
+
+		// createSeedDocument(dataSet, "www.ufpi.br", "http://www.ufpi.br/");
+		//
+		// createSeedDocument(dataSet, "www.ufc.br", "http://www.ufc.br/");
+		//
+		// createSeedDocument(dataSet, "www.ufrj.br", "http://www.ufrj.br/");
+		//
+		// createSeedDocument(dataSet, "www.ufrgs.br", "http://www.ufrgs.br/");
+		//
+		// createSeedDocument(dataSet, "www.cos.ufrj.br",
+		// "http://www.cos.ufrj.br/");
+
+		QualityDimension qualityDimension = null;
+		QualityDimensionWeight qualityDimensionWeight = null;
+
+		HashMap<String, String> variaveisLinguisticas = new HashMap<String, String>();
+		variaveisLinguisticas.put(QualityDimension.COM, "Completeness");
+		variaveisLinguisticas.put(QualityDimension.REP, "Reputation");
+		variaveisLinguisticas.put(QualityDimension.TIM, "Timeleness");
+		for (Iterator<String> iterator = variaveisLinguisticas.keySet()
+				.iterator(); iterator.hasNext();) {
+			String code = (String) iterator.next();
+
+			qualityDimension = createQualityDimension(variaveisLinguisticas,
+					code);
+
+			int weight = 1;
+
+			if (code.equals(QualityDimension.COM)) {
+				weight = 4;
+			} else if (code.equals(QualityDimension.REP)) {
+				weight = 3;
+			} else if (code.equals(QualityDimension.TIM)) {
+				weight = 2;
+			}
+
+			qualityDimensionWeight = createQualityDimensionWeight(
+					variaveisLinguisticas, code, weight);
 
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
@@ -86,15 +188,16 @@ public class PopulateDB {
 	public final void popularSearch() throws Exception {
 		// limparDB();
 
-		Language language = createLanguage("português");
+		Language language = createLanguage("english");
 
 		Collaborator collaborator = createCollaborator(true, true,
 				"fulano@fulano.com", "fulano da Silva", "12345", "fulano");
 
-		DataSet dataSet = createDataSet(collaborator, "economia", "economia",
+		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
 				language, 100, DataSet.STATUS_SEARCH);
 
-		createSeedDocument(dataSet, "economia", "economia");
+		createSeedDocument(dataSet, "economist", "economist");
+		createSeedDocument(dataSet, "economy", "economy");
 
 		QualityDimension qualityDimension = null;
 		QualityDimensionWeight qualityDimensionWeight = null;
@@ -117,9 +220,10 @@ public class PopulateDB {
 			qualityDimension = createQualityDimension(variaveisLinguisticas,
 					code);
 
-			qualityDimensionWeight = createQualityDimensionWeight(
-					variaveisLinguisticas, code);
+			int weight = 1;
 
+			qualityDimensionWeight = createQualityDimensionWeight(
+					variaveisLinguisticas, code, weight);
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
 		}
@@ -149,16 +253,17 @@ public class PopulateDB {
 	/**
 	 * @param variaveisLinguisticas
 	 * @param code
+	 * @param weight
 	 * @return
 	 * @throws Exception
 	 */
 	private QualityDimensionWeight createQualityDimensionWeight(
-			HashMap<String, String> variaveisLinguisticas, String code)
-			throws Exception {
+			HashMap<String, String> variaveisLinguisticas, String code,
+			int weight) throws Exception {
 		QualityDimensionWeight qualityDimensionWeight = null;
 		qualityDimensionWeight = new QualityDimensionWeight();
 		qualityDimensionWeight.setDescription(variaveisLinguisticas.get(code));
-		qualityDimensionWeight.setWeight(1);
+		qualityDimensionWeight.setWeight(weight);
 		qualityDimensionWeight = (QualityDimensionWeight) create(qualityDimensionWeight);
 		return qualityDimensionWeight;
 	}
