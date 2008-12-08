@@ -1,4 +1,4 @@
-addpath 'C:\Users\Heraldo\Documents\PESC\P2 - Busca e Recuperação de Informação\Crawler\QualityRanking\bin'
-javaaddpath 'C:\Users\Heraldo\Documents\PESC\P2 - Busca e Recuperação de Informação\Crawler\QualityRanking\bin'
-ms = br.ufrj.cos.bri.matlab.server.MatServer;
+addpath 'C:\foxset\workspace\QualityRanking\bin'
+javaaddpath 'C:\foxset\workspace\QualityRanking\bin'
+ms = br.ufrj.cos.matlab.server.MatServer;
 ms.body();
