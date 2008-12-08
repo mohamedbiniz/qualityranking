@@ -42,7 +42,13 @@ public class MatServer {
 				}
 
 				while (listening) {
-					new workerThread(serverSocket.accept()).run();
+					try {
+						WorkerThread worker = new WorkerThread(serverSocket
+								.accept());
+						worker.run();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					System.gc();
 				}
 				serverSocket.close();
@@ -52,10 +58,10 @@ public class MatServer {
 		c.start();
 	}
 
-	public class workerThread {
+	public class WorkerThread {
 		private Socket socket = null;
 
-		public workerThread(Socket socket) {
+		public WorkerThread(Socket socket) {
 			this.socket = socket;
 		}
 
@@ -113,20 +119,31 @@ public class MatServer {
 
 		private Double executeFuzzy(int tl, int qd, double[] cdq, double[] qds)
 				throws InterruptedException, IOException {
-			String function = "fuzzyDocument";
-			File file = new File(NAME_FILE_RESULTS);
-			file.delete();
-			Object[] parameters = constuctParameters(tl, qd, cdq, qds, file
-					.getAbsolutePath());
-			mc.blockingFeval(function, parameters);
+			Double d = new Double(0);
 
-			while (!file.exists()) {
-				Thread.sleep(100);
+			try {
+				String function = "fuzzyDocument";
+				File file = new File(NAME_FILE_RESULTS);
+				file.delete();
+				Object[] parameters = constuctParameters(tl, qd, cdq, qds, file
+						.getAbsolutePath());
+				mc.blockingFeval(function, parameters);
+
+				while (!file.exists()) {
+					Thread.sleep(100);
+				}
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				String result = reader.readLine();
+				reader.close();
+				d = Double.parseDouble(result);
+			} catch (IOException ioe) {
+				throw ioe;
+			} catch (InterruptedException ie) {
+				throw ie;
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
 			}
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String result = reader.readLine();
-			reader.close();
-			Double d = Double.parseDouble(result);
 			return d;
 		}
 

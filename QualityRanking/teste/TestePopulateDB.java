@@ -13,8 +13,9 @@ public class TestePopulateDB {
 		try {
 			PopulateDB populate = (new PopulateDB());
 			populate.limparDB();
-			populate.popularSearch();
-			// populate.popularTradicional();
+			// populate.popularSearch();
+			// populate.popularTradicionalEconomia();
+			populate.popularTradicionalBDR();
 			// populate.teste();
 		} catch (Exception e) {
 			e.printStackTrace();
