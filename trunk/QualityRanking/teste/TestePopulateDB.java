@@ -13,7 +13,8 @@ public class TestePopulateDB {
 		try {
 			PopulateDB populate = (new PopulateDB());
 			populate.limparDB();
-			populate.popularSearch();
+			populate.createCollaboratorFoxSet();
+			// populate.popularSearch();
 			// populate.popularTradicionalEconomia();
 			// populate.popularTradicionalBDR();
 			// populate.teste();
