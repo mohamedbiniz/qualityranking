@@ -17,6 +17,10 @@ import br.ufrj.cos.foxset.search.SearchEngine.Result;
 public class Main {
 
 	public static void main(String[] args) throws SearchException, IOException {
+		System
+				.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+						"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+
 		for (int engine = 0; engine < 3; engine++) {
 			SearchEngine se = null;
 			if (engine == 0) {
