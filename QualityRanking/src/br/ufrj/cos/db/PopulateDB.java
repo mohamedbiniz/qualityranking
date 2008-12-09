@@ -54,8 +54,7 @@ public class PopulateDB {
 
 		Language language = createLanguage("english");
 
-		Collaborator collaborator = createCollaborator(true, true,
-				"fulano@fulano.com", "fulano da Silva", "12345", "fulano");
+		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
 				language, 100, DataSet.STATUS_CRAWLING);
@@ -119,8 +118,7 @@ public class PopulateDB {
 
 		Language language = createLanguage("english");
 
-		Collaborator collaborator = createCollaborator(true, true,
-				"fulano@fulano.com", "fulano da Silva", "12345", "fulano");
+		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
 				language, 600, DataSet.STATUS_CRAWLING);
@@ -190,8 +188,7 @@ public class PopulateDB {
 
 		Language language = createLanguage("english");
 
-		Collaborator collaborator = createCollaborator(true, true,
-				"fulano@fulano.com", "fulano da Silva", "12345", "fulano");
+		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
 				language, 100, DataSet.STATUS_SEARCH);
@@ -228,6 +225,16 @@ public class PopulateDB {
 					qualityDimensionWeight);
 		}
 
+	}
+
+	/**
+	 * @return
+	 * @throws Exception
+	 */
+	public Collaborator createCollaboratorFoxSet() throws Exception {
+		Collaborator collaborator = createCollaborator(true, true,
+				"foxset@cos.ufrj.br", "FoxSet", "foxset", "foxset");
+		return collaborator;
 	}
 
 	/**
