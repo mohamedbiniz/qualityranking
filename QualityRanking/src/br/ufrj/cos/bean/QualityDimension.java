@@ -27,6 +27,7 @@ public class QualityDimension implements Serializable {
 	public static final String COM = "COM";
 	public static final String REP = "REP";
 	public static final String TIM = "TIM";
+	public static final String SEC = "SEC";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

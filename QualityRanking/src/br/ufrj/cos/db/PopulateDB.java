@@ -38,6 +38,43 @@ public class PopulateDB {
 		setDao(HibernateDAO.getInstance()); // TODO
 	}
 
+	public void initFoxSet() throws Exception {
+		Language languagePt = createLanguage("Português (BR)");
+		Language languageEn = createLanguage("English (US)");
+
+		Collaborator coordinatorFoxSet = createCollaboratorFoxSet();
+
+		QualityDimension qualityDimension = null;
+		QualityDimensionWeight qualityDimensionWeight = null;
+
+		HashMap<String, String> variaveisLinguisticas = new HashMap<String, String>();
+		variaveisLinguisticas.put(QualityDimension.COM, "Completeness");
+		variaveisLinguisticas.put(QualityDimension.REP, "Reputation");
+		variaveisLinguisticas.put(QualityDimension.TIM, "Timeleness");
+		variaveisLinguisticas.put(QualityDimension.SEC, "Security");
+		for (Iterator<String> iterator = variaveisLinguisticas.keySet()
+				.iterator(); iterator.hasNext();) {
+			String code = (String) iterator.next();
+
+			qualityDimension = createQualityDimension(variaveisLinguisticas,
+					code);
+
+		}
+
+		qualityDimensionWeight = createQualityDimensionWeight(0,
+				"Indicates that the evaluated quality dimension has no importance.");
+		qualityDimensionWeight = createQualityDimensionWeight(1,
+				"Indicates that the evaluated quality dimension has a small importance.");
+		qualityDimensionWeight = createQualityDimensionWeight(
+				2,
+				"Indicates that the evaluated quality dimension is important in some circumstances, but not always.");
+		qualityDimensionWeight = createQualityDimensionWeight(3,
+				"Indicates that the evaluated quality dimension is very important.");
+		qualityDimensionWeight = createQualityDimensionWeight(5,
+				"Indicates that the evaluated quality dimension is essential.");
+
+	}
+
 	// http://en.wikipedia.org/wiki/Relational_databases
 	//
 	// http://computer.howstuffworks.com/framed.htm?parent=relational-database.htm&url=http://www.edm2.com/0612/msql7.html
@@ -104,8 +141,8 @@ public class PopulateDB {
 				weight = 2;
 			}
 
-			qualityDimensionWeight = createQualityDimensionWeight(
-					variaveisLinguisticas, code, weight);
+			qualityDimensionWeight = createQualityDimensionWeight(weight,
+					variaveisLinguisticas.get(code));
 
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
@@ -174,8 +211,8 @@ public class PopulateDB {
 				weight = 2;
 			}
 
-			qualityDimensionWeight = createQualityDimensionWeight(
-					variaveisLinguisticas, code, weight);
+			qualityDimensionWeight = createQualityDimensionWeight(weight,
+					variaveisLinguisticas.get(code));
 
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
@@ -219,8 +256,8 @@ public class PopulateDB {
 
 			int weight = 1;
 
-			qualityDimensionWeight = createQualityDimensionWeight(
-					variaveisLinguisticas, code, weight);
+			qualityDimensionWeight = createQualityDimensionWeight(weight,
+					variaveisLinguisticas.get(code));
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
 		}
@@ -232,8 +269,8 @@ public class PopulateDB {
 	 * @throws Exception
 	 */
 	public Collaborator createCollaboratorFoxSet() throws Exception {
-		Collaborator collaborator = createCollaborator(true, true,
-				"foxset@cos.ufrj.br", "FoxSet", "foxset", "foxset");
+		Collaborator collaborator = createCollaborator("foxset@cos.ufrj.br",
+				"FoxSet", "foxset", "foxset", true, true, true);
 		return collaborator;
 	}
 
@@ -264,12 +301,11 @@ public class PopulateDB {
 	 * @return
 	 * @throws Exception
 	 */
-	private QualityDimensionWeight createQualityDimensionWeight(
-			HashMap<String, String> variaveisLinguisticas, String code,
-			int weight) throws Exception {
+	private QualityDimensionWeight createQualityDimensionWeight(int weight,
+			String description) throws Exception {
 		QualityDimensionWeight qualityDimensionWeight = null;
 		qualityDimensionWeight = new QualityDimensionWeight();
-		qualityDimensionWeight.setDescription(variaveisLinguisticas.get(code));
+		qualityDimensionWeight.setDescription(description);
 		qualityDimensionWeight.setWeight(weight);
 		qualityDimensionWeight = (QualityDimensionWeight) create(qualityDimensionWeight);
 		return qualityDimensionWeight;
@@ -336,12 +372,20 @@ public class PopulateDB {
 	}
 
 	/**
+	 * 
+	 * @param email
+	 * @param name
+	 * @param password
+	 * @param username
+	 * @param administrator
+	 * @param coordinator
+	 * @param active
 	 * @return
 	 * @throws Exception
 	 */
-	private Collaborator createCollaborator(boolean administrator,
-			boolean coordinator, String email, String name, String password,
-			String username) throws Exception {
+	private Collaborator createCollaborator(String email, String name,
+			String password, String username, boolean administrator,
+			boolean coordinator, boolean active) throws Exception {
 		Collaborator collaborator = new Collaborator();
 		collaborator.setAdministrator(administrator);
 		collaborator.setCoordinator(coordinator);
@@ -349,6 +393,7 @@ public class PopulateDB {
 		collaborator.setName(name);
 		collaborator.setPassword(password);
 		collaborator.setUsername(username);
+		collaborator.setActive(active);
 
 		collaborator = (Collaborator) create(collaborator);
 		return collaborator;
@@ -531,4 +576,5 @@ public class PopulateDB {
 				.loadByFieldPk(ContextQualityDimensionWeight.class, "id",
 						contextQualityDimensionWeightPk);
 	}
+
 }
