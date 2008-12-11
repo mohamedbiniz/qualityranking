@@ -13,7 +13,7 @@ public class InitPopulateDB {
 		try {
 			PopulateDB populate = (new PopulateDB());
 			populate.limparDB();
-			populate.createCollaboratorFoxSet();
+			populate.initFoxSet();
 			// populate.popularSearch();
 			// populate.popularTradicionalEconomia();
 			// populate.popularTradicionalBDR();
