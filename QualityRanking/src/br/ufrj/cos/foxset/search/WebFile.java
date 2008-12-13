@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +91,7 @@ public class WebFile {
 		}
 
 		if (charset == null) {
-			return bytes;
+			return new String(bytes, Charset.defaultCharset());
 		}
 		try {
 			return new String(bytes, charset);
