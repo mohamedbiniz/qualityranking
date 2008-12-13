@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -54,12 +56,12 @@ public class Document implements Serializable, Comparable<Document> {
 	// Quando a atual instância é o filho
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "Document_Document", joinColumns = @JoinColumn(name = "child_document_id"), inverseJoinColumns = @JoinColumn(name = "father_document_id"))
-	private Collection<Document> fatherDocuments;
+	private Set<Document> fatherDocuments;
 
 	// Quando a atual instância é o pai
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "Document_Document", joinColumns = @JoinColumn(name = "father_document_id"), inverseJoinColumns = @JoinColumn(name = "child_document_id"))
-	private Collection<Document> childDocuments;
+	private Set<Document> childDocuments;
 
 	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
 	private Collection<DocumentData> documentDatas;
@@ -77,8 +79,8 @@ public class Document implements Serializable, Comparable<Document> {
 
 	public Document() {
 		setActive(true);
-		setFatherDocuments(new ArrayList<Document>());
-		setChildDocuments(new ArrayList<Document>());
+		setFatherDocuments(new TreeSet<Document>());
+		setChildDocuments(new TreeSet<Document>());
 		setDocumentDatas(new ArrayList<DocumentData>());
 		setQualityDimensions(new ArrayList<QualityDimension>());
 		setQueries(new ArrayList<Query>());
@@ -117,7 +119,7 @@ public class Document implements Serializable, Comparable<Document> {
 	/**
 	 * @return the fatherDocuments
 	 */
-	public Collection<Document> getFatherDocuments() {
+	public Set<Document> getFatherDocuments() {
 		return fatherDocuments;
 	}
 
@@ -125,8 +127,10 @@ public class Document implements Serializable, Comparable<Document> {
 	 * @param fatherDocuments
 	 *            the fatherDocuments to set
 	 */
-	public void setFatherDocuments(Collection<Document> fatherDocuments) {
+	public void setFatherDocuments(Set<Document> fatherDocuments) {
+		fatherDocuments.remove(this);
 		this.fatherDocuments = fatherDocuments;
+
 	}
 
 	/**
@@ -135,7 +139,10 @@ public class Document implements Serializable, Comparable<Document> {
 	 * @return
 	 */
 	public boolean addFatherDocument(Document fatherDocument) {
-		return getFatherDocuments().add(fatherDocument);
+		if (!this.equals(fatherDocument))
+			return getFatherDocuments().add(fatherDocument);
+		return false;
+
 	}
 
 	/**
@@ -144,6 +151,7 @@ public class Document implements Serializable, Comparable<Document> {
 	 * @return
 	 */
 	public boolean addAllFatherDocuments(Collection<Document> fatherDocuments) {
+		fatherDocuments.remove(this);
 		return getFatherDocuments().addAll(fatherDocuments);
 	}
 
@@ -159,7 +167,7 @@ public class Document implements Serializable, Comparable<Document> {
 	/**
 	 * @return the childDocuments
 	 */
-	public Collection<Document> getChildDocuments() {
+	public Set<Document> getChildDocuments() {
 		return childDocuments;
 	}
 
@@ -167,8 +175,10 @@ public class Document implements Serializable, Comparable<Document> {
 	 * @param childDocuments
 	 *            the childDocuments to set
 	 */
-	public void setChildDocuments(Collection<Document> childDocuments) {
+	public void setChildDocuments(Set<Document> childDocuments) {
+		childDocuments.remove(this);
 		this.childDocuments = childDocuments;
+
 	}
 
 	/**
@@ -177,7 +187,10 @@ public class Document implements Serializable, Comparable<Document> {
 	 * @return
 	 */
 	public boolean addChildDocument(Document childDocument) {
-		return getChildDocuments().add(childDocument);
+		if (!this.equals(childDocument))
+			return getChildDocuments().add(childDocument);
+		return false;
+
 	}
 
 	/**
@@ -186,6 +199,7 @@ public class Document implements Serializable, Comparable<Document> {
 	 * @return
 	 */
 	public boolean addAllChildDocuments(Collection<Document> childDocuments) {
+		childDocuments.remove(this);
 		return getChildDocuments().addAll(childDocuments);
 	}
 
