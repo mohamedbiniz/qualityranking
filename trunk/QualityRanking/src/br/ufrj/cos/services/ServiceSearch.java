@@ -4,7 +4,11 @@
 package br.ufrj.cos.services;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
@@ -15,6 +19,7 @@ import br.ufrj.cos.db.HelperAcessDB;
 import br.ufrj.cos.foxset.search.GoogleSearch;
 import br.ufrj.cos.foxset.search.LiveSearch;
 import br.ufrj.cos.foxset.search.SearchEngine;
+import br.ufrj.cos.foxset.search.WebFile;
 import br.ufrj.cos.foxset.search.YahooSearch;
 import br.ufrj.cos.foxset.search.SearchEngine.Result;
 
@@ -60,6 +65,7 @@ public class ServiceSearch extends Service {
 
 	private void searchAndPersistPages(DataSet dataSet, SearchEngine se,
 			String keyWords) throws Exception {
+
 		se.setMaxResults(dataSet.getMinQuantityPages());
 		List<Result> results = se.search(keyWords);
 		QualityDimension qualityDimension = HelperAcessDB.loadQualityDimension(
@@ -72,14 +78,49 @@ public class ServiceSearch extends Service {
 			Document document = new Document();
 			document.setDataSet(dataSet);
 			document.setUrl(result.getURL());
-			getDao().create(document);
-			ServiceCrawler.extractMetadatas(document);
+			Document documentPersisted = HelperAcessDB
+					.getPersistedDocument(document);
+			if (documentPersisted == null) {
+				getDao().create(document);
+				ServiceCrawler.extractMetadatas(document);
+			} else {
+				document = documentPersisted;
+			}
 			if (qualityDimension != null) {
 				updateSearchRankingScore(document, qualityDimension, results
 						.size(), position);
 			}
+			updateDocumentLinks(document);
 			position++;
 		}
+	}
+
+	private void updateDocumentLinks(Document document) throws Exception {
+		WebFile wf = new WebFile(document.getUrl());
+
+		Map<String, Integer> mapChildLinks = wf.getForwardLinks();
+		Set<String> childLinks = mapChildLinks.keySet();
+		Collection<Document> childDocuments = findChildDocumentsByLinks(childLinks);
+		document.addAllChildDocuments(childDocuments);
+
+		Map<String, Integer> mapFatherLinks = wf.getBackLinks();
+		Set<String> fatherLinks = mapFatherLinks.keySet();
+		Collection<Document> fatherDocuments = findFatherDocumentsByLinks(fatherLinks);
+		document.addAllFatherDocuments(fatherDocuments);
+
+		getDao().update(document);
+	}
+
+	private Collection<Document> findFatherDocumentsByLinks(
+			Set<String> fatherLinks) {
+		// TODO Auto-generated method stub
+		return new ArrayList<Document>();
+	}
+
+	private Collection<Document> findChildDocumentsByLinks(
+			Set<String> childLinks) {
+		// TODO Auto-generated method stub
+		return new ArrayList<Document>();
 	}
 
 	private void updateSearchRankingScore(Document document,

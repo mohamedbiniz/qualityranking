@@ -38,6 +38,7 @@ public abstract class Service extends Thread {
 	private char dataSetEndStatus;
 
 	public Service(char dataSetInitStatus, char dataSetEndStatus, long pauseTime) {
+
 		setDataSetInitStatus(dataSetInitStatus);
 		setDataSetEndStatus(dataSetEndStatus);
 		setPauseTime(pauseTime);

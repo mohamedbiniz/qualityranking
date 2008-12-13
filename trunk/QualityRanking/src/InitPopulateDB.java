@@ -17,7 +17,6 @@ public class InitPopulateDB {
 			// populate.popularSearch();
 			// populate.popularTradicionalEconomia();
 			// populate.popularTradicionalBDR();
-			// populate.teste();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

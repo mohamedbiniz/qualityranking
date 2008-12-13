@@ -140,6 +140,15 @@ public class Document implements Serializable, Comparable<Document> {
 
 	/**
 	 * 
+	 * @param fatherDocuments
+	 * @return
+	 */
+	public boolean addAllFatherDocuments(Collection<Document> fatherDocuments) {
+		return getFatherDocuments().addAll(fatherDocuments);
+	}
+
+	/**
+	 * 
 	 * @param fatherDocument
 	 * @return
 	 */
@@ -164,11 +173,20 @@ public class Document implements Serializable, Comparable<Document> {
 
 	/**
 	 * 
-	 * @param document
+	 * @param childDocument
 	 * @return
 	 */
 	public boolean addChildDocument(Document childDocument) {
 		return getChildDocuments().add(childDocument);
+	}
+
+	/**
+	 * 
+	 * @param childDocuments
+	 * @return
+	 */
+	public boolean addAllChildDocuments(Collection<Document> childDocuments) {
+		return getChildDocuments().addAll(childDocuments);
 	}
 
 	/**
@@ -295,11 +313,6 @@ public class Document implements Serializable, Comparable<Document> {
 		this.active = active;
 	}
 
-	public int compareTo(Document o) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	/**
 	 * @return the qualityDimensions
 	 */
@@ -365,6 +378,42 @@ public class Document implements Serializable, Comparable<Document> {
 	 */
 	public boolean removeQuery(Query query) {
 		return getQueries().remove(query);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		boolean result = false;
+		if ((obj != null) && (obj instanceof Document)) {
+			Document document = (Document) obj;
+			if (isPersisted(this) && isPersisted(document)) {
+				result = (this.getId() == document.getId());
+			} else {
+				// TODO: comparar URLs, considerar iguais URL que levam à mesma
+				// página web
+				result = getUrl().equalsIgnoreCase(document.getUrl());
+			}
+		}
+		return result;
+	}
+
+	public int compareTo(Document document) {
+		int result = 0;
+		if (isPersisted(this) && isPersisted(document)) {
+			result = (new Long(this.getId())).compareTo(new Long(document
+					.getId()));
+		} else {
+			// TODO: comparar URLs, considerar iguais URL que levam à mesma
+			// página web
+			result = getUrl().compareToIgnoreCase(document.getUrl());
+		}
+		return result;
+	}
+
+	private boolean isPersisted(Document document) {
+		boolean result = false;
+		if ((document != null) && (document.getId() != 0))
+			result = true;
+		return result;
 	}
 
 	@Override
