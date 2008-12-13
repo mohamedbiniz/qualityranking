@@ -51,16 +51,15 @@ public class Document implements Serializable, Comparable<Document> {
 	@JoinColumn(nullable = false)
 	private DataSet dataSet;
 
-	// No caso da instância ser um dos filhos
-	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST,
-			CascadeType.MERGE })
-	@PrimaryKeyJoinColumn
-	private Document document;
+	// Quando a atual instância é o filho
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "Document_Document", joinColumns = @JoinColumn(name = "child_document_id"), inverseJoinColumns = @JoinColumn(name = "father_document_id"))
+	private Collection<Document> fatherDocuments;
 
-	// No caso da instância ser o pai
-	@OneToMany(mappedBy = "document", cascade = { CascadeType.MERGE,
-			CascadeType.REFRESH })
-	private Collection<Document> documents;
+	// Quando a atual instância é o pai
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "Document_Document", joinColumns = @JoinColumn(name = "father_document_id"), inverseJoinColumns = @JoinColumn(name = "child_document_id"))
+	private Collection<Document> childDocuments;
 
 	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
 	private Collection<DocumentData> documentDatas;
@@ -78,7 +77,8 @@ public class Document implements Serializable, Comparable<Document> {
 
 	public Document() {
 		setActive(true);
-		setDocuments(new ArrayList<Document>());
+		setFatherDocuments(new ArrayList<Document>());
+		setChildDocuments(new ArrayList<Document>());
 		setDocumentDatas(new ArrayList<DocumentData>());
 		setQualityDimensions(new ArrayList<QualityDimension>());
 		setQueries(new ArrayList<Query>());
@@ -115,33 +115,51 @@ public class Document implements Serializable, Comparable<Document> {
 	}
 
 	/**
-	 * @return the document
+	 * @return the fatherDocuments
 	 */
-	public Document getDocument() {
-		return document;
+	public Collection<Document> getFatherDocuments() {
+		return fatherDocuments;
 	}
 
 	/**
-	 * @param document
-	 *            the document to set
+	 * @param fatherDocuments
+	 *            the fatherDocuments to set
 	 */
-	public void setDocument(Document document) {
-		this.document = document;
+	public void setFatherDocuments(Collection<Document> fatherDocuments) {
+		this.fatherDocuments = fatherDocuments;
 	}
 
 	/**
-	 * @return the documents
+	 * 
+	 * @param fatherDocument
+	 * @return
 	 */
-	public Collection<Document> getDocuments() {
-		return documents;
+	public boolean addFatherDocument(Document fatherDocument) {
+		return getFatherDocuments().add(fatherDocument);
 	}
 
 	/**
-	 * @param documents
-	 *            the documents to set
+	 * 
+	 * @param fatherDocument
+	 * @return
 	 */
-	public void setDocuments(Collection<Document> documents) {
-		this.documents = documents;
+	public boolean removeFatherDocument(Document fatherDocument) {
+		return getFatherDocuments().remove(fatherDocument);
+	}
+
+	/**
+	 * @return the childDocuments
+	 */
+	public Collection<Document> getChildDocuments() {
+		return childDocuments;
+	}
+
+	/**
+	 * @param childDocuments
+	 *            the childDocuments to set
+	 */
+	public void setChildDocuments(Collection<Document> childDocuments) {
+		this.childDocuments = childDocuments;
 	}
 
 	/**
@@ -149,8 +167,8 @@ public class Document implements Serializable, Comparable<Document> {
 	 * @param document
 	 * @return
 	 */
-	public boolean addDocument(Document document) {
-		return getDocuments().add(document);
+	public boolean addChildDocument(Document childDocument) {
+		return getChildDocuments().add(childDocument);
 	}
 
 	/**
@@ -158,8 +176,8 @@ public class Document implements Serializable, Comparable<Document> {
 	 * @param document
 	 * @return
 	 */
-	public boolean removeDocument(Document document) {
-		return getDocuments().remove(document);
+	public boolean removeChildDocument(Document childDocument) {
+		return getChildDocuments().remove(childDocument);
 	}
 
 	/**

@@ -26,6 +26,7 @@ import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.DataSetCollaborator;
 import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.DocumentData;
+import br.ufrj.cos.bean.DocumentDocument;
 import br.ufrj.cos.bean.DocumentQualityDimension;
 import br.ufrj.cos.bean.Language;
 import br.ufrj.cos.bean.Metadata;
@@ -80,6 +81,7 @@ public class HibernateDAO {
 		annotationCfg.addAnnotatedClass(DataSetCollaborator.class);
 		annotationCfg.addAnnotatedClass(Document.class);
 		annotationCfg.addAnnotatedClass(DocumentData.class);
+		annotationCfg.addAnnotatedClass(DocumentDocument.class);
 		annotationCfg.addAnnotatedClass(DocumentQualityDimension.class);
 		annotationCfg.addAnnotatedClass(Language.class);
 		annotationCfg.addAnnotatedClass(Metadata.class);

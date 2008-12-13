@@ -10,11 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import br.ufrj.cos.bean.ContextQualityDimensionWeight;
 import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
+import br.ufrj.cos.bean.DocumentDocument;
 import br.ufrj.cos.bean.DocumentQualityDimension;
 import br.ufrj.cos.bean.QualityDimension;
 
@@ -106,12 +108,20 @@ public class HelperAcessDB {
 	}
 
 	public static List<Document> loadDocumentsByFather(Document fatherDocument) {
-
 		Criteria criteria = getDao().openSession().createCriteria(
-				Document.class).add(
-				Restrictions.eq("dataSet", fatherDocument.getDataSet())).add(
-				Restrictions.eq("document", fatherDocument));
-		List<Document> list = criteria.list();
+				DocumentDocument.class).add(
+				Restrictions.eq("id.fatherDocument", fatherDocument))
+				.setProjection(Projections.property("id.childDocument.id"));
+		Collection<Long> lisIdChilds = criteria.list();
+		List<Document> list = new ArrayList<Document>();
+		if (!lisIdChilds.isEmpty()) {
+			criteria = getDao().openSession().createCriteria(Document.class)
+					.add(
+							Restrictions.eq("dataSet", fatherDocument
+									.getDataSet())).add(
+							Restrictions.in("id", lisIdChilds));
+			list = criteria.list();
+		}
 
 		return list;
 	}
@@ -119,7 +129,7 @@ public class HelperAcessDB {
 	public static List<Document> findRootDocuments(DataSet dataSet) {
 		Criteria criteria = getDao().openSession().createCriteria(
 				Document.class).add(Restrictions.eq("dataSet", dataSet)).add(
-				Restrictions.isNull("document"));
+				Restrictions.isEmpty("fatherDocuments"));
 
 		List<Document> list = (List<Document>) criteria.list();
 

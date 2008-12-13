@@ -9,9 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
-
 import br.ufrj.cos.bean.Collaborator;
 import br.ufrj.cos.bean.ContextQualityDimensionWeight;
 import br.ufrj.cos.bean.ContextQualityDimensionWeightPk;
@@ -158,7 +155,7 @@ public class PopulateDB {
 		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, 600, DataSet.STATUS_CRAWLING);
+				language, 60, DataSet.STATUS_CRAWLING);
 
 		// http://www.economist.com
 		createSeedDocument(dataSet, "www.economist.com",
@@ -423,7 +420,8 @@ public class PopulateDB {
 		Collection<DataSet> dataSets = (Collection<DataSet>) getDao().listAll(
 				DataSet.class);
 		for (DataSet dataSet : dataSets) {
-			Collection<Document> documents = findRootDocuments(dataSet);
+			Collection<Document> documents = HelperAcessDB
+					.findRootDocuments(dataSet);
 			for (Document document : documents) {
 				removeDocument(document);
 			}
@@ -466,33 +464,13 @@ public class PopulateDB {
 	}
 
 	private void removeDocument(Document fatherDocument) throws Exception {
-		List<Document> childDocuments = loadDocumentsByFather(fatherDocument);
+		List<Document> childDocuments = HelperAcessDB
+				.loadDocumentsByFather(fatherDocument);
 		for (Document childDocument : childDocuments) {
 			removeDocument(childDocument);
 			getDao().remove(childDocument);
 		}
 
-	}
-
-	private List<Document> findRootDocuments(DataSet dataSet) {
-		Criteria criteria = getDao().openSession().createCriteria(
-				Document.class).add(Restrictions.eq("dataSet", dataSet)).add(
-				Restrictions.isNull("document"));
-
-		List<Document> list = (List<Document>) criteria.list();
-
-		return list;
-	}
-
-	private List<Document> loadDocumentsByFather(Document fatherDocument) {
-
-		Criteria criteria = getDao().openSession().createCriteria(
-				Document.class).add(
-				Restrictions.eq("dataSet", fatherDocument.getDataSet())).add(
-				Restrictions.eq("document", fatherDocument));
-		List<Document> list = criteria.list();
-
-		return list;
 	}
 
 	/**
