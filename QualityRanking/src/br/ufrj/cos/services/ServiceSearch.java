@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+
 import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.DocumentQualityDimension;
@@ -100,27 +103,29 @@ public class ServiceSearch extends Service {
 
 		Map<String, Integer> mapChildLinks = wf.getForwardLinks();
 		Set<String> childLinks = mapChildLinks.keySet();
-		Collection<Document> childDocuments = findChildDocumentsByLinks(childLinks);
+		Collection<Document> childDocuments = findDocumentsByLinks(childLinks,
+				document.getDataSet());
 		document.addAllChildDocuments(childDocuments);
 
 		Map<String, Integer> mapFatherLinks = wf.getBackLinks();
 		Set<String> fatherLinks = mapFatherLinks.keySet();
-		Collection<Document> fatherDocuments = findFatherDocumentsByLinks(fatherLinks);
+		Collection<Document> fatherDocuments = findDocumentsByLinks(
+				fatherLinks, document.getDataSet());
 		document.addAllFatherDocuments(fatherDocuments);
 
 		getDao().update(document);
 	}
 
-	private Collection<Document> findFatherDocumentsByLinks(
-			Set<String> fatherLinks) {
-		// TODO Auto-generated method stub
-		return new ArrayList<Document>();
-	}
-
-	private Collection<Document> findChildDocumentsByLinks(
-			Set<String> childLinks) {
-		// TODO Auto-generated method stub
-		return new ArrayList<Document>();
+	private Collection<Document> findDocumentsByLinks(Set<String> fatherLinks,
+			DataSet dataSet) {
+		Collection<Document> fatherDocuments = new ArrayList<Document>();
+		if (!fatherLinks.isEmpty()) {
+			Criteria criteria = getDao().openSession().createCriteria(
+					Document.class).add(Restrictions.eq("dataSet", dataSet))
+					.add(Restrictions.in("url", fatherLinks));
+			fatherDocuments = (List<Document>) criteria.list();
+		}
+		return fatherDocuments;
 	}
 
 	private void updateSearchRankingScore(Document document,
