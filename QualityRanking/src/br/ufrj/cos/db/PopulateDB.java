@@ -225,7 +225,7 @@ public class PopulateDB {
 		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, 100, DataSet.STATUS_SEARCH);
+				language, 50, DataSet.STATUS_SEARCH);
 
 		createSeedDocument(dataSet, "economist", "economist");
 		createSeedDocument(dataSet, "economy", "economy");

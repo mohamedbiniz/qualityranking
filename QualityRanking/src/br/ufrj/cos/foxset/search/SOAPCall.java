@@ -42,13 +42,6 @@ public class SOAPCall {
 	private SOAPMessage message;
 	private SOAPElement bodyElement;
 
-	static {
-		System
-				.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-						"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-
-	}
-
 	public SOAPCall(String endpoint, String localName) throws SOAPException {
 		this(endpoint, localName, null, null);
 	}

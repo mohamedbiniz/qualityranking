@@ -70,8 +70,8 @@ public class HelperAcessDB {
 			String searchEngineCode) {
 		Collection<QualityDimension> qualityDimensions = loadQualityDimensions(dataSet);
 		for (QualityDimension qualityDimension : qualityDimensions) {
-			if (searchEngineCode
-					.contains(qualityDimension.getCode().toString())) {
+			if (searchEngineCode.contains(String.valueOf(qualityDimension
+					.getCode()))) {
 				return qualityDimension;
 			}
 		}
@@ -153,4 +153,16 @@ public class HelperAcessDB {
 		return HibernateDAO.getInstance();
 	}
 
+	public static Document getPersistedDocument(Document document) {
+		Document documentPersisted = null;
+		Criteria criteria = getDao().openSession().createCriteria(
+				Document.class).add(
+				Restrictions.eq("dataSet", document.getDataSet()));
+
+		List<Document> list = (List<Document>) criteria.list();
+		int index = list.indexOf(document);
+		if (index != -1)
+			documentPersisted = list.get(index);
+		return documentPersisted;
+	}
 }
