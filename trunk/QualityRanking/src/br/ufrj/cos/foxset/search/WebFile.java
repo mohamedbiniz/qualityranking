@@ -90,7 +90,11 @@ public class WebFile {
 			bytes = newBytes;
 		}
 
+		if (bytes == null) {
+			return "";
+		}
 		if (charset == null) {
+
 			return new String(bytes, Charset.defaultCharset());
 		}
 		try {
@@ -130,6 +134,9 @@ public class WebFile {
 			Pattern p = Pattern.compile(Pattern.quote("href=\"") + "("
 					+ Pattern.quote("http://") + "[^" + Pattern.quote("\"")
 					+ "]+)");
+			System.out.println(getURL());
+			System.out.println(content.getClass().getCanonicalName());
+			System.out.println(mimeType);
 			Matcher m = p.matcher((String) content);
 			while (m.find()) {
 				String matchedURL = m.group(1);

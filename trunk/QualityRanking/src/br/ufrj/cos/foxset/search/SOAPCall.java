@@ -42,12 +42,20 @@ public class SOAPCall {
 	private SOAPMessage message;
 	private SOAPElement bodyElement;
 
+	static {
+		System
+				.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+						"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+
+	}
+
 	public SOAPCall(String endpoint, String localName) throws SOAPException {
 		this(endpoint, localName, null, null);
 	}
 
 	public SOAPCall(String endpoint, String localName, String prefix, String uri)
 			throws SOAPException {
+
 		this.endpoint = endpoint;
 
 		SOAPConnectionFactory soapConnFactory = SOAPConnectionFactory
@@ -81,6 +89,7 @@ public class SOAPCall {
 	public Document call() throws SOAPException,
 			TransformerConfigurationException, TransformerException,
 			ParserConfigurationException, SAXException, IOException {
+
 		message.saveChanges();
 		SOAPMessage response = connection.call(message, endpoint);
 
@@ -92,6 +101,7 @@ public class SOAPCall {
 		transformer.transform(sourceContent, streamResult);
 		String content = writer.getBuffer().toString();
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		System.out.println(factory.getClass().getName());
 		factory.setNamespaceAware(false);
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder

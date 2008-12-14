@@ -14,7 +14,7 @@ public class InitPopulateDB {
 			PopulateDB populate = (new PopulateDB());
 			populate.limparDB();
 			populate.initFoxSet();
-			// populate.popularSearch();
+			// populate.popularSearch(5);
 			// populate.popularTradicionalEconomia();
 			// populate.popularTradicionalBDR();
 		} catch (Exception e) {
