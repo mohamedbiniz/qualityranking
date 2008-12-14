@@ -82,6 +82,7 @@ public class Document implements Serializable, Comparable<Document> {
 		setFatherDocuments(new TreeSet<Document>());
 		setChildDocuments(new TreeSet<Document>());
 		setDocumentDatas(new ArrayList<DocumentData>());
+		setMetadatas(new ArrayList<Metadata>());
 		setQualityDimensions(new ArrayList<QualityDimension>());
 		setQueries(new ArrayList<Query>());
 	}
