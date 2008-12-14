@@ -16,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -96,6 +97,10 @@ public class DataSet implements Serializable {
 	@PrimaryKeyJoinColumn
 	@JoinColumn(nullable = false)
 	private Collaborator collaborator;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(nullable = true)
+	private DataSet dataSet;
 
 	@OneToMany(mappedBy = "dataSet", cascade = CascadeType.ALL)
 	private Collection<Document> documents;
@@ -496,6 +501,21 @@ public class DataSet implements Serializable {
 	 */
 	public void setMethod(char method) {
 		this.method = method;
+	}
+
+	/**
+	 * @return the dataSet
+	 */
+	public DataSet getDataSet() {
+		return dataSet;
+	}
+
+	/**
+	 * @param dataSet
+	 *            the dataSet to set
+	 */
+	public void setDataSet(DataSet dataSet) {
+		this.dataSet = dataSet;
 	}
 
 }
