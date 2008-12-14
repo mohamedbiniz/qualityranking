@@ -48,12 +48,24 @@ public class DataSet implements Serializable {
 	@Transient
 	public static final char STATUS_UNDEFINED = 'U';
 
+	@Transient
+	public static final char CRAWLER_QUALITYFUZZY = 'C';
+
+	@Transient
+	public static final char SEARCH_QUALITYFUZZY = 'Q';
+
+	@Transient
+	public static final char SEARCH_POFN = 'P';
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	@Column(nullable = false)
 	private char status;
+
+	@Column(nullable = false)
+	private char method;
 
 	@Column(nullable = false)
 	private boolean crawler;
@@ -469,6 +481,21 @@ public class DataSet implements Serializable {
 	public boolean removeQualityDimensionWeight(
 			QualityDimensionWeight qualityDimensionWeight) {
 		return getQualityDimensionWeights().remove(qualityDimensionWeight);
+	}
+
+	/**
+	 * @return the method
+	 */
+	public char getMethod() {
+		return method;
+	}
+
+	/**
+	 * @param method
+	 *            the method to set
+	 */
+	public void setMethod(char method) {
+		this.method = method;
 	}
 
 }

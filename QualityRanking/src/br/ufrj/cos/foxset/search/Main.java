@@ -37,6 +37,8 @@ public class Main {
 			se.setMaxResults(7);
 			List<Result> results = se.search("heraldo");
 			for (Result r : results) {
+				System.out.println("Engine: "
+						+ String.valueOf(se.getSearchEngineCode()));
 				System.out.println("Title: " + r.getTitle());
 				System.out.println("URL: " + r.getURL());
 				System.out.println("Summary: " + r.getSummary());

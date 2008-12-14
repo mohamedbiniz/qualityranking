@@ -44,12 +44,6 @@ public abstract class SearchEngine {
 	private String appID;
 	private int maxResults;
 
-	public SearchEngine() {
-		System
-				.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-						"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-	}
-
 	public String getAppID() {
 		return appID;
 	}

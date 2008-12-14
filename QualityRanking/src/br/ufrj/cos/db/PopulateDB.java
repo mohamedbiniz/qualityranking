@@ -91,7 +91,8 @@ public class PopulateDB {
 		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, 100, DataSet.STATUS_CRAWLING);
+				language, 100, DataSet.STATUS_CRAWLING,
+				DataSet.CRAWLER_QUALITYFUZZY);
 
 		createSeedDocument(dataSet, "redbook.cs.berkeley.edu",
 				"http://redbook.cs.berkeley.edu/redbook3/lecs.html");
@@ -155,7 +156,8 @@ public class PopulateDB {
 		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, 60, DataSet.STATUS_CRAWLING);
+				language, 60, DataSet.STATUS_CRAWLING,
+				DataSet.CRAWLER_QUALITYFUZZY);
 
 		// http://www.economist.com
 		createSeedDocument(dataSet, "www.economist.com",
@@ -217,7 +219,7 @@ public class PopulateDB {
 
 	}
 
-	public final void popularSearch() throws Exception {
+	public final void popularSearch(int qtdPag) throws Exception {
 		// limparDB();
 
 		Language language = createLanguage("english");
@@ -225,7 +227,8 @@ public class PopulateDB {
 		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, 50, DataSet.STATUS_SEARCH);
+				language, qtdPag, DataSet.STATUS_SEARCH,
+				DataSet.SEARCH_QUALITYFUZZY);
 
 		createSeedDocument(dataSet, "economist", "economist");
 		createSeedDocument(dataSet, "economy", "economy");
@@ -349,12 +352,13 @@ public class PopulateDB {
 	 * @param language
 	 * @param collaborator
 	 * @param status
+	 * @param method
 	 * @return
 	 * @throws Exception
 	 */
 	private DataSet createDataSet(Collaborator collaborator, String context,
 			String description, Language language, int minQuantityPages,
-			char status) throws Exception {
+			char status, char method) throws Exception {
 		DataSet dataSet = new DataSet();
 		dataSet.setCollaborator(collaborator);
 		dataSet.setContext(context);
@@ -363,6 +367,7 @@ public class PopulateDB {
 		dataSet.setLanguage(language);
 		dataSet.setMinQuantityPages(minQuantityPages);
 		dataSet.setStatus(status);
+		dataSet.setMethod(method);
 		dataSet.setCrawler(true);
 		dataSet = (DataSet) create(dataSet);
 		return dataSet;

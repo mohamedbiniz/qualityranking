@@ -204,4 +204,9 @@ public class QualityDimension implements Serializable {
 		return getDocuments().remove(document);
 	}
 
+	@Override
+	public String toString() {
+		return String.format("%s", getName());
+	}
+
 }

@@ -6,11 +6,13 @@ package br.ufrj.cos.services;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import br.ufrj.cos.bean.DataSet;
@@ -62,8 +64,49 @@ public class ServiceSearch extends Service {
 		for (int i = 0; i < se.length; i++) {
 			searchAndPersistPages(dataSet, se[i], keyWords);
 		}
+		mathDocumentAndQualityDimension(dataSet);
 
 		fuzzy(dataSet);
+	}
+
+	private void mathDocumentAndQualityDimension(DataSet dataSet)
+			throws Exception {
+		Collection<QualityDimension> qualityDimensions = HelperAcessDB
+				.loadQualityDimensions(dataSet);
+		for (QualityDimension qualityDimension : qualityDimensions) {
+			Collection<Document> documents = findDocumentsWithoutQualityDimension(
+					dataSet, qualityDimension);
+			for (Document document : documents) {
+				updateSearchRankingScore(document, qualityDimension, 1, 1);
+			}
+		}
+	}
+
+	private Collection<Document> findDocumentsWithoutQualityDimension(
+			DataSet dataSet, QualityDimension qualityDimension) {
+		Criteria criteria = getDao().openSession().createCriteria(
+				DocumentQualityDimension.class).add(
+				Restrictions.ne("id.qualityDimension", qualityDimension))
+				.setProjection(Projections.property("id.document.id"));
+		Collection<Long> listIdDocumentsNotInQualiyDimension = criteria.list();
+		criteria = getDao().openSession().createCriteria(
+				DocumentQualityDimension.class).add(
+				Restrictions.eq("id.qualityDimension", qualityDimension))
+				.setProjection(Projections.property("id.document.id"));
+		Collection<Long> listIdDocumentsInQualiyDimension = criteria.list();
+		for (Iterator<Long> iterator = listIdDocumentsNotInQualiyDimension
+				.iterator(); iterator.hasNext();) {
+			Long idDocument = iterator.next();
+			if (listIdDocumentsInQualiyDimension.contains(idDocument)) {
+				iterator.remove();
+			}
+
+		}
+		criteria = getDao().openSession().createCriteria(Document.class).add(
+				Restrictions.eq("dataSet", dataSet)).add(
+				Restrictions.in("id", listIdDocumentsNotInQualiyDimension));
+		Collection<Document> list = criteria.list();
+		return list;
 	}
 
 	private void searchAndPersistPages(DataSet dataSet, SearchEngine se,
@@ -136,7 +179,8 @@ public class ServiceSearch extends Service {
 		documentQualityDimension.setDocument(document);
 		documentQualityDimension.setQualityDimension(qualityDimension);
 		double score = 0;
-		score = ((double) position) / ((double) sizeResults);
+		score = ((double) sizeResults - (double) position)
+				/ ((double) sizeResults);
 		documentQualityDimension.setScore(new BigDecimal(score));
 		getDao().create(documentQualityDimension);
 	}
