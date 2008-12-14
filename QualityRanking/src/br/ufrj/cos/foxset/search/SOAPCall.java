@@ -101,7 +101,6 @@ public class SOAPCall {
 		transformer.transform(sourceContent, streamResult);
 		String content = writer.getBuffer().toString();
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		System.out.println(factory.getClass().getName());
 		factory.setNamespaceAware(false);
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder
