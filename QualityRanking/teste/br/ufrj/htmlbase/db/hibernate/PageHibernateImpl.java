@@ -307,6 +307,20 @@ public class PageHibernateImpl implements PageBD {
 		}
 	}
 
+	public static synchronized void update(Object obj) {
+
+		Session session = HibernateSessionFactory.currentSession();
+		Transaction tx = session.beginTransaction();
+
+		session.update(obj);
+
+		session.flush();
+		tx.commit();
+
+		HibernateSessionFactory.closeSession();
+
+	}
+
 	public synchronized void updateLinks(Collection c, DataSet dataSet)
 			throws java.sql.BatchUpdateException {
 
@@ -350,7 +364,7 @@ public class PageHibernateImpl implements PageBD {
 
 	}
 
-	private Object loadById(Class<?> klass, Serializable id) {
+	public static Object loadById(Class<?> klass, Serializable id) {
 		Session ss = HibernateSessionFactory.currentSession();
 		Transaction tx = ss.beginTransaction();
 		Object obj = null;
