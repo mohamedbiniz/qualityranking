@@ -219,7 +219,7 @@ public class PopulateDB {
 
 	}
 
-	public static final void popularSearch(int qtdPag) throws Exception {
+	public static final void popularSearchPofN(int qtdPag) throws Exception {
 		// limparDB();
 
 		Language language = createLanguage("english");
@@ -228,6 +228,49 @@ public class PopulateDB {
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
 				language, qtdPag, 2, DataSet.STATUS_SEARCH, DataSet.SEARCH_POFN);
+
+		createSeedDocument(dataSet, "economist", "economist");
+		createSeedDocument(dataSet, "economy", "economy");
+
+		QualityDimension qualityDimension = null;
+		QualityDimensionWeight qualityDimensionWeight = null;
+
+		HashMap<String, String> variaveisLinguisticas = new HashMap<String, String>();
+		GoogleSearch googleSearch = new GoogleSearch();
+		variaveisLinguisticas.put(googleSearch.getSearchEngineCode().substring(
+				0, 3), googleSearch.getSearchEngineCode());
+
+		YahooSearch yahooSearch = new YahooSearch();
+		variaveisLinguisticas.put(yahooSearch.getSearchEngineCode().substring(
+				0, 3), yahooSearch.getSearchEngineCode());
+		LiveSearch liveSearch = new LiveSearch();
+		variaveisLinguisticas.put(liveSearch.getSearchEngineCode().substring(0,
+				3), liveSearch.getSearchEngineCode());
+		for (Iterator<String> iterator = variaveisLinguisticas.keySet()
+				.iterator(); iterator.hasNext();) {
+			String code = (String) iterator.next();
+
+			qualityDimension = createQualityDimension(variaveisLinguisticas,
+					code);
+
+			int weight = 1;
+
+			qualityDimensionWeight = createQualityDimensionWeight(weight,
+					variaveisLinguisticas.get(code));
+			createContextQualityDimensionWeight(dataSet, qualityDimension,
+					qualityDimensionWeight);
+		}
+
+	}
+
+	public static void popularSearchQF(int qtdPag) throws Exception {
+		Language language = createLanguage("english");
+
+		Collaborator collaborator = createCollaboratorFoxSet();
+
+		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
+				language, qtdPag, DataSet.STATUS_SEARCH,
+				DataSet.SEARCH_QUALITYFUZZY);
 
 		createSeedDocument(dataSet, "economist", "economist");
 		createSeedDocument(dataSet, "economy", "economy");
