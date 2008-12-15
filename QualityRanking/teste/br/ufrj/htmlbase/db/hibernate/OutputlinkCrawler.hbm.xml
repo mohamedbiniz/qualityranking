@@ -25,8 +25,9 @@
         <property name="dateCreate" column="DATE_CREATE" type="java.util.Date" />
         <property name="lastModified" column="LAST_MODIFIED" type="java.util.Date" />
         <property name="nextFetch" column="NEXT_FETCH" type="java.util.Date" />
-        
+        <!--  
         <many-to-one  name="pageCrawler" class="br.ufrj.htmlbase.OutputLinkCrawler" column="IdPagina"  />
+        -->
     </class>
     
 </hibernate-mapping>
