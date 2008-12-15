@@ -27,7 +27,7 @@ import br.ufrj.cos.enume.MetadataType;
  */
 @Table
 @Entity
-public class Metadata implements Serializable {
+public class Metadata implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -111,4 +111,12 @@ public class Metadata implements Serializable {
 		this.document = document;
 	}
 
+	@Override
+	public Metadata clone() throws CloneNotSupportedException {
+		Metadata metadata = new Metadata();
+		metadata.setDocument(getDocument());
+		metadata.setType(getType());
+		metadata.setValue(getValue());
+		return metadata;
+	}
 }

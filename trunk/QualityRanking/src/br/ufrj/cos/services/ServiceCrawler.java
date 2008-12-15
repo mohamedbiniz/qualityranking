@@ -63,8 +63,8 @@ public class ServiceCrawler extends Service {
 	public ServiceCrawler() {
 		// super(DataSet.STATUS_CRAWLING, DataSet.STATUS_AUTOMATIC_EVALUATION,
 		// PAUSA_CRAWLER);
-		super(DataSet.STATUS_CRAWLING, DataSet.STATUS_MANUAL_EVALUATION,
-				PAUSA_CRAWLER);
+		super(DataSet.STATUS_SEARCH, DataSet.STATUS_MANUAL_EVALUATION,
+				DataSet.CRAWLER_QUALITYFUZZY, PAUSA_CRAWLER);
 		crawler = new Capture();
 	}
 

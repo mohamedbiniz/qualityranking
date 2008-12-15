@@ -3,7 +3,9 @@
  */
 package br.ufrj.cos.services;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,6 +23,7 @@ import br.ufrj.cos.bean.DocumentQualityDimension;
 import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.bean.SeedDocument;
 import br.ufrj.cos.db.HelperAcessDB;
+import br.ufrj.cos.db.PopulateDB;
 import br.ufrj.cos.foxset.search.GoogleSearch;
 import br.ufrj.cos.foxset.search.LiveSearch;
 import br.ufrj.cos.foxset.search.SearchEngine;
@@ -32,14 +35,15 @@ import br.ufrj.cos.foxset.search.SearchEngine.Result;
  * @author Fabricio
  * 
  */
-public class ServiceSearch extends Service {
+public abstract class ServiceSearch extends Service {
 
 	private static final long PAUSA_SEARCH = 30000;
 
 	private SearchEngine[] se;
 
-	public ServiceSearch() {
-		super(DataSet.STATUS_SEARCH, DataSet.STATUS_UNDEFINED, PAUSA_SEARCH);
+	public ServiceSearch(char dataSetMethod) {
+		super(DataSet.STATUS_SEARCH, DataSet.STATUS_AUTOMATIC_EVALUATION,
+				dataSetMethod, PAUSA_SEARCH);
 		se = new SearchEngine[3];
 
 		se[0] = new GoogleSearch();
@@ -59,7 +63,7 @@ public class ServiceSearch extends Service {
 	 * @see br.ufrj.cos.bri.services.Service#execute(br.ufrj.cos.bri.bean.DataSet)
 	 */
 	@Override
-	protected void execute(DataSet dataSet) throws Exception {
+	protected final void execute(DataSet dataSet) throws Exception {
 		String keyWords = getKeywords(dataSet);
 		for (int i = 0; i < se.length; i++) {
 			searchAndPersistPages(dataSet, se[i], keyWords);
@@ -67,6 +71,30 @@ public class ServiceSearch extends Service {
 		mathDocumentAndQualityDimension(dataSet);
 
 		fuzzy(dataSet);
+
+		DataSet dataSetChild = createDataSetChild(dataSet);
+
+		exportDocumentsFromDataSetFather(dataSetChild);
+
+		applyFinalRanking(dataSetChild);
+
+	}
+
+	protected abstract void exportDocumentsFromDataSetFather(DataSet dataSet)
+			throws Exception;
+
+	protected abstract void applyFinalRanking(DataSet dataSet) throws Exception;
+
+	private final DataSet createDataSetChild(DataSet dataSetFather)
+			throws Exception {
+		DataSet dataSetChild = PopulateDB.createDataSet(dataSetFather
+				.getCollaborator(), dataSetFather.getContext() + " - "
+				+ dataSetFather.getMethod(), dataSetFather.getDescription(),
+				dataSetFather.getLanguage(), dataSetFather
+						.getMinQuantityPages(), dataSetFather.getPOfN(),
+				DataSet.STATUS_AUTOMATIC_EVALUATION, dataSetFather.getMethod(),
+				dataSetFather);
+		return dataSetChild;
 	}
 
 	private void mathDocumentAndQualityDimension(DataSet dataSet)
@@ -142,21 +170,37 @@ public class ServiceSearch extends Service {
 	}
 
 	private void updateDocumentLinks(Document document) throws Exception {
-		WebFile wf = new WebFile(document.getUrl());
+		try {
+			WebFile wf = new WebFile(document.getUrl());
 
-		Map<String, Integer> mapChildLinks = wf.getForwardLinks();
-		Set<String> childLinks = mapChildLinks.keySet();
-		Collection<Document> childDocuments = findDocumentsByLinks(childLinks,
-				document.getDataSet());
-		document.addAllChildDocuments(childDocuments);
+			Map<String, Integer> mapChildLinks = wf.getForwardLinks();
+			Set<String> childLinks = mapChildLinks.keySet();
+			Collection<Document> childDocuments = findDocumentsByLinks(
+					childLinks, document.getDataSet());
+			document.addAllChildDocuments(childDocuments);
 
-		Map<String, Integer> mapFatherLinks = wf.getBackLinks();
-		Set<String> fatherLinks = mapFatherLinks.keySet();
-		Collection<Document> fatherDocuments = findDocumentsByLinks(
-				fatherLinks, document.getDataSet());
-		document.addAllFatherDocuments(fatherDocuments);
+			Map<String, Integer> mapFatherLinks = null;
 
-		getDao().update(document);
+			mapFatherLinks = wf.getBackLinks();
+
+			Set<String> fatherLinks = mapFatherLinks.keySet();
+			Collection<Document> fatherDocuments = findDocumentsByLinks(
+					fatherLinks, document.getDataSet());
+			document.addAllFatherDocuments(fatherDocuments);
+
+			getDao().update(document);
+		} catch (MalformedURLException mURLe) {
+			System.err
+					.println(String
+							.format(
+									"Falha de formato de url indevido ao reconhecer a url ou seus back links: %s",
+									document.getUrl()));
+		} catch (IOException ioe) {
+			System.err.println(String.format(
+					"Falha no carregamento da url ou de seus back links: %s",
+					document.getUrl()));
+		}
+
 	}
 
 	private Collection<Document> findDocumentsByLinks(Set<String> fatherLinks,

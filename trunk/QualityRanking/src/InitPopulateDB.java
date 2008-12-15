@@ -11,12 +11,11 @@ import br.ufrj.cos.db.PopulateDB;
 public class InitPopulateDB {
 	public static void main(String[] args) {
 		try {
-			PopulateDB populate = (new PopulateDB());
-			populate.limparDB();
-			populate.initFoxSet();
-			// populate.popularSearch(5);
-			// populate.popularTradicionalEconomia();
-			// populate.popularTradicionalBDR();
+			PopulateDB.limparDB();
+			PopulateDB.initFoxSet();
+			// PopulateDB.popularSearch(5);
+			// PopulateDB.popularTradicionalEconomia();
+			// PopulateDB.popularTradicionalBDR();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
