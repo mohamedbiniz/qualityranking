@@ -64,6 +64,11 @@ public abstract class ServiceSearch extends Service {
 	 */
 	@Override
 	protected final void execute(DataSet dataSet) throws Exception {
+
+		DataSet dataSetChild = createDataSetChild(dataSet);
+
+		prepareDataSets(dataSet, dataSetChild);
+
 		String keyWords = getKeywords(dataSet);
 		for (int i = 0; i < se.length; i++) {
 			searchAndPersistPages(dataSet, se[i], keyWords);
@@ -72,13 +77,14 @@ public abstract class ServiceSearch extends Service {
 
 		fuzzy(dataSet);
 
-		DataSet dataSetChild = createDataSetChild(dataSet);
-
 		exportDocumentsFromDataSetFather(dataSetChild);
 
 		applyFinalRanking(dataSetChild);
 
 	}
+
+	protected abstract void prepareDataSets(DataSet dataSet,
+			DataSet dataSetChild) throws Exception;
 
 	protected abstract void exportDocumentsFromDataSetFather(DataSet dataSet)
 			throws Exception;

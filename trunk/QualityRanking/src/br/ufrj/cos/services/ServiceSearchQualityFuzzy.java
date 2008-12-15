@@ -9,6 +9,12 @@ public class ServiceSearchQualityFuzzy extends ServiceSearch {
 	}
 
 	@Override
+	protected void prepareDataSets(DataSet dataSet, DataSet dataSetChild) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	protected void exportDocumentsFromDataSetFather(DataSet dataSetChild) {
 		// TODO Auto-generated method stub
 
