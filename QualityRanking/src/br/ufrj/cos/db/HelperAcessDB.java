@@ -21,6 +21,7 @@ import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.DocumentDocument;
 import br.ufrj.cos.bean.DocumentQualityDimension;
 import br.ufrj.cos.bean.QualityDimension;
+import br.ufrj.cos.bean.QualityDimensionWeight;
 
 /**
  * @author Fabricio
@@ -224,5 +225,13 @@ public class HelperAcessDB {
 			list = (List<Document>) criteria.list();
 		}
 		return list;
+	}
+
+	public static QualityDimensionWeight loadQualityDimensionWeight(int weight) {
+		QualityDimensionWeight qualityDimensionWeight = (QualityDimensionWeight) getDao()
+				.loadByUniqueField(QualityDimensionWeight.class, "weight",
+						new Integer(weight));
+		return qualityDimensionWeight;
+
 	}
 }

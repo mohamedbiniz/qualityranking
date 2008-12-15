@@ -18,9 +18,6 @@ import br.ufrj.cos.bean.Language;
 import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.bean.QualityDimensionWeight;
 import br.ufrj.cos.bean.SeedDocument;
-import br.ufrj.cos.foxset.search.GoogleSearch;
-import br.ufrj.cos.foxset.search.LiveSearch;
-import br.ufrj.cos.foxset.search.YahooSearch;
 
 /**
  * @author Fabricio
@@ -42,7 +39,6 @@ public class PopulateDB {
 		Collaborator coordinatorFoxSet = createCollaboratorFoxSet();
 
 		QualityDimension qualityDimension = null;
-		QualityDimensionWeight qualityDimensionWeight = null;
 
 		HashMap<String, String> variaveisLinguisticas = new HashMap<String, String>();
 		variaveisLinguisticas.put(QualityDimension.COM, "Completeness");
@@ -58,17 +54,7 @@ public class PopulateDB {
 
 		}
 
-		qualityDimensionWeight = createQualityDimensionWeight(0,
-				"Indicates that the evaluated quality dimension has no importance.");
-		qualityDimensionWeight = createQualityDimensionWeight(1,
-				"Indicates that the evaluated quality dimension has a small importance.");
-		qualityDimensionWeight = createQualityDimensionWeight(
-				2,
-				"Indicates that the evaluated quality dimension is important in some circumstances, but not always.");
-		qualityDimensionWeight = createQualityDimensionWeight(3,
-				"Indicates that the evaluated quality dimension is very important.");
-		qualityDimensionWeight = createQualityDimensionWeight(5,
-				"Indicates that the evaluated quality dimension is essential.");
+		createQualityDimensionsWeights();
 
 	}
 
@@ -115,6 +101,8 @@ public class PopulateDB {
 				"fyi.oreilly.com",
 				"http://fyi.oreilly.com/2008/11/relational-database-technology.html#normalization");
 
+		createQualityDimensionsWeights();
+
 		QualityDimension qualityDimension = null;
 		QualityDimensionWeight qualityDimensionWeight = null;
 
@@ -138,9 +126,8 @@ public class PopulateDB {
 			} else if (code.equals(QualityDimension.TIM)) {
 				weight = 2;
 			}
-
-			qualityDimensionWeight = createQualityDimensionWeight(weight,
-					variaveisLinguisticas.get(code));
+			qualityDimensionWeight = HelperAcessDB
+					.loadQualityDimensionWeight(weight);
 
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
@@ -186,6 +173,8 @@ public class PopulateDB {
 		// createSeedDocument(dataSet, "www.cos.ufrj.br",
 		// "http://www.cos.ufrj.br/");
 
+		createQualityDimensionsWeights();
+
 		QualityDimension qualityDimension = null;
 		QualityDimensionWeight qualityDimensionWeight = null;
 
@@ -210,8 +199,8 @@ public class PopulateDB {
 				weight = 2;
 			}
 
-			qualityDimensionWeight = createQualityDimensionWeight(weight,
-					variaveisLinguisticas.get(code));
+			qualityDimensionWeight = HelperAcessDB
+					.loadQualityDimensionWeight(weight);
 
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
@@ -232,34 +221,7 @@ public class PopulateDB {
 		createSeedDocument(dataSet, "economist", "economist");
 		createSeedDocument(dataSet, "economy", "economy");
 
-		QualityDimension qualityDimension = null;
-		QualityDimensionWeight qualityDimensionWeight = null;
-
-		HashMap<String, String> variaveisLinguisticas = new HashMap<String, String>();
-		GoogleSearch googleSearch = new GoogleSearch();
-		variaveisLinguisticas.put(googleSearch.getSearchEngineCode().substring(
-				0, 3), googleSearch.getSearchEngineCode());
-
-		YahooSearch yahooSearch = new YahooSearch();
-		variaveisLinguisticas.put(yahooSearch.getSearchEngineCode().substring(
-				0, 3), yahooSearch.getSearchEngineCode());
-		LiveSearch liveSearch = new LiveSearch();
-		variaveisLinguisticas.put(liveSearch.getSearchEngineCode().substring(0,
-				3), liveSearch.getSearchEngineCode());
-		for (Iterator<String> iterator = variaveisLinguisticas.keySet()
-				.iterator(); iterator.hasNext();) {
-			String code = (String) iterator.next();
-
-			qualityDimension = createQualityDimension(variaveisLinguisticas,
-					code);
-
-			int weight = 1;
-
-			qualityDimensionWeight = createQualityDimensionWeight(weight,
-					variaveisLinguisticas.get(code));
-			createContextQualityDimensionWeight(dataSet, qualityDimension,
-					qualityDimensionWeight);
-		}
+		createQualityDimensionsWeights();
 
 	}
 
@@ -275,20 +237,15 @@ public class PopulateDB {
 		createSeedDocument(dataSet, "economist", "economist");
 		createSeedDocument(dataSet, "economy", "economy");
 
+		createQualityDimensionsWeights();
+
 		QualityDimension qualityDimension = null;
 		QualityDimensionWeight qualityDimensionWeight = null;
 
 		HashMap<String, String> variaveisLinguisticas = new HashMap<String, String>();
-		GoogleSearch googleSearch = new GoogleSearch();
-		variaveisLinguisticas.put(googleSearch.getSearchEngineCode().substring(
-				0, 3), googleSearch.getSearchEngineCode());
-
-		YahooSearch yahooSearch = new YahooSearch();
-		variaveisLinguisticas.put(yahooSearch.getSearchEngineCode().substring(
-				0, 3), yahooSearch.getSearchEngineCode());
-		LiveSearch liveSearch = new LiveSearch();
-		variaveisLinguisticas.put(liveSearch.getSearchEngineCode().substring(0,
-				3), liveSearch.getSearchEngineCode());
+		variaveisLinguisticas.put(QualityDimension.COM, "Completeness");
+		variaveisLinguisticas.put(QualityDimension.REP, "Reputation");
+		variaveisLinguisticas.put(QualityDimension.TIM, "Timeleness");
 		for (Iterator<String> iterator = variaveisLinguisticas.keySet()
 				.iterator(); iterator.hasNext();) {
 			String code = (String) iterator.next();
@@ -298,11 +255,45 @@ public class PopulateDB {
 
 			int weight = 1;
 
-			qualityDimensionWeight = createQualityDimensionWeight(weight,
-					variaveisLinguisticas.get(code));
+			if (code.equals(QualityDimension.COM)) {
+				weight = 4;
+			} else if (code.equals(QualityDimension.REP)) {
+				weight = 3;
+			} else if (code.equals(QualityDimension.TIM)) {
+				weight = 2;
+			}
+			qualityDimensionWeight = HelperAcessDB
+					.loadQualityDimensionWeight(weight);
+
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
 		}
+
+	}
+
+	private static Collection<QualityDimensionWeight> createQualityDimensionsWeights()
+			throws Exception {
+		Collection<QualityDimensionWeight> qualityDimensionWeights = new ArrayList<QualityDimensionWeight>();
+		QualityDimensionWeight qualityDimensionWeight = null;
+
+		qualityDimensionWeight = createQualityDimensionWeight(0,
+				"Indicates that the evaluated quality dimension has no importance.");
+		qualityDimensionWeights.add(qualityDimensionWeight);
+		qualityDimensionWeight = createQualityDimensionWeight(1,
+				"Indicates that the evaluated quality dimension has a small importance.");
+		qualityDimensionWeights.add(qualityDimensionWeight);
+		qualityDimensionWeight = createQualityDimensionWeight(
+				2,
+				"Indicates that the evaluated quality dimension is important in some circumstances, but not always.");
+		qualityDimensionWeights.add(qualityDimensionWeight);
+		qualityDimensionWeight = createQualityDimensionWeight(3,
+				"Indicates that the evaluated quality dimension is very important.");
+		qualityDimensionWeights.add(qualityDimensionWeight);
+		qualityDimensionWeight = createQualityDimensionWeight(5,
+				"Indicates that the evaluated quality dimension is essential.");
+		qualityDimensionWeights.add(qualityDimensionWeight);
+
+		return qualityDimensionWeights;
 
 	}
 

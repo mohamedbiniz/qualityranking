@@ -15,10 +15,10 @@ public class InitPopulateDB {
 
 			// Descomentar abaixo para inicializar o BD a fim de permitir
 			// sistema entrar em produção de modo correto
-			PopulateDB.initFoxSet();
+			// PopulateDB.initFoxSet();
 
 			// Descomentar abaixo para testar o pOfN (contexto economia)
-			// PopulateDB.popularSearchPofN(5);
+			PopulateDB.popularSearchPofN(5);
 
 			// Descomentar abaixo para testar o quality fuzzy (contexto
 			// economia)

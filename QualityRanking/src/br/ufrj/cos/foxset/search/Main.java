@@ -6,7 +6,6 @@ package br.ufrj.cos.foxset.search;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import br.ufrj.cos.foxset.search.SearchEngine.Result;
 
@@ -21,7 +20,7 @@ public class Main {
 				.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 						"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 
-		for (int engine = 0; engine < 3; engine++) {
+		for (int engine = 0; engine < 1; engine++) {
 			SearchEngine se = null;
 			if (engine == 0) {
 				se = new GoogleSearch();
@@ -34,7 +33,7 @@ public class Main {
 				se = new LiveSearch();
 				se.setAppID("6F4477E8615644FDA81A62E15217B400B121E0A4");
 			}
-			se.setMaxResults(7);
+			se.setMaxResults(10);
 			List<Result> results = se.search("heraldo");
 			for (Result r : results) {
 				System.out.println("Engine: "
@@ -46,11 +45,12 @@ public class Main {
 			}
 		}
 
-		WebFile wf = new WebFile("http://en.wikipedia.org/wiki/Heraldo_Munoz");
-		Map<String, Integer> links = wf.getForwardLinks();
-		System.out.println("Forward links para " + wf.getURL() + ":");
-		for (String url : links.keySet()) {
-			System.out.println(url);
-		}
+		// WebFile wf = new
+		// WebFile("http://en.wikipedia.org/wiki/Heraldo_Munoz");
+		// Map<String, Integer> links = wf.getForwardLinks();
+		// System.out.println("Forward links para " + wf.getURL() + ":");
+		// for (String url : links.keySet()) {
+		// System.out.println(url);
+		// }
 	}
 }
