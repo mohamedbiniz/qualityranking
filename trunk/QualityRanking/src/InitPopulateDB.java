@@ -13,7 +13,8 @@ public class InitPopulateDB {
 		try {
 			PopulateDB.limparDB();
 			PopulateDB.initFoxSet();
-			// PopulateDB.popularSearch(5);
+			// PopulateDB.popularSearchPofN(5);
+			// PopulateDB.popularSearchQF(5);
 			// PopulateDB.popularTradicionalEconomia();
 			// PopulateDB.popularTradicionalBDR();
 		} catch (Exception e) {
