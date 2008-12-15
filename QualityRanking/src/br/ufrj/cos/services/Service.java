@@ -12,6 +12,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
@@ -29,6 +30,8 @@ import br.ufrj.cos.matlab.client.MatClient;
  */
 public abstract class Service extends Thread {
 
+	private static final char CHAR_SPACE = ' ';
+
 	private static HibernateDAO dao;
 
 	private long pauseTime;
@@ -37,10 +40,19 @@ public abstract class Service extends Thread {
 
 	private char dataSetEndStatus;
 
+	private char dataSetMethod;
+
 	public Service(char dataSetInitStatus, char dataSetEndStatus, long pauseTime) {
+
+		this(dataSetInitStatus, dataSetEndStatus, CHAR_SPACE, pauseTime);
+	}
+
+	public Service(char dataSetInitStatus, char dataSetEndStatus,
+			char dataSetMethod, long pauseTime) {
 
 		setDataSetInitStatus(dataSetInitStatus);
 		setDataSetEndStatus(dataSetEndStatus);
+		setDataSetMethod(dataSetMethod);
 		setPauseTime(pauseTime);
 		setDao(HibernateDAO.getInstance());
 		// setSession(getDao().getSession());
@@ -96,6 +108,9 @@ public abstract class Service extends Thread {
 
 		Criteria crit = getDao().openSession().createCriteria(DataSet.class);
 		crit.add(Restrictions.eq("status", getDataSetInitStatus()));
+		if (getDataSetMethod() != CHAR_SPACE) {
+			crit.add(Restrictions.eq("method", getDataSetMethod()));
+		}
 		crit.add(Restrictions.eq("crawler", true));
 		crit.addOrder(Order.asc("creationDate"));
 		crit.setMaxResults(1);
@@ -107,24 +122,37 @@ public abstract class Service extends Thread {
 	}
 
 	public DataSet getDataSetTo(int max) {
+
+		Transaction tx = null;
 		List<DataSet> result = null;
 		try {
-			Query q = getDao()
-					.openSession()
-					.createQuery(
-							String
-									.format(
-											"from DataSet "
-													+ "where status='%c' and crawler=1 order by creation_datetime",
-											getDataSetInitStatus()));
+			tx = getDao().openSession().beginTransaction();
+			String queryStr;
+			Query q = getDao().getSession().createQuery(getQuerySql());
 			q.setMaxResults(max);
 			result = q.list();
+			tx.commit();
 		} catch (HibernateException he) {
+			if (tx != null)
+				tx.rollback();
 			throw he;
 		}
 		if (result == null || result.isEmpty())
 			return null;
 		return result.get(0);
+
+	}
+
+	private String getQuerySql() {
+		String restricionMethod = "";
+		if (getDataSetMethod() != CHAR_SPACE) {
+			restricionMethod = String.format("and method='%c' ",
+					getDataSetMethod());
+		}
+		String query = String.format("from DataSet "
+				+ "where status='%c' and crawler=1 " + restricionMethod
+				+ "order by creation_datetime", getDataSetInitStatus());
+		return query;
 	}
 
 	/**
@@ -223,6 +251,21 @@ public abstract class Service extends Thread {
 			document.setScore(new BigDecimal(documentScore));
 			getDao().update(document);
 		}
+	}
+
+	/**
+	 * @return the dataSetMethod
+	 */
+	public char getDataSetMethod() {
+		return dataSetMethod;
+	}
+
+	/**
+	 * @param dataSetMethod
+	 *            the dataSetMethod to set
+	 */
+	public void setDataSetMethod(char dataSetMethod) {
+		this.dataSetMethod = dataSetMethod;
 	}
 
 }

@@ -3,11 +3,13 @@
  */
 package br.ufrj.cos.db;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
@@ -136,6 +138,34 @@ public class HelperAcessDB {
 		return list;
 	}
 
+	public static List<DataSet> loadAllDataSetWhitoutFather() {
+		Criteria criteria = getDao().openSession()
+				.createCriteria(DataSet.class).add(
+						Restrictions.isNull("dataSetFather"));
+		List<DataSet> list = (List<DataSet>) criteria.list();
+		return list;
+	}
+
+	public static List<DataSet> loadAllDataSetWhitFather() {
+		Criteria criteria = getDao().openSession()
+				.createCriteria(DataSet.class).add(
+						Restrictions.isNotNull("dataSetFather"));
+		List<DataSet> list = (List<DataSet>) criteria.list();
+		return list;
+	}
+
+	public static DataSet loadDataSetChild(DataSet dataSet) {
+		Criteria criteria = getDao().openSession()
+				.createCriteria(DataSet.class).add(
+						Restrictions.eq("dataSetFather", dataSet));
+		criteria.setMaxResults(1);
+		List<DataSet> list = (List<DataSet>) criteria.list();
+		DataSet dataSetChild = null;
+		if (!list.isEmpty())
+			dataSetChild = list.get(0);
+		return dataSetChild;
+	}
+
 	public static double[] getWeights(
 			Collection<ContextQualityDimensionWeight> listCQDWeights) {
 		double[] weights = new double[listCQDWeights.size()];
@@ -164,5 +194,35 @@ public class HelperAcessDB {
 		if (index != -1)
 			documentPersisted = list.get(index);
 		return documentPersisted;
+	}
+
+	public static Collection<Document> findDocumentsGroupByQualityDimension(
+			DataSet dataSet) {
+
+		Criteria criteria = getDao().openSession().createCriteria(
+				DocumentQualityDimension.class).add(
+				Restrictions.gt("score", new BigDecimal(0)));
+		criteria.setProjection(Projections.property("id.document.id"));
+		List<Long> idsDocuments = (List<Long>) criteria.list();
+		Map<Long, Integer> docCount = new HashMap<Long, Integer>();
+		for (Long idDoc : idsDocuments) {
+			int value = (docCount.get(idDoc) == null ? 1 : docCount.get(idDoc)
+					.intValue() + 1);
+			docCount.put(idDoc, new Integer(value));
+		}
+		idsDocuments = new ArrayList<Long>();
+		for (Long idDoc : docCount.keySet()) {
+			if (docCount.get(idDoc).intValue() >= dataSet.getPOfN()) {
+				idsDocuments.add(idDoc);
+			}
+		}
+		List<Document> list = new ArrayList<Document>();
+		if (!idsDocuments.isEmpty()) {
+			criteria = getDao().openSession().createCriteria(Document.class)
+					.add(Restrictions.eq("dataSet", dataSet)).add(
+							Restrictions.in("id", idsDocuments));
+			list = (List<Document>) criteria.list();
+		}
+		return list;
 	}
 }

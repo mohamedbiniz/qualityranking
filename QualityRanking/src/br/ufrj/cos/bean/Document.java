@@ -26,7 +26,7 @@ import javax.persistence.Table;
 //(name = "PAGE"/*, uniqueConstraints = { @UniqueConstraint(columnNames = {
 //"URL", "IdDataSet" }) }*/)
 @Entity
-public class Document implements Serializable, Comparable<Document> {
+public class Document implements Serializable, Comparable<Document>, Cloneable {
 
 	/**
 	 * 
@@ -429,6 +429,21 @@ public class Document implements Serializable, Comparable<Document> {
 		if ((document != null) && (document.getId() != 0))
 			result = true;
 		return result;
+	}
+
+	@Override
+	public Document clone() throws CloneNotSupportedException {
+		Document document = new Document();
+		document.setDataSet(getDataSet());
+		document.setUrl(getUrl());
+		document.setScore(getScore());
+		Collection<Metadata> metadatasOld = getMetadatas();
+		for (Metadata metadataOfDataSetFather : metadatas) {
+			Metadata metadata = metadataOfDataSetFather.clone();
+			metadata.setDocument(document);
+			document.addMetadata(metadata);
+		}
+		return document;
 	}
 
 	@Override

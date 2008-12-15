@@ -35,7 +35,7 @@ public class DataSet implements Serializable {
 	@Transient
 	public static final char STATUS_CREATION = 'C';
 	@Transient
-	public static final char STATUS_CRAWLING = 'L';
+	public static final char STATUS_SEARCH = 'L';
 	@Transient
 	public static final char STATUS_AUTOMATIC_EVALUATION = 'A';
 	@Transient
@@ -44,17 +44,11 @@ public class DataSet implements Serializable {
 	public static final char STATUS_MANUAL_EVALUATION = 'M';
 	@Transient
 	public static final char STATUS_FINALIZED = 'F';
-	@Transient
-	public static final char STATUS_SEARCH = 'S';
-	@Transient
-	public static final char STATUS_UNDEFINED = 'U';
 
 	@Transient
 	public static final char CRAWLER_QUALITYFUZZY = 'C';
-
 	@Transient
 	public static final char SEARCH_QUALITYFUZZY = 'Q';
-
 	@Transient
 	public static final char SEARCH_POFN = 'P';
 
@@ -93,6 +87,9 @@ public class DataSet implements Serializable {
 	@Column(name = "min_pages", nullable = false)
 	private int minQuantityPages;
 
+	@Column
+	private int pOfN;
+
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@PrimaryKeyJoinColumn
 	@JoinColumn(nullable = false)
@@ -100,7 +97,7 @@ public class DataSet implements Serializable {
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(nullable = true)
-	private DataSet dataSet;
+	private DataSet dataSetFather;
 
 	@OneToMany(mappedBy = "dataSet", cascade = CascadeType.ALL)
 	private Collection<Document> documents;
@@ -125,6 +122,7 @@ public class DataSet implements Serializable {
 
 	public DataSet() {
 		setMinQuantityPages(0);
+		setPOfN(0);
 		setCrawler(false);
 		setStatus(STATUS_CREATION);
 
@@ -504,18 +502,33 @@ public class DataSet implements Serializable {
 	}
 
 	/**
-	 * @return the dataSet
+	 * @return the dataSetFather
 	 */
-	public DataSet getDataSet() {
-		return dataSet;
+	public DataSet getDataSetFather() {
+		return dataSetFather;
 	}
 
 	/**
-	 * @param dataSet
-	 *            the dataSet to set
+	 * @param dataSetFather
+	 *            the dataSetFather to set
 	 */
-	public void setDataSet(DataSet dataSet) {
-		this.dataSet = dataSet;
+	public void setDataSetFather(DataSet dataSetFather) {
+		this.dataSetFather = dataSetFather;
+	}
+
+	/**
+	 * @return the pOfN
+	 */
+	public int getPOfN() {
+		return pOfN;
+	}
+
+	/**
+	 * @param ofN
+	 *            the pOfN to set
+	 */
+	public void setPOfN(int ofN) {
+		pOfN = ofN;
 	}
 
 }

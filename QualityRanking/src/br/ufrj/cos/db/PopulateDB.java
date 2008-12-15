@@ -3,6 +3,7 @@
  */
 package br.ufrj.cos.db;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,7 +12,6 @@ import java.util.List;
 
 import br.ufrj.cos.bean.Collaborator;
 import br.ufrj.cos.bean.ContextQualityDimensionWeight;
-import br.ufrj.cos.bean.ContextQualityDimensionWeightPk;
 import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.Language;
@@ -28,14 +28,14 @@ import br.ufrj.cos.foxset.search.YahooSearch;
  */
 public class PopulateDB {
 
-	private HibernateDAO dao;
+	private static HibernateDAO dao;
 
-	public PopulateDB() {
+	static {
 
-		setDao(HibernateDAO.getInstance()); // TODO
+		setDao(HibernateDAO.getInstance());
 	}
 
-	public void initFoxSet() throws Exception {
+	public static void initFoxSet() throws Exception {
 		Language languagePt = createLanguage("Português (BR)");
 		Language languageEn = createLanguage("English (US)");
 
@@ -83,7 +83,7 @@ public class PopulateDB {
 	//
 	// http://redbook.cs.berkeley.edu/redbook3/lecs.html
 
-	public final void popularTradicionalBDR() throws Exception {
+	public static final void popularTradicionalBDR() throws Exception {
 		// limparDB();
 
 		Language language = createLanguage("english");
@@ -91,7 +91,7 @@ public class PopulateDB {
 		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, 100, DataSet.STATUS_CRAWLING,
+				language, 100, DataSet.STATUS_SEARCH,
 				DataSet.CRAWLER_QUALITYFUZZY);
 
 		createSeedDocument(dataSet, "redbook.cs.berkeley.edu",
@@ -148,7 +148,7 @@ public class PopulateDB {
 
 	}
 
-	public final void popularTradicionalEconomia() throws Exception {
+	public static final void popularTradicionalEconomia() throws Exception {
 		// limparDB();
 
 		Language language = createLanguage("english");
@@ -156,7 +156,7 @@ public class PopulateDB {
 		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, 60, DataSet.STATUS_CRAWLING,
+				language, 60, DataSet.STATUS_SEARCH,
 				DataSet.CRAWLER_QUALITYFUZZY);
 
 		// http://www.economist.com
@@ -219,7 +219,7 @@ public class PopulateDB {
 
 	}
 
-	public final void popularSearch(int qtdPag) throws Exception {
+	public static final void popularSearch(int qtdPag) throws Exception {
 		// limparDB();
 
 		Language language = createLanguage("english");
@@ -227,8 +227,7 @@ public class PopulateDB {
 		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, qtdPag, DataSet.STATUS_SEARCH,
-				DataSet.SEARCH_QUALITYFUZZY);
+				language, qtdPag, 2, DataSet.STATUS_SEARCH, DataSet.SEARCH_POFN);
 
 		createSeedDocument(dataSet, "economist", "economist");
 		createSeedDocument(dataSet, "economy", "economy");
@@ -268,7 +267,7 @@ public class PopulateDB {
 	 * @return
 	 * @throws Exception
 	 */
-	public Collaborator createCollaboratorFoxSet() throws Exception {
+	public static Collaborator createCollaboratorFoxSet() throws Exception {
 		Collaborator collaborator = createCollaborator("foxset@cos.ufrj.br",
 				"FoxSet", "foxset", "foxset", true, true, true);
 		return collaborator;
@@ -280,7 +279,7 @@ public class PopulateDB {
 	 * @param qualityDimensionWeight
 	 * @throws Exception
 	 */
-	private ContextQualityDimensionWeight createContextQualityDimensionWeight(
+	public static ContextQualityDimensionWeight createContextQualityDimensionWeight(
 			DataSet dataSet, QualityDimension qualityDimension,
 			QualityDimensionWeight qualityDimensionWeight) throws Exception {
 		ContextQualityDimensionWeight contextQualityDimensionWeight = null;
@@ -301,8 +300,8 @@ public class PopulateDB {
 	 * @return
 	 * @throws Exception
 	 */
-	private QualityDimensionWeight createQualityDimensionWeight(int weight,
-			String description) throws Exception {
+	public static QualityDimensionWeight createQualityDimensionWeight(
+			int weight, String description) throws Exception {
 		QualityDimensionWeight qualityDimensionWeight = null;
 		qualityDimensionWeight = new QualityDimensionWeight();
 		qualityDimensionWeight.setDescription(description);
@@ -317,7 +316,7 @@ public class PopulateDB {
 	 * @return
 	 * @throws Exception
 	 */
-	private QualityDimension createQualityDimension(
+	public static QualityDimension createQualityDimension(
 			HashMap<String, String> variaveisLinguisticas, String code)
 			throws Exception {
 		QualityDimension qualityDimension = null;
@@ -335,8 +334,8 @@ public class PopulateDB {
 	 * @param url
 	 * @throws Exception
 	 */
-	private SeedDocument createSeedDocument(DataSet dataSet, String domain,
-			String url) throws Exception {
+	public static SeedDocument createSeedDocument(DataSet dataSet,
+			String domain, String url) throws Exception {
 		SeedDocument seedDocument = null;
 		seedDocument = new SeedDocument();
 		seedDocument.setDataSet(dataSet);
@@ -353,12 +352,50 @@ public class PopulateDB {
 	 * @param collaborator
 	 * @param status
 	 * @param method
+	 * @param dataSetFather
 	 * @return
 	 * @throws Exception
 	 */
-	private DataSet createDataSet(Collaborator collaborator, String context,
-			String description, Language language, int minQuantityPages,
-			char status, char method) throws Exception {
+	public static DataSet createDataSet(Collaborator collaborator,
+			String context, String description, Language language,
+			int minQuantityPages, char status, char method) throws Exception {
+		return createDataSet(collaborator, context, description, language,
+				minQuantityPages, 0, status, method);
+	}
+
+	/**
+	 * 
+	 * @param collaborator
+	 * @param context
+	 * @param description
+	 * @param language
+	 * @param minQuantityPages
+	 * @param status
+	 * @param method
+	 * @return
+	 * @throws Exception
+	 */
+	public static DataSet createDataSet(Collaborator collaborator,
+			String context, String description, Language language,
+			int minQuantityPages, int pOfN, char status, char method)
+			throws Exception {
+		return createDataSet(collaborator, context, description, language,
+				minQuantityPages, pOfN, status, method, null);
+	}
+
+	/**
+	 * @param language
+	 * @param collaborator
+	 * @param status
+	 * @param method
+	 * @param dataSetFather
+	 * @return
+	 * @throws Exception
+	 */
+	public static DataSet createDataSet(Collaborator collaborator,
+			String context, String description, Language language,
+			int minQuantityPages, int pOfN, char status, char method,
+			DataSet dataSetFather) throws Exception {
 		DataSet dataSet = new DataSet();
 		dataSet.setCollaborator(collaborator);
 		dataSet.setContext(context);
@@ -366,9 +403,11 @@ public class PopulateDB {
 		dataSet.setDescription(description);
 		dataSet.setLanguage(language);
 		dataSet.setMinQuantityPages(minQuantityPages);
+		dataSet.setPOfN(pOfN);
 		dataSet.setStatus(status);
 		dataSet.setMethod(method);
 		dataSet.setCrawler(true);
+		dataSet.setDataSetFather(dataSetFather);
 		dataSet = (DataSet) create(dataSet);
 		return dataSet;
 	}
@@ -385,7 +424,7 @@ public class PopulateDB {
 	 * @return
 	 * @throws Exception
 	 */
-	private Collaborator createCollaborator(String email, String name,
+	public static Collaborator createCollaborator(String email, String name,
 			String password, String username, boolean administrator,
 			boolean coordinator, boolean active) throws Exception {
 		Collaborator collaborator = new Collaborator();
@@ -405,14 +444,14 @@ public class PopulateDB {
 	 * @return
 	 * @throws Exception
 	 */
-	private Language createLanguage(String name) throws Exception {
+	public static Language createLanguage(String name) throws Exception {
 		Language language = new Language();
 		language.setName(name);
 		language = (Language) create(language);
 		return language;
 	}
 
-	public void limparDB() throws Exception {
+	public static void limparDB() throws Exception {
 
 		// Collection<DocumentQualityDimension> documentQualityDimensions =
 		// (Collection<DocumentQualityDimension>) getDao()
@@ -422,8 +461,13 @@ public class PopulateDB {
 		// getDao().remove(documentQualityDimension);
 		// }
 
-		Collection<DataSet> dataSets = (Collection<DataSet>) getDao().listAll(
-				DataSet.class);
+		Collection<DataSet> dataSetsWhitoutFather = HelperAcessDB
+				.loadAllDataSetWhitoutFather();
+		Collection<DataSet> dataSetsWhitFather = HelperAcessDB
+				.loadAllDataSetWhitFather();
+		Collection<DataSet> dataSets = new ArrayList<DataSet>();
+		dataSets.addAll(dataSetsWhitFather);
+		dataSets.addAll(dataSetsWhitoutFather);
 		for (DataSet dataSet : dataSets) {
 			Collection<Document> documents = HelperAcessDB
 					.findRootDocuments(dataSet);
@@ -450,8 +494,8 @@ public class PopulateDB {
 			getDao().remove(qualityDimension);
 		}
 
-		for (DataSet dataSet : dataSets) {
-			getDao().remove(dataSet);
+		for (DataSet dataSet : dataSetsWhitoutFather) {
+			removeDataSet(dataSet);
 		}
 
 		Collection<Language> languages = (Collection<Language>) getDao()
@@ -468,7 +512,14 @@ public class PopulateDB {
 
 	}
 
-	private void removeDocument(Document fatherDocument) throws Exception {
+	public static void removeDataSet(DataSet dataSet) throws Exception {
+		DataSet dataSetChild = HelperAcessDB.loadDataSetChild(dataSet);
+		if (dataSetChild != null)
+			removeDataSet(dataSetChild);
+		getDao().remove(dataSet);
+	}
+
+	public static void removeDocument(Document fatherDocument) throws Exception {
 		List<Document> childDocuments = HelperAcessDB
 				.loadDocumentsByFather(fatherDocument);
 		for (Document childDocument : childDocuments) {
@@ -484,7 +535,7 @@ public class PopulateDB {
 	 * @return
 	 * @throws Exception
 	 */
-	public Object create(Object obj) throws Exception {
+	public static Object create(Object obj) throws Exception {
 		// org.hibernate.Transaction t =
 		// getDao().getSession().beginTransaction();
 		getDao().create(obj);
@@ -492,7 +543,7 @@ public class PopulateDB {
 		return obj;
 	}
 
-	public Object update(Object obj) throws Exception {
+	public static Object update(Object obj) throws Exception {
 		// org.hibernate.Transaction t =
 		// getDao().getSession().beginTransaction();
 
@@ -501,7 +552,7 @@ public class PopulateDB {
 		return obj;
 	}
 
-	public Object remove(Object obj) throws Exception {
+	public static Object remove(Object obj) throws Exception {
 		// org.hibernate.Transaction t =
 		// getDao().getSession().beginTransaction();
 
@@ -510,14 +561,14 @@ public class PopulateDB {
 		return obj;
 	}
 
-	public List<Object[]> listAll(String tableName) {
+	public static List<Object[]> listAll(String tableName) {
 		return getDao().listAll(tableName);
 	}
 
 	/**
 	 * @return the dao
 	 */
-	public HibernateDAO getDao() {
+	public static HibernateDAO getDao() {
 		return dao;
 	}
 
@@ -525,39 +576,8 @@ public class PopulateDB {
 	 * @param dao
 	 *            the dao to set
 	 */
-	public void setDao(HibernateDAO dao) {
-		this.dao = dao;
-	}
-
-	public void teste() {
-		DataSet dataSet = (DataSet) getDao().loadById(DataSet.class,
-				new Long(29));
-		System.out.println(dataSet.getQualityDimensions().size());
-		QualityDimension qualityDimension = (QualityDimension) getDao()
-				.loadById(QualityDimension.class, new Long(6));
-		QualityDimensionWeight qualityDimensionWeight = (QualityDimensionWeight) getDao()
-				.loadById(QualityDimensionWeight.class, new Long(6));
-		ContextQualityDimensionWeightPk contextQualityDimensionWeightPk = new ContextQualityDimensionWeightPk();
-		if (dataSet != null)
-			System.out.println(dataSet.getId());
-		contextQualityDimensionWeightPk.setDataSet(dataSet);
-		contextQualityDimensionWeightPk.setQualityDimension(qualityDimension);
-		contextQualityDimensionWeightPk
-				.setQualityDimensionWeight(qualityDimensionWeight);
-		Collection<ContextQualityDimensionWeight> list = getContextQualityDimensionWeights(contextQualityDimensionWeightPk);
-		for (ContextQualityDimensionWeight contextQualityDimensionWeight : list) {
-			System.out.println(contextQualityDimensionWeight.getDataSet()
-					.getContext());
-		}
-		System.out.println(list.size());
-
-	}
-
-	private Collection<ContextQualityDimensionWeight> getContextQualityDimensionWeights(
-			ContextQualityDimensionWeightPk contextQualityDimensionWeightPk) {
-		return (Collection<ContextQualityDimensionWeight>) getDao()
-				.loadByFieldPk(ContextQualityDimensionWeight.class, "id",
-						contextQualityDimensionWeightPk);
+	private static void setDao(HibernateDAO daoInstance) {
+		dao = daoInstance;
 	}
 
 }
