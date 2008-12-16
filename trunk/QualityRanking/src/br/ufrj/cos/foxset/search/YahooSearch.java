@@ -31,7 +31,9 @@ public class YahooSearch extends SearchEngine {
 			List<Result> results = new ArrayList<Result>(getMaxResults());
 
 			String URL = "http://search.yahooapis.com/WebSearchService/V1/webSearch?appid="
-					+ getAppID() + "&query=economia&results=" + getMaxResults();
+					+ getAppID() + "&query=%s&results=" + getMaxResults();
+			query.replaceAll(" ", "+");
+			URL = String.format(URL, query);
 			String content = (String) new WebFile(URL).getContent();
 			DocumentBuilderFactory factory = DocumentBuilderFactory
 					.newInstance();
