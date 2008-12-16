@@ -236,8 +236,10 @@ public abstract class ServiceSearch extends Service {
 	}
 
 	private String getKeywords(DataSet dataSet) {
+		Collection<SeedDocument> seedDocuments = HelperAcessDB
+				.loadSeedDocuments(dataSet);
 		String keyWord = "";
-		for (SeedDocument seedDocument : dataSet.getSeedDocuments()) {
+		for (SeedDocument seedDocument : seedDocuments) {
 			keyWord += " " + seedDocument.getUrl();
 		}
 		return keyWord.substring(1);

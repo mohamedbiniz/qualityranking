@@ -225,15 +225,17 @@ public class PopulateDB {
 
 	}
 
-	public static void popularSearchQF(int qtdPag) throws Exception {
+	public static void popularSearchQF(int qtdPag, String keyWords)
+			throws Exception {
 		Language language = createLanguage("english");
 
 		Collaborator collaborator = createCollaboratorFoxSet();
 
-		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
+		DataSet dataSet = createDataSet(collaborator, keyWords, keyWords,
 				language, qtdPag, DataSet.STATUS_SEARCH,
 				DataSet.SEARCH_QUALITYFUZZY);
 
+		// createSeedDocument(dataSet, keyWords, keyWords);
 		createSeedDocument(dataSet, "economist", "economist");
 		createSeedDocument(dataSet, "economy", "economy");
 
@@ -289,7 +291,7 @@ public class PopulateDB {
 		qualityDimensionWeight = createQualityDimensionWeight(3,
 				"Indicates that the evaluated quality dimension is very important.");
 		qualityDimensionWeights.add(qualityDimensionWeight);
-		qualityDimensionWeight = createQualityDimensionWeight(5,
+		qualityDimensionWeight = createQualityDimensionWeight(4,
 				"Indicates that the evaluated quality dimension is essential.");
 		qualityDimensionWeights.add(qualityDimensionWeight);
 

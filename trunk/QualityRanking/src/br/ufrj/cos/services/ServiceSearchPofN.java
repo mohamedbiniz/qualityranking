@@ -59,7 +59,6 @@ public class ServiceSearchPofN extends ServiceSearch {
 	@Override
 	protected void exportDocumentsFromDataSetFather(DataSet dataSet)
 			throws Exception {
-		int i = 0;
 		Collection<Document> documents = HelperAcessDB
 				.findDocumentsGroupByQualityDimension(dataSet
 						.getDataSetFather());
