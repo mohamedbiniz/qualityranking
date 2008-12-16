@@ -278,7 +278,7 @@ public class HelperAcessDB {
 		Collection<Long> idDocuments = criteria.list();
 
 		List<DocumentDocument> list = new ArrayList<DocumentDocument>();
-		if (idDocuments.isEmpty()) {
+		if (!idDocuments.isEmpty()) {
 			criteria = getDao().openSession().createCriteria(
 					DocumentDocument.class).add(
 					Restrictions.or(Restrictions.in("id.childDocument.id",
