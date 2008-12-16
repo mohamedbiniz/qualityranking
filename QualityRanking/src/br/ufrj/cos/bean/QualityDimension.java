@@ -17,7 +17,8 @@ import javax.persistence.Table;
 
 @Table(name = "Quality_Dimension")
 @Entity
-public class QualityDimension implements Serializable {
+public class QualityDimension implements Serializable,
+		Comparable<QualityDimension>, Cloneable {
 
 	/**
 	 * 
@@ -99,7 +100,7 @@ public class QualityDimension implements Serializable {
 	 *            the code to set
 	 */
 	public void setCode(char[] code) {
-		if (code.length == 3)
+		if (code != null && code.length == 3)
 			this.code = code;
 	}
 
@@ -202,6 +203,48 @@ public class QualityDimension implements Serializable {
 	 */
 	public boolean removeDocument(Document document) {
 		return getDocuments().remove(document);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		boolean result = false;
+		if ((obj != null) && (obj instanceof QualityDimension)) {
+			QualityDimension qualityDimension = (QualityDimension) obj;
+			if (isPersisted(this) && isPersisted(qualityDimension)) {
+				result = (this.getId() == qualityDimension.getId());
+			} else {
+				result = String.valueOf(getCode()).equalsIgnoreCase(
+						String.valueOf(qualityDimension.getCode()));
+			}
+		}
+		return result;
+	}
+
+	public int compareTo(QualityDimension qualityDimension) {
+		int result = 0;
+		if (isPersisted(this) && isPersisted(qualityDimension)) {
+			result = (new Long(this.getId())).compareTo(new Long(
+					qualityDimension.getId()));
+		} else {
+			result = String.valueOf(getCode()).compareToIgnoreCase(
+					String.valueOf(qualityDimension.getCode()));
+		}
+		return result;
+	}
+
+	private boolean isPersisted(QualityDimension qualityDimension) {
+		boolean result = false;
+		if ((qualityDimension != null) && (qualityDimension.getId() != 0))
+			result = true;
+		return result;
+	}
+
+	@Override
+	public QualityDimension clone() throws CloneNotSupportedException {
+		QualityDimension qualityDimension = new QualityDimension();
+		qualityDimension.setCode(getCode());
+		qualityDimension.setName(getName());
+		return qualityDimension;
 	}
 
 	@Override
