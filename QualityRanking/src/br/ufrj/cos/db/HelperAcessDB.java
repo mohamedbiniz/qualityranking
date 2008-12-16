@@ -22,6 +22,7 @@ import br.ufrj.cos.bean.DocumentDocument;
 import br.ufrj.cos.bean.DocumentQualityDimension;
 import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.bean.QualityDimensionWeight;
+import br.ufrj.cos.bean.SeedDocument;
 
 /**
  * @author Fabricio
@@ -66,6 +67,32 @@ public class HelperAcessDB {
 				iterator.remove();
 			}
 		}
+		return list;
+	}
+
+	public static ContextQualityDimensionWeight loadContextQualityDimensionWeight(
+			DataSet dataSet, QualityDimension qualityDimension,
+			QualityDimensionWeight qualityDimensionWeight) {
+		Criteria criteria = getDao().openSession().createCriteria(
+				ContextQualityDimensionWeight.class).add(
+				Restrictions.eq("id.dataSet", dataSet)).add(
+				Restrictions.eq("id.qualityDimension", qualityDimension)).add(
+				Restrictions.eq("id.qualityDimensionWeight",
+						qualityDimensionWeight));
+		ContextQualityDimensionWeight contextQualityDimensionWeight = (ContextQualityDimensionWeight) criteria
+				.uniqueResult();
+		return contextQualityDimensionWeight;
+	}
+
+	public static List<QualityDimensionWeight> loadQualityDimensionWeights(
+			DataSet dataSet, QualityDimension qualityDimension) {
+		Criteria criteria = getDao().openSession().createCriteria(
+				ContextQualityDimensionWeight.class).add(
+				Restrictions.eq("id.dataSet", dataSet)).add(
+				Restrictions.eq("id.qualityDimension", qualityDimension))
+				.setProjection(
+						Projections.property("id.qualityDimensionWeight"));
+		List<QualityDimensionWeight> list = criteria.list();
 		return list;
 	}
 
@@ -233,5 +260,47 @@ public class HelperAcessDB {
 						new Integer(weight));
 		return qualityDimensionWeight;
 
+	}
+
+	public static Collection<SeedDocument> loadSeedDocuments(DataSet dataSet) {
+		List<SeedDocument> list = (List<SeedDocument>) getDao().loadByField(
+				SeedDocument.class, "dataSet", dataSet);
+
+		return list;
+	}
+
+	public static List<DocumentDocument> loadDocumentDocumentByDataSet(
+			DataSet dataSetFather) {
+		Criteria criteria = getDao().openSession().createCriteria(
+				Document.class).add(Restrictions.eq("dataSet", dataSetFather))
+				.setProjection(Projections.property("id"));
+
+		Collection<Long> idDocuments = criteria.list();
+
+		List<DocumentDocument> list = new ArrayList<DocumentDocument>();
+		if (idDocuments.isEmpty()) {
+			criteria = getDao().openSession().createCriteria(
+					DocumentDocument.class).add(
+					Restrictions.or(Restrictions.in("id.childDocument.id",
+							idDocuments), Restrictions.in(
+							"id.fatherDocument.id", idDocuments)));
+
+			list = (List<DocumentDocument>) criteria.list();
+		}
+
+		return list;
+	}
+
+	public static Document loadDocumentByDataSetAndUrl(DataSet dataSet,
+			String url) {
+		Criteria criteria = getDao().openSession().createCriteria(
+				Document.class).add(Restrictions.eq("dataSet", dataSet)).add(
+				Restrictions.eq("url", url));
+		List<Document> list = criteria.list();
+		Document doc = null;
+		if (!list.isEmpty()) {
+			doc = list.get(0);
+		}
+		return doc;
 	}
 }
