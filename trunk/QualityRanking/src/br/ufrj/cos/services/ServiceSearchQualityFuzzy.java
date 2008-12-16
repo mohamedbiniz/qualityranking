@@ -79,11 +79,6 @@ public class ServiceSearchQualityFuzzy extends ServiceSearch {
 	protected void exportDocumentsFromDataSetFather(DataSet dataSet)
 			throws Exception {
 		DataSet dataSetFather = dataSet.getDataSetFather();
-		// Collection<Document> documents = HelperAcessDB
-		// .findRootDocuments(dataSet.getDataSetFather());
-		// for (Document document : documents) {
-		// exportDocument(document, dataSet);
-		// }
 
 		List<Document> documents = HelperAcessDB.loadDocuments(dataSetFather);
 		for (Document documentOfDataSetFather : documents) {
@@ -112,24 +107,10 @@ public class ServiceSearchQualityFuzzy extends ServiceSearch {
 
 	}
 
-	// private Document exportDocument(Document document, DataSet dataSet)
-	// throws CloneNotSupportedException {
-	// Document newDoc = document.clone();
-	// newDoc.setDataSet(dataSet);
-	// newDoc.setScore(null);
-	// dataSet.addDocument(newDoc);
-	//
-	// List<Document> childDocuments = HelperAcessDB
-	// .loadDocumentsByFather(document);
-	// for (Document childDocument : childDocuments) {
-	// newDoc.addChildDocument(exportDocument(childDocument, dataSet));
-	// }
-	// return newDoc;
-	// }
-
 	@Override
-	protected void applyFinalRanking(DataSet dataSet) {
-		// TODO Auto-generated method stub
+	protected void applyFinalRanking(DataSet dataSet) throws Exception {
+		derivacaoMetadados(dataSet);
+		fuzzy(dataSet);
 	}
 
 }

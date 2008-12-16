@@ -162,7 +162,7 @@ public abstract class ServiceSearch extends Service {
 					.getPersistedDocument(document);
 			if (documentPersisted == null) {
 				getDao().create(document);
-				ServiceCrawler.extractMetadatas(document);
+				extractMetadatas(document);
 			} else {
 				document = documentPersisted;
 			}

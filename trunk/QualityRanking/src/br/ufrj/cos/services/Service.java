@@ -3,9 +3,21 @@
  */
 package br.ufrj.cos.services;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -16,19 +28,35 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import br.ufrj.cos.GraphInstance;
 import br.ufrj.cos.bean.ContextQualityDimensionWeight;
 import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
+import br.ufrj.cos.bean.DocumentQualityDimension;
+import br.ufrj.cos.bean.Metadata;
+import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.db.HelperAcessDB;
 import br.ufrj.cos.db.HibernateDAO;
+import br.ufrj.cos.enume.MetadataType;
 import br.ufrj.cos.matlab.JobSend;
 import br.ufrj.cos.matlab.client.MatClient;
+import br.ufrj.cos.services.process.MetadataExtract;
+import edu.uci.ics.jung.algorithms.importance.AbstractRanker;
+import edu.uci.ics.jung.algorithms.importance.HITS;
+import edu.uci.ics.jung.algorithms.importance.NodeRanking;
+import edu.uci.ics.jung.algorithms.importance.PageRank;
+import edu.uci.ics.jung.algorithms.transformation.DirectionTransformer;
+import edu.uci.ics.jung.graph.DirectedGraph;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
 
 /**
  * @author Fabricio
  * 
  */
 public abstract class Service extends Thread {
+
+	private static final String PAJEK_FILE_NAME_FORMAT = "pajek%s.txt";
 
 	private static final char CHAR_SPACE = ' ';
 
@@ -41,6 +69,8 @@ public abstract class Service extends Thread {
 	private char dataSetEndStatus;
 
 	private char dataSetMethod;
+
+	private Date now = null;
 
 	public Service(char dataSetInitStatus, char dataSetEndStatus, long pauseTime) {
 
@@ -215,6 +245,287 @@ public abstract class Service extends Thread {
 		this.dataSetEndStatus = dataSetEndStatus;
 	}
 
+	protected void derivacaoMetadados(DataSet dataSet) throws Exception {
+		DocumentQualityDimension documentQualityDimension = null;
+		long diff = generatePajekFormat(dataSet);
+		HashMap<String, HashMap<Long, Double>> scoresHubAutority = generateJungScores(
+				dataSet, diff);
+		Collection<Document> documents = HelperAcessDB.loadDocuments(dataSet);
+		Collection<QualityDimension> qualityDimensions = HelperAcessDB
+				.loadQualityDimensions(dataSet);
+		setNow(new Date());
+		for (Document document : documents) {
+			System.gc();
+			for (QualityDimension qualityDimension : qualityDimensions) {
+				documentQualityDimension = new DocumentQualityDimension();
+				documentQualityDimension.setDocument(document);
+				documentQualityDimension.setQualityDimension(qualityDimension);
+				double score = 0;
+				String code = new String(qualityDimension.getCode());
+				if (code.equals(QualityDimension.COM)) {
+					score = getCompleteness(document, scoresHubAutority);
+				} else if (code.equals(QualityDimension.REP)) {
+					score = getReputation(document, scoresHubAutority);
+				} else if (code.equals(QualityDimension.TIM)) {
+					score = getTimeliness(document);
+				}
+				documentQualityDimension.setScore(new BigDecimal(score));
+				getDao().create(documentQualityDimension);
+			}
+
+		}
+
+	}
+
+	/**
+	 * @param document
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws Exception
+	 */
+	protected void extractMetadatas(Document document)
+			throws MalformedURLException, IOException, Exception {
+		MetadataExtract metadataExtract = new MetadataExtract(document.getUrl());
+		HashMap<MetadataType, byte[]> listMetadatas = metadataExtract.extract();
+		for (MetadataType metadataType : listMetadatas.keySet()) {
+			System.gc();
+			byte[] valueMetadata = listMetadatas.get(metadataType);
+			Metadata metadata = new Metadata();
+			metadata.setDocument(document);
+			metadata.setType(metadataType);
+			metadata.setValue(valueMetadata);
+			getDao().create(metadata);
+		}
+	}
+
+	private long generatePajekFormat(DataSet dataSet) throws SQLException,
+			IOException {
+		long diffIdOfDocuments = getMinIdDocument(dataSet) - 1;
+		List<Document> documents = HelperAcessDB.loadDocuments(dataSet);
+		PrintWriter writer = new PrintWriter(new FileWriter(String.format(
+				PAJEK_FILE_NAME_FORMAT, dataSet.getId())));
+		writer.println(String.format("*Vertices %d", documents.size()));
+		for (Document document : documents) {
+			writer.println(String.format("%d \"%s\"", document.getId()
+					- diffIdOfDocuments, document.getUrl()));
+		}
+		writer.println("*Arcs");
+		goTree(dataSet, writer, diffIdOfDocuments);
+		writer.close();
+		return diffIdOfDocuments;
+	}
+
+	private void goTree(DataSet dataSet, PrintWriter writer,
+			long diffIdOfDocuments) {
+		List<Document> rootDocuments = HelperAcessDB.findRootDocuments(dataSet);
+		for (Document rootDocument : rootDocuments) {
+			toVisitDocument(rootDocument, writer, diffIdOfDocuments);
+		}
+	}
+
+	private void toVisitDocument(Document fatherDocument, PrintWriter writer,
+			long diffIdOfDocuments) {
+		int pesoArco = 1;
+		List<Document> childDocuments = HelperAcessDB
+				.loadDocumentsByFather(fatherDocument);
+		for (Document childDocument : childDocuments) {
+			System.gc();
+			writer.println(String.format("%d %d %d", fatherDocument.getId()
+					- diffIdOfDocuments, childDocument.getId()
+					- diffIdOfDocuments, pesoArco));
+			toVisitDocument(childDocument, writer, diffIdOfDocuments);
+		}
+
+	}
+
+	private long getMinIdDocument(DataSet dataSet) {
+		List<Document> result = null;
+		try {
+			Query q = getDao().openSession().createQuery(
+					String.format(
+							"from Document where dataSet_id=? order by id",
+							getDataSetInitStatus()));
+			q.setParameter(0, dataSet.getId());
+			q.setMaxResults(1);
+			result = q.list();
+		} catch (HibernateException he) {
+			throw he;
+		}
+		if (result == null || result.isEmpty())
+			return 0;
+		return result.get(0).getId();
+	}
+
+	private HashMap<String, HashMap<Long, Double>> generateJungScores(
+			DataSet dataSet, long diffIdOfDocuments) {
+		GraphInstance graphInstance = new GraphInstance();
+		Graph graph = graphInstance.load(String.format(PAJEK_FILE_NAME_FORMAT,
+				dataSet.getId()));
+		// graphInstance.displayGraph(graph);
+		// graphInstance.save(graph,"C:/eclipse/workspace/jung/graphTestOut.txt");
+		System.out.println(" Ranking usando Authorities ");
+		HITS rankerAuthorities = new HITS(graph, true);
+		rankerAuthorities.evaluate();
+		rankerAuthorities.printRankings(true, true);
+		System.out.println(" Ranking usando Hubs ");
+		HITS rankerHubs = new HITS(graph, false);
+		rankerHubs.evaluate();
+		rankerHubs.printRankings(true, true);
+		System.out.println(" Ranking usando Pagerank ");
+		DirectedGraph directedGraph = new DirectedSparseGraph();
+		directedGraph = DirectionTransformer.toDirected(graph);
+		// directedGraph= (DirectedSparseGraph)graph;
+		PageRank rankerPageRank = new PageRank(directedGraph, 0.15);
+		rankerPageRank.evaluate();
+		rankerPageRank.printRankings(true, true);
+		// try {
+		// Thread.sleep(200000);
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// }
+
+		HashMap<String, HashMap<Long, Double>> result = new HashMap<String, HashMap<Long, Double>>();
+
+		result.put(rankerAuthorities.getRankScoreKey(), getRankingByDocumentId(
+				diffIdOfDocuments, rankerAuthorities));
+
+		result.put(rankerHubs.getRankScoreKey(), getRankingByDocumentId(
+				diffIdOfDocuments, rankerHubs));
+
+		return result;
+
+	}
+
+	/**
+	 * @param diffIdOfDocuments
+	 * @param rankerAuthorities
+	 * @return
+	 */
+	private HashMap<Long, Double> getRankingByDocumentId(
+			long diffIdOfDocuments, AbstractRanker ranker) {
+		List<NodeRanking> listRankings = null;
+		HashMap<Long, Double> rankingMap = null;
+		rankingMap = new HashMap<Long, Double>();
+		listRankings = ranker.getRankings();
+		for (NodeRanking nodeRanking : listRankings) {
+			rankingMap.put(nodeRanking.originalPos + diffIdOfDocuments,
+					nodeRanking.rankScore);
+
+		}
+		return rankingMap;
+	}
+
+	private double getCompleteness(Document document,
+			HashMap<String, HashMap<Long, Double>> scoresHubAutority)
+			throws SQLException, IOException {
+		String name_ranking = "AUTHORITY";
+		return getRankingScore(document, scoresHubAutority, name_ranking);
+	}
+
+	private double getReputation(Document document,
+			HashMap<String, HashMap<Long, Double>> scoresHubAutority) {
+		String name_ranking = "HUB";
+		return getRankingScore(document, scoresHubAutority, name_ranking);
+	}
+
+	/**
+	 * @param document
+	 * @param scoresHubAutority
+	 * @param name_ranking
+	 * @return
+	 */
+	private double getRankingScore(Document document,
+			HashMap<String, HashMap<Long, Double>> scoresHubAutority,
+			String name_ranking) {
+		double score = 0;
+		HashMap<Long, Double> mapRanking = null;
+		for (String key : scoresHubAutority.keySet()) {
+			if (key.contains(name_ranking)) {
+				mapRanking = scoresHubAutority.get(key);
+			}
+		}
+
+		if (mapRanking != null)
+			score = mapRanking.get(document.getId());
+
+		return score;
+	}
+
+	private double getTimeliness(Document document) {
+		double score = 0;
+		byte[] metadata = getMetadata(document, MetadataType.DATE);
+		if (metadata != null) {
+			DateFormat dateFormat = new SimpleDateFormat(
+					MetadataExtract.DATE_FORMAT);
+			Date lastModified = null;
+			try {
+				lastModified = dateFormat.parse(new String(metadata));
+			} catch (ParseException e) {
+				System.err.println(String.format(
+						"Este documento (%s) não possui o metadado, "
+								+ "ou o mesmo não está no formato correto, "
+								+ "para calcular o timeliness", document
+								.toString()));
+			}
+			if (lastModified != null) {
+				double diffDates = calcDiffDays(getNow(), lastModified);
+				double quo = (diffDates + 1);
+				score = 1 / (quo > 1 ? quo : 1);
+			}
+		}
+		return score;
+	}
+
+	private byte[] getMetadata(Document document, MetadataType metadataType) {
+		byte[] value = null;
+		Metadata metadataExample = new Metadata();
+		metadataExample.setDocument(document);
+		metadataExample.setType(metadataType);
+		List<String> listExcludeParams = new ArrayList<String>();
+		listExcludeParams.add("id");
+		listExcludeParams.add("value");
+		List<Metadata> list = (List<Metadata>) getDao().findByExample(
+				metadataExample, listExcludeParams);
+		// List<Metadata> list = (List<Metadata>) getDao().loadByField(
+		// Metadata.class, "type", metadataType);
+		if (!list.isEmpty()) {
+			Metadata metadata = list.get(0);
+			value = metadata.getValue();
+		}
+		return value;
+	}
+
+	private double calcDiffDays(Date dateEnd, Date dateInit) {
+		// Creates two calendars instances
+		Calendar calInit = new GregorianCalendar();
+		Calendar calEnd = new GregorianCalendar();
+
+		// Set the date for both of the calendar instance
+		calInit.setTime(dateInit);
+		calEnd.setTime(dateEnd);
+
+		// Get the represented date in milliseconds
+		long milisInit = calInit.getTimeInMillis();
+		long milisEnd = calEnd.getTimeInMillis();
+
+		// Calculate difference in milliseconds
+		double diff = milisEnd - milisInit;
+
+		//
+		// // Calculate difference in seconds
+		// double diffSeconds = diff / 1000;
+		//
+		// // Calculate difference in minutes
+		// double diffMinutes = diff / (60 * 1000);
+		//
+		// // Calculate difference in hours
+		// double diffHours = diff / (60 * 60 * 1000);
+
+		// Calculate difference in days
+		double diffDays = diff / (24 * 60 * 60 * 1000);
+		return diffDays;
+	}
+
 	protected void fuzzy(DataSet dataSet) throws Exception {
 		Collection<ContextQualityDimensionWeight> listCQDWeights = HelperAcessDB
 				.loadContextQualityDimensionWeights(dataSet);
@@ -266,6 +577,21 @@ public abstract class Service extends Thread {
 	 */
 	public void setDataSetMethod(char dataSetMethod) {
 		this.dataSetMethod = dataSetMethod;
+	}
+
+	/**
+	 * @return the now
+	 */
+	private Date getNow() {
+		return now;
+	}
+
+	/**
+	 * @param now
+	 *            the now to set
+	 */
+	private void setNow(Date now) {
+		this.now = now;
 	}
 
 }
