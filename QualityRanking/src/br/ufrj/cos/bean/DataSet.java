@@ -62,9 +62,6 @@ public class DataSet implements Serializable {
 	@Column(nullable = false)
 	private char method;
 
-	@Column(nullable = false)
-	private boolean crawler;
-
 	@Column(nullable = false, unique = true, length = 50)
 	private String context;
 
@@ -123,7 +120,6 @@ public class DataSet implements Serializable {
 	public DataSet() {
 		setMinQuantityPages(0);
 		setPOfN(0);
-		setCrawler(false);
 		setStatus(STATUS_CREATION);
 
 		setDocuments(new ArrayList<Document>());
@@ -271,21 +267,6 @@ public class DataSet implements Serializable {
 	 */
 	public void setStatus(char status) {
 		this.status = status;
-	}
-
-	/**
-	 * @return the crawler
-	 */
-	public boolean isCrawler() {
-		return crawler;
-	}
-
-	/**
-	 * @param crawler
-	 *            the crawler to set
-	 */
-	public void setCrawler(boolean crawler) {
-		this.crawler = crawler;
 	}
 
 	/**

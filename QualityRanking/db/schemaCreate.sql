@@ -60,7 +60,6 @@ CREATE TABLE  `foxset`.`dataset` (
   `id` bigint(20) NOT NULL auto_increment,
   `finalization_datetime` datetime default NULL,
   `context` varchar(50) collate latin1_general_ci NOT NULL,
-  `crawler` tinyint(1) NOT NULL,
   `creation_datetime` datetime NOT NULL,
   `description` longtext collate latin1_general_ci NOT NULL,
   `method` char(1) collate latin1_general_ci NOT NULL,
