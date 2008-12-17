@@ -205,6 +205,21 @@ public class HibernateDAO {
 		}
 	}
 
+	public synchronized void createOrUpdate(Object obj) throws Exception {
+		openSession();
+		try {
+			initTransaction();
+			session.flush();
+			session.clear();
+			session.saveOrUpdate(obj);
+			commitTransaction();
+		} catch (Exception e) {
+			rollbackTransaction();
+			throw e;
+		}
+
+	}
+
 	/**
 	 * Remove um objeto no banco. Esse objeto deve ser um {@link BaseBean}
 	 * anotado utilizando a JPA.
