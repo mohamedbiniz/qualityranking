@@ -260,8 +260,9 @@ public abstract class Service extends Thread {
 				documentQualityDimension = new DocumentQualityDimension();
 				documentQualityDimension.setDocument(document);
 				documentQualityDimension.setQualityDimension(qualityDimension);
+				int o = 0;
 				double score = 0;
-				String code = new String(qualityDimension.getCode());
+				String code = qualityDimension.getCodeStr();
 				if (code.equals(QualityDimension.COM)) {
 					score = getCompleteness(document, scoresHubAutority);
 				} else if (code.equals(QualityDimension.REP)) {
@@ -445,7 +446,8 @@ public abstract class Service extends Thread {
 			}
 		}
 
-		if (mapRanking != null)
+		if ((mapRanking != null)
+				&& (!mapRanking.get(document.getId()).equals(Double.NaN)))
 			score = mapRanking.get(document.getId());
 
 		return score;

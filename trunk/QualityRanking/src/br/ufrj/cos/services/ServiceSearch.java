@@ -240,8 +240,8 @@ public abstract class ServiceSearch extends Service {
 				.loadSeedDocuments(dataSet);
 		String keyWord = "";
 		for (SeedDocument seedDocument : seedDocuments) {
-			keyWord += " " + seedDocument.getUrl();
+			keyWord += " " + seedDocument.getUrl().trim();
 		}
-		return keyWord.substring(1);
+		return keyWord.trim();
 	}
 }
