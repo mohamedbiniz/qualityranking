@@ -166,7 +166,6 @@ if ($action == 'admin') {
 		if ($_POST['password'] != $admin['password']) {
 			error('Senha incorreta.');
 		}
-	} else {
 		$_SESSION['admin'] = 1;
 	}
 	$body = <<<BODY
