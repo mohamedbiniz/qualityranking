@@ -25,13 +25,6 @@ import br.ufrj.cos.bean.SeedDocument;
  */
 public class PopulateDB {
 
-	private static HibernateDAO dao;
-
-	static {
-
-		setDao(HibernateDAO.getInstance());
-	}
-
 	public static void initFoxSet() throws Exception {
 		Language languagePt = createLanguage("Português (BR)");
 		Language languageEn = createLanguage("English (US)");
@@ -575,6 +568,7 @@ public class PopulateDB {
 	public static Object create(Object obj) throws Exception {
 		// org.hibernate.Transaction t =
 		// getDao().getSession().beginTransaction();
+		getDao().openSession();
 		getDao().create(obj);
 		// t.commit();
 		return obj;
@@ -583,7 +577,7 @@ public class PopulateDB {
 	public static Object update(Object obj) throws Exception {
 		// org.hibernate.Transaction t =
 		// getDao().getSession().beginTransaction();
-
+		getDao().openSession();
 		getDao().update(obj);
 		// t.commit();
 		return obj;
@@ -592,13 +586,14 @@ public class PopulateDB {
 	public static Object remove(Object obj) throws Exception {
 		// org.hibernate.Transaction t =
 		// getDao().getSession().beginTransaction();
-
+		getDao().openSession();
 		getDao().remove(obj);
 		// t.commit();
 		return obj;
 	}
 
 	public static List<Object[]> listAll(String tableName) {
+		getDao().openSession();
 		return getDao().listAll(tableName);
 	}
 
@@ -606,15 +601,7 @@ public class PopulateDB {
 	 * @return the dao
 	 */
 	public static HibernateDAO getDao() {
-		return dao;
-	}
-
-	/**
-	 * @param dao
-	 *            the dao to set
-	 */
-	private static void setDao(HibernateDAO daoInstance) {
-		dao = daoInstance;
+		return HibernateDAO.getInstance();
 	}
 
 }

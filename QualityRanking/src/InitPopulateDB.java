@@ -11,6 +11,8 @@ import br.ufrj.cos.db.PopulateDB;
 public class InitPopulateDB {
 	public static void main(String[] args) {
 		try {
+			PopulateDB.getDao().openSession();
+
 			PopulateDB.limparDB();
 
 			// Descomentar abaixo para inicializar o BD a fim de permitir
@@ -18,7 +20,8 @@ public class InitPopulateDB {
 			PopulateDB.initFoxSet();
 
 			// Descomentar abaixo para testar o pOfN (contexto economia)
-			// PopulateDB.popularSearchPofN(5, "relational database", 2);
+			// PopulateDB.popularSearchPofN(5, "relational database", new
+			// Integer(2));
 
 			// Descomentar abaixo para testar o quality fuzzy (contexto
 			// economia)
@@ -30,6 +33,9 @@ public class InitPopulateDB {
 			// Descomentar abaixo para testar o crawler com contexto de banco de
 			// dados relacinal
 			// PopulateDB.popularTradicionalBDR();
+
+			if (PopulateDB.getDao().getSession().isOpen())
+				PopulateDB.getDao().closeSession();
 
 		} catch (Exception e) {
 			e.printStackTrace();
