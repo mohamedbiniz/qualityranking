@@ -18,6 +18,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import br.ufrj.cos.bean.DataSet;
+import br.ufrj.cos.bean.DataSetCollaborator;
 import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.DocumentQualityDimension;
 import br.ufrj.cos.bean.QualityDimension;
@@ -101,16 +102,21 @@ public abstract class ServiceSearch extends Service {
 			criouDataSet = true;
 			try {
 				dataSetChild = PopulateDB.createDataSet(dataSetFather
-						.getCollaborator(), HelperAcessDB
-						.loadCollaborators(dataSetFather), dataSetFather
-						.getContext()
-						+ " - " + dataSetFather.getMethod() + diff,
-						dataSetFather.getDescription(), dataSetFather
-								.getLanguage(), dataSetFather
-								.getMinQuantityPages(),
-						dataSetFather.getPOfN(),
+						.getCollaborator(), dataSetFather.getContext() + " - "
+						+ dataSetFather.getMethod() + diff, dataSetFather
+						.getDescription(), dataSetFather.getLanguage(),
+						dataSetFather.getMinQuantityPages(), dataSetFather
+								.getPOfN(),
 						DataSet.STATUS_AUTOMATIC_EVALUATION, dataSetFather
 								.getMethod(), dataSetFather);
+				Collection<DataSetCollaborator> dataSetCollaborators = HelperAcessDB
+						.loadCollaborators(dataSetFather);
+				for (DataSetCollaborator dataSetCollaborator : dataSetCollaborators) {
+					DataSetCollaborator newDataSetCollaborator = dataSetCollaborator
+							.clone();
+					newDataSetCollaborator.setDataSet(dataSetChild);
+					getDao().create(newDataSetCollaborator);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				diff = String.format("%03d", ++i);
