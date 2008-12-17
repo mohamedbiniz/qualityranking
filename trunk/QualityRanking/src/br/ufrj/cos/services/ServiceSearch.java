@@ -93,13 +93,28 @@ public abstract class ServiceSearch extends Service {
 
 	private final DataSet createDataSetChild(DataSet dataSetFather)
 			throws Exception {
-		DataSet dataSetChild = PopulateDB.createDataSet(dataSetFather
-				.getCollaborator(), dataSetFather.getContext() + " - "
-				+ dataSetFather.getMethod(), dataSetFather.getDescription(),
-				dataSetFather.getLanguage(), dataSetFather
-						.getMinQuantityPages(), dataSetFather.getPOfN(),
-				DataSet.STATUS_AUTOMATIC_EVALUATION, dataSetFather.getMethod(),
-				dataSetFather);
+		DataSet dataSetChild = null;
+		boolean criouDataSet = false;
+		String diff = "";
+		int i = 0;
+		while (!criouDataSet) {
+			criouDataSet = true;
+			try {
+				dataSetChild = PopulateDB.createDataSet(dataSetFather
+						.getCollaborator(), dataSetFather.getContext() + " - "
+						+ dataSetFather.getMethod() + diff, dataSetFather
+						.getDescription(), dataSetFather.getLanguage(),
+						dataSetFather.getMinQuantityPages(), dataSetFather
+								.getPOfN(),
+						DataSet.STATUS_AUTOMATIC_EVALUATION, dataSetFather
+								.getMethod(), dataSetFather);
+			} catch (Exception e) {
+				e.printStackTrace();
+				diff = String.format("%03d", ++i);
+				criouDataSet = false;
+			}
+
+		}
 		return dataSetChild;
 	}
 
