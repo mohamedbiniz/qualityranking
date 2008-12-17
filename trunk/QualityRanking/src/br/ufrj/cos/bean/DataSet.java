@@ -85,7 +85,7 @@ public class DataSet implements Serializable {
 	private int minQuantityPages;
 
 	@Column(name = "p_of_n")
-	private int pOfN;
+	private Integer pOfN;
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@PrimaryKeyJoinColumn
@@ -119,7 +119,7 @@ public class DataSet implements Serializable {
 
 	public DataSet() {
 		setMinQuantityPages(0);
-		setPOfN(0);
+		setPOfN(new Integer(0));
 		setStatus(STATUS_CREATION);
 
 		setDocuments(new ArrayList<Document>());
@@ -500,7 +500,7 @@ public class DataSet implements Serializable {
 	/**
 	 * @return the pOfN
 	 */
-	public int getPOfN() {
+	public Integer getPOfN() {
 		return pOfN;
 	}
 
@@ -508,7 +508,7 @@ public class DataSet implements Serializable {
 	 * @param ofN
 	 *            the pOfN to set
 	 */
-	public void setPOfN(int ofN) {
+	public void setPOfN(Integer ofN) {
 		pOfN = ofN;
 	}
 
