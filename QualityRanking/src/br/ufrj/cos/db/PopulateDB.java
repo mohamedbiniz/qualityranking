@@ -62,7 +62,7 @@ public class PopulateDB {
 	//
 	// http://redbook.cs.berkeley.edu/redbook3/lecs.html
 
-	public static final void popularTradicionalBDR() throws Exception {
+	public static final void popularTradicionalBDR(int qtdPag) throws Exception {
 		// limparDB();
 
 		Language language = createLanguage("english");
@@ -70,7 +70,7 @@ public class PopulateDB {
 		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, 100, DataSet.STATUS_SEARCH,
+				language, qtdPag, DataSet.STATUS_SEARCH,
 				DataSet.CRAWLER_QUALITYFUZZY);
 
 		createSeedDocument(dataSet, "redbook.cs.berkeley.edu",

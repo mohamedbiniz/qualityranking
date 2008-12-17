@@ -428,8 +428,9 @@ public class PageHibernateImpl implements PageBD {
 		for (PageCrawler pageCrawler : pages) {
 			System.gc();
 			Document document = documentsMap.get(pageCrawler.getId());
-			document.addFatherDocument(documentsMap
-					.get(pageCrawler.getIdPage()));
+			Document father = documentsMap.get(pageCrawler.getIdPage());
+			if (father != null)
+				document.addFatherDocument(father);
 			dao.update(document);
 		}
 	}

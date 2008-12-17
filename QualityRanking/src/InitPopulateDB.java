@@ -32,7 +32,7 @@ public class InitPopulateDB {
 
 			// Descomentar abaixo para testar o crawler com contexto de banco de
 			// dados relacinal
-			// PopulateDB.popularTradicionalBDR();
+			// PopulateDB.popularTradicionalBDR(50);
 
 			if (PopulateDB.getDao().getSession().isOpen())
 				PopulateDB.getDao().closeSession();
