@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<overlay id="foxset-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<script type="application/x-javascript" src="chrome://foxset/content/foxset.js"/>
+
+	<toolbox id="navigator-toolbox">
+		<toolbar id="foxset-toolbar" context="toolbar-context-menu" toolbarname="FoxSet Toolbar" hidden="false" persist="hidden">
+			<toolbaritem><toolbarspacer /></toolbaritem>
+	   		<toolbaritem>
+				<toolbarbutton image="chrome://foxset/skin/logo.jpg" id="btnFoxSet" label="" oncommand="FoxSet.home();" />
+			</toolbaritem>
+			<toolbaritem><toolbarspacer /></toolbaritem>
+			<toolbaritem>
+				<hbox align="center">
+					<label id="lblUsername" value="" />
+					<toolbarbutton image="chrome://foxset/skin/cadeado16.png" id="btnLogin" label=" Login" oncommand="FoxSet.login();" />
+				</hbox>
+			</toolbaritem>
+			<toolbaritem><toolbarspacer /></toolbaritem>
+			<toolbaritem>
+				<hbox align="center">
+					<label id="lblDatasets" value="Datasets:"  disabled="true" />
+					<menulist id="mnuDatasets" disabled="true">
+						<menupopup>
+							<menuitem label=" " />
+						</menupopup>
+					</menulist>
+					<toolbarbutton image="chrome://foxset/skin/ok16.png" id="btnDatasets" oncommand="FoxSet.setDataSet();" disabled="true" />
+				</hbox>
+			</toolbaritem>
+			<toolbaritem><toolbarspacer /></toolbaritem>
+			<toolbaritem>
+				<hbox align="center">
+					<label id="lblDataset" value="" />
+					<toolbarbutton image="chrome://foxset/skin/coord.png" id="btnCoordinate" label="Coordinate" oncommand="FoxSet.coordinate();" disabled="true" />
+					<toolbarbutton image="chrome://foxset/skin/add.png" id="btnAdd" label="Add" oncommand="FoxSet.add();" disabled="true" />
+					<toolbarbutton image="chrome://foxset/skin/evaluate.png" id="btnEvaluate" label="Evaluate" oncommand="FoxSet.evaluate();" disabled="true"/>
+				</hbox>
+			</toolbaritem>
+			<toolbaritem><toolbarspacer /></toolbaritem>
+			<toolbaritem>
+				<hbox align="center">
+					<label id="lblRating" value="Rating:" disabled="true" />
+					<menulist id="mnuRating" disabled="true">
+						<menupopup>
+							<menuitem label=" " />
+						</menupopup>
+					</menulist>
+					<toolbarbutton image="chrome://foxset/skin/ok16.png" id="btnRating" label="" oncommand="FoxSet.saveEvaluation();" disabled="true"/>
+				</hbox>
+			</toolbaritem>
+		</toolbar>
+	</toolbox>
+</overlay>

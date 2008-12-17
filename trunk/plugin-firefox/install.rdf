@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#" xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+	<RDF:Description RDF:about="urn:mozilla:install-manifest">
+		
+		<em:id>foxset@cos.ufrj.br</em:id>
+		<em:version>0.4</em:version>
+		<em:type>2</em:type>
+		
+		<em:targetApplication>
+			<RDF:Description>
+				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+				<em:minVersion>1.5</em:minVersion>
+				<em:maxVersion>3.0.*</em:maxVersion>
+			</RDF:Description>
+		</em:targetApplication>
+		
+		<em:name>FoxSet</em:name>
+		<em:description>Uma ferramenta para criação de datasets</em:description>
+		<em:creator>Equipe FoxSet - BRI/PESC/COPPE/UFRJ</em:creator>
+		<em:developer>Rodrigo Padula de Oliveira</em:developer>
+		<em:developer>Heraldo J. A. Carneiro Filho</em:developer>
+		<em:contributor>José Rodrigues Neto</em:contributor>
+		<em:contributor>Ricardo Barros</em:contributor>
+		<em:contributor>Michele Machado</em:contributor>
+		<em:contributor>Patrícia Barros</em:contributor>
+		<em:contributor>Melissa Paes</em:contributor>
+		<em:contributor>Carlos Eduardo Paulino</em:contributor>
+		<em:contributor>Fabrício Raphael</em:contributor>
+		<em:contributor>Olivério Fernandes</em:contributor>
+		<em:homepageURL>http://www.cos.ufrj.br/</em:homepageURL>
+		<em:updateURL>https://www.cos.ufrj.br/foxset.rdf</em:updateURL>
+		<em:iconURL>chrome://foxset/skin/icon.png</em:iconURL>
+		<em:optionsURL>chrome://foxset/content/options.xul</em:optionsURL>
+		
+	</RDF:Description>
+	
+</RDF:RDF>
