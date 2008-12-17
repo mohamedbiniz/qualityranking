@@ -100,8 +100,7 @@ public class HelperAcessDB {
 			String searchEngineCode) {
 		Collection<QualityDimension> qualityDimensions = loadQualityDimensions(dataSet);
 		for (QualityDimension qualityDimension : qualityDimensions) {
-			if (searchEngineCode.contains(String.valueOf(qualityDimension
-					.getCode()))) {
+			if (searchEngineCode.contains(qualityDimension.getCodeStr())) {
 				return qualityDimension;
 			}
 		}

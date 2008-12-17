@@ -96,6 +96,13 @@ public class QualityDimension implements Serializable,
 	}
 
 	/**
+	 * @return the code
+	 */
+	public String getCodeStr() {
+		return String.valueOf(getCode());
+	}
+
+	/**
 	 * @param code
 	 *            the code to set
 	 */
@@ -213,8 +220,8 @@ public class QualityDimension implements Serializable,
 			if (isPersisted(this) && isPersisted(qualityDimension)) {
 				result = (this.getId() == qualityDimension.getId());
 			} else {
-				result = String.valueOf(getCode()).equalsIgnoreCase(
-						String.valueOf(qualityDimension.getCode()));
+				result = getCodeStr().equalsIgnoreCase(
+						qualityDimension.getCodeStr());
 			}
 		}
 		return result;
@@ -226,8 +233,8 @@ public class QualityDimension implements Serializable,
 			result = (new Long(this.getId())).compareTo(new Long(
 					qualityDimension.getId()));
 		} else {
-			result = String.valueOf(getCode()).compareToIgnoreCase(
-					String.valueOf(qualityDimension.getCode()));
+			result = getCodeStr().compareToIgnoreCase(
+					qualityDimension.getCodeStr());
 		}
 		return result;
 	}
