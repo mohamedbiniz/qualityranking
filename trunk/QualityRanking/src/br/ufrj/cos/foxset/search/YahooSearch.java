@@ -50,7 +50,7 @@ public class YahooSearch extends SearchEngine {
 			factory.setNamespaceAware(false);
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document doc = builder.parse(new InputSource(new StringReader(
-					content)));
+					content.trim())));
 
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			NodeList nodes = (NodeList) xpath.evaluate("/ResultSet/Result",
