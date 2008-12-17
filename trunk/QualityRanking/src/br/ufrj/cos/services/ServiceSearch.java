@@ -101,15 +101,18 @@ public abstract class ServiceSearch extends Service {
 			criouDataSet = true;
 			try {
 				dataSetChild = PopulateDB.createDataSet(dataSetFather
-						.getCollaborator(), dataSetFather.getContext() + " - "
-						+ dataSetFather.getMethod() + diff, dataSetFather
-						.getDescription(), dataSetFather.getLanguage(),
-						dataSetFather.getMinQuantityPages(), dataSetFather
-								.getPOfN(),
+						.getCollaborator(), HelperAcessDB
+						.loadCollaborators(dataSetFather), dataSetFather
+						.getContext()
+						+ " - " + dataSetFather.getMethod() + diff,
+						dataSetFather.getDescription(), dataSetFather
+								.getLanguage(), dataSetFather
+								.getMinQuantityPages(),
+						dataSetFather.getPOfN(),
 						DataSet.STATUS_AUTOMATIC_EVALUATION, dataSetFather
 								.getMethod(), dataSetFather);
 			} catch (Exception e) {
-				// e.printStackTrace();
+				e.printStackTrace();
 				diff = String.format("%03d", ++i);
 				criouDataSet = false;
 			}

@@ -414,8 +414,8 @@ public class PopulateDB {
 			String context, String description, Language language,
 			int minQuantityPages, Integer pOfN, char status, char method)
 			throws Exception {
-		return createDataSet(collaborator, context, description, language,
-				minQuantityPages, pOfN, status, method, null);
+		return createDataSet(collaborator, null, context, description,
+				language, minQuantityPages, pOfN, status, method, null);
 	}
 
 	/**
@@ -431,8 +431,19 @@ public class PopulateDB {
 			String context, String description, Language language,
 			int minQuantityPages, Integer pOfN, char status, char method,
 			DataSet dataSetFather) throws Exception {
+		return createDataSet(collaborator, context, description, language,
+				minQuantityPages, pOfN, status, method);
+	}
+
+	public static DataSet createDataSet(Collaborator collaborator,
+			Collection<Collaborator> collaborators, String context,
+			String description, Language language, int minQuantityPages,
+			Integer pOfN, char status, char method, DataSet dataSetFather)
+			throws Exception {
 		DataSet dataSet = new DataSet();
 		dataSet.setCollaborator(collaborator);
+		if (collaborators != null)
+			dataSet.setCollaborators(collaborators);
 		dataSet.setContext(context);
 		dataSet.setCreationDate(new Date());
 		dataSet.setDescription(description);
