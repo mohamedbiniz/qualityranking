@@ -92,9 +92,9 @@ public abstract class Service extends Thread {
 	public final void run() {
 		// super.run();
 		Session session = null;
+		try {
+			while (true) {
 
-		while (true) {
-			try {
 				synchronized (dao) {
 					session = getDao().openSession();
 					// DataSet dataSet = getDataSetTo();
@@ -117,12 +117,13 @@ public abstract class Service extends Thread {
 				} finally {
 
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (session != null)
-					getDao().closeSession();
+
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null)
+				getDao().closeSession();
 		}
 
 	}
