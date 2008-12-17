@@ -109,7 +109,7 @@ public abstract class ServiceSearch extends Service {
 						DataSet.STATUS_AUTOMATIC_EVALUATION, dataSetFather
 								.getMethod(), dataSetFather);
 			} catch (Exception e) {
-				e.printStackTrace();
+				// e.printStackTrace();
 				diff = String.format("%03d", ++i);
 				criouDataSet = false;
 			}
