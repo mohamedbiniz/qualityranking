@@ -71,17 +71,17 @@ public class HtmlBase extends Thread {
 
 				OutputLinkCrawler link = Frontier.getInstance().getNextURL(
 						dataSet);
-				if (!agrupa(link)) {
+				// if (!agrupa(link)) {
 
-					PageCrawler page = new PageCrawler(link);
-					System.gc();
-					if (page.process()) {
+				PageCrawler page = new PageCrawler(link);
+				System.gc();
+				if (page.process()) {
 
-						PageBD dao = FactoryBD.getInstance().createPage();
-						dao.save(page, dataSet);
-						dao.shutdown();
-					}
+					PageBD dao = FactoryBD.getInstance().createPage();
+					dao.save(page, dataSet);
+					dao.shutdown();
 				}
+				// }
 				// else {
 				// if (i > 0)
 				// i--;
