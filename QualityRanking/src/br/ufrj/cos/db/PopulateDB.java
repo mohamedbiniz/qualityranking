@@ -42,8 +42,8 @@ public class PopulateDB {
 				.iterator(); iterator.hasNext();) {
 			String code = (String) iterator.next();
 
-			qualityDimension = createQualityDimension(variaveisLinguisticas,
-					code);
+			qualityDimension = createOrUpdateQualityDimension(
+					variaveisLinguisticas, code);
 
 		}
 
@@ -107,8 +107,8 @@ public class PopulateDB {
 				.iterator(); iterator.hasNext();) {
 			String code = (String) iterator.next();
 
-			qualityDimension = createQualityDimension(variaveisLinguisticas,
-					code);
+			qualityDimension = createOrUpdateQualityDimension(
+					variaveisLinguisticas, code);
 
 			int weight = 1;
 
@@ -179,8 +179,8 @@ public class PopulateDB {
 				.iterator(); iterator.hasNext();) {
 			String code = (String) iterator.next();
 
-			qualityDimension = createQualityDimension(variaveisLinguisticas,
-					code);
+			qualityDimension = createOrUpdateQualityDimension(
+					variaveisLinguisticas, code);
 
 			int weight = 1;
 
@@ -247,8 +247,8 @@ public class PopulateDB {
 				.iterator(); iterator.hasNext();) {
 			String code = (String) iterator.next();
 
-			qualityDimension = createQualityDimension(variaveisLinguisticas,
-					code);
+			qualityDimension = createOrUpdateQualityDimension(
+					variaveisLinguisticas, code);
 
 			int weight = 1;
 
@@ -347,7 +347,7 @@ public class PopulateDB {
 	 * @return
 	 * @throws Exception
 	 */
-	public static QualityDimension createQualityDimension(
+	public static QualityDimension createOrUpdateQualityDimension(
 			HashMap<String, String> variaveisLinguisticas, String code)
 			throws Exception {
 		QualityDimension qualityDimension = null;
@@ -355,7 +355,7 @@ public class PopulateDB {
 		qualityDimension.setName(variaveisLinguisticas.get(code));
 		qualityDimension.setCode(code.toCharArray());
 
-		qualityDimension = (QualityDimension) create(qualityDimension);
+		qualityDimension = (QualityDimension) createOrUpdate(qualityDimension);
 		return qualityDimension;
 	}
 
@@ -568,7 +568,6 @@ public class PopulateDB {
 	public static Object create(Object obj) throws Exception {
 		// org.hibernate.Transaction t =
 		// getDao().getSession().beginTransaction();
-		getDao().openSession();
 		getDao().create(obj);
 		// t.commit();
 		return obj;
@@ -577,8 +576,15 @@ public class PopulateDB {
 	public static Object update(Object obj) throws Exception {
 		// org.hibernate.Transaction t =
 		// getDao().getSession().beginTransaction();
-		getDao().openSession();
 		getDao().update(obj);
+		// t.commit();
+		return obj;
+	}
+
+	private static Object createOrUpdate(Object obj) throws Exception {
+		// org.hibernate.Transaction t =
+		// getDao().getSession().beginTransaction();
+		getDao().createOrUpdate(obj);
 		// t.commit();
 		return obj;
 	}
@@ -586,7 +592,6 @@ public class PopulateDB {
 	public static Object remove(Object obj) throws Exception {
 		// org.hibernate.Transaction t =
 		// getDao().getSession().beginTransaction();
-		getDao().openSession();
 		getDao().remove(obj);
 		// t.commit();
 		return obj;

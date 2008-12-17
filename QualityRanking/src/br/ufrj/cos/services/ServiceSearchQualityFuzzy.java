@@ -64,7 +64,7 @@ public class ServiceSearchQualityFuzzy extends ServiceSearch {
 			String code = (String) iterator.next();
 
 			QualityDimension qualityDimension = PopulateDB
-					.createQualityDimension(variaveisLinguisticas, code);
+					.createOrUpdateQualityDimension(variaveisLinguisticas, code);
 
 			int weight = 1;
 			QualityDimensionWeight qualityDimensionWeight = HelperAcessDB

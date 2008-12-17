@@ -42,7 +42,7 @@ public class ServiceSearchPofN extends ServiceSearch {
 				.iterator(); iterator.hasNext();) {
 			String code = (String) iterator.next();
 
-			qualityDimension = PopulateDB.createQualityDimension(
+			qualityDimension = PopulateDB.createOrUpdateQualityDimension(
 					variaveisLinguisticas, code);
 
 			int weight = 1;
