@@ -209,7 +209,7 @@ public class PopulateDB {
 	}
 
 	public static final void popularSearchPofN(int qtdPag, String keyWords,
-			int pOfN) throws Exception {
+			Integer pOfN) throws Exception {
 		// limparDB();
 
 		Language language = createLanguage("english");
@@ -398,7 +398,7 @@ public class PopulateDB {
 			String context, String description, Language language,
 			int minQuantityPages, char status, char method) throws Exception {
 		return createDataSet(collaborator, context, description, language,
-				minQuantityPages, 0, status, method);
+				minQuantityPages, null, status, method);
 	}
 
 	/**
@@ -415,7 +415,7 @@ public class PopulateDB {
 	 */
 	public static DataSet createDataSet(Collaborator collaborator,
 			String context, String description, Language language,
-			int minQuantityPages, int pOfN, char status, char method)
+			int minQuantityPages, Integer pOfN, char status, char method)
 			throws Exception {
 		return createDataSet(collaborator, context, description, language,
 				minQuantityPages, pOfN, status, method, null);
@@ -432,7 +432,7 @@ public class PopulateDB {
 	 */
 	public static DataSet createDataSet(Collaborator collaborator,
 			String context, String description, Language language,
-			int minQuantityPages, int pOfN, char status, char method,
+			int minQuantityPages, Integer pOfN, char status, char method,
 			DataSet dataSetFather) throws Exception {
 		DataSet dataSet = new DataSet();
 		dataSet.setCollaborator(collaborator);
