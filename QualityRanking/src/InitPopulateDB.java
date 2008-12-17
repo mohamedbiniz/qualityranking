@@ -18,7 +18,7 @@ public class InitPopulateDB {
 			PopulateDB.initFoxSet();
 
 			// Descomentar abaixo para testar o pOfN (contexto economia)
-			// PopulateDB.popularSearchPofN(5);
+			// PopulateDB.popularSearchPofN(5, "relational database", 2);
 
 			// Descomentar abaixo para testar o quality fuzzy (contexto
 			// economia)
