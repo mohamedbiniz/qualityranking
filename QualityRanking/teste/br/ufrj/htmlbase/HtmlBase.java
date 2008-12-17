@@ -3,14 +3,10 @@ package br.ufrj.htmlbase;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 
 import br.ufrj.cos.bean.DataSet;
-import br.ufrj.cos.db.HibernateDAO;
 import br.ufrj.cos.services.ServiceCrawler;
 import br.ufrj.htmlbase.db.FactoryBD;
 import br.ufrj.htmlbase.db.PageBD;
@@ -71,8 +67,6 @@ public class HtmlBase extends Thread {
 
 				OutputLinkCrawler link = Frontier.getInstance().getNextURL(
 						dataSet);
-				// if (!agrupa(link)) {
-
 				PageCrawler page = new PageCrawler(link);
 				System.gc();
 				if (page.process()) {
@@ -81,7 +75,6 @@ public class HtmlBase extends Thread {
 					dao.save(page, dataSet);
 					dao.shutdown();
 				}
-				// }
 				// else {
 				// if (i > 0)
 				// i--;
@@ -133,65 +126,4 @@ public class HtmlBase extends Thread {
 		}
 
 	}
-
-	private boolean agrupa(OutputLinkCrawler link) throws IOException {
-
-		LinkedList<OutputLinkCrawler> antepassados = findAllFathers(link);
-
-		for (OutputLinkCrawler antepassado : antepassados) {
-			if (isPersistedInPage(antepassado)) {
-				if (antepassado.getDomain().equalsIgnoreCase(link.getDomain())) {
-
-					long id = generatePageId(antepassado);
-					PageCrawler page = (PageCrawler) PageHibernateImpl
-							.loadById(PageCrawler.class, id);
-
-					page.addLink(link);
-
-					PageHibernateImpl.update(page);
-					return true;
-				} else {
-					link.setIdPage(generatePageId(antepassado));
-					PageHibernateImpl.update(link);
-					return false;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private long generatePageId(OutputLinkCrawler antepassado)
-			throws IOException {
-		return (new PageCrawler(antepassado, false)).getId();
-	}
-
-	private boolean isPersistedInPage(OutputLinkCrawler antepassado)
-			throws IOException {
-		long id = generatePageId(antepassado);
-
-		Criteria criteria = HibernateDAO.getInstance().openSession()
-				.createCriteria(PageCrawler.class).add(
-						Restrictions.eq("id", id));
-
-		if (criteria.list().isEmpty()) {
-			return false;
-
-		}
-		return true;
-	}
-
-	private LinkedList<OutputLinkCrawler> findAllFathers(OutputLinkCrawler link) {
-		LinkedList<OutputLinkCrawler> antepassados = new LinkedList<OutputLinkCrawler>();
-		Criteria criteria = HibernateDAO.getInstance().openSession()
-				.createCriteria(OutputLinkCrawler.class).add(
-						Restrictions.eq("idTest", link.getIdPage()))
-				.setMaxResults(1);
-		antepassados.add((OutputLinkCrawler) criteria.uniqueResult());
-		for (OutputLinkCrawler linkAntepassado : antepassados) {
-			antepassados.addAll(findAllFathers(linkAntepassado));
-		}
-		return antepassados;
-	}
-
 }
