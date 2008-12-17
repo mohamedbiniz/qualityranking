@@ -354,8 +354,12 @@ public class PopulateDB {
 		qualityDimension = new QualityDimension();
 		qualityDimension.setName(variaveisLinguisticas.get(code));
 		qualityDimension.setCode(code.toCharArray());
-
-		qualityDimension = (QualityDimension) createOrUpdate(qualityDimension);
+		QualityDimension qD = (QualityDimension) getDao().loadByUniqueField(
+				QualityDimension.class, "code", qualityDimension.getCode());
+		if (qD == null)
+			qualityDimension = (QualityDimension) createOrUpdate(qualityDimension);
+		else
+			qualityDimension = qD;
 		return qualityDimension;
 	}
 
@@ -518,11 +522,12 @@ public class PopulateDB {
 			getDao().remove(qualityDimensionWeight);
 		}
 
-		Collection<QualityDimension> qualityDimensions = (Collection<QualityDimension>) getDao()
-				.listAll(QualityDimension.class);
-		for (QualityDimension qualityDimension : qualityDimensions) {
-			getDao().remove(qualityDimension);
-		}
+		// Collection<QualityDimension> qualityDimensions =
+		// (Collection<QualityDimension>) getDao()
+		// .listAll(QualityDimension.class);
+		// for (QualityDimension qualityDimension : qualityDimensions) {
+		// getDao().remove(qualityDimension);
+		// }
 
 		for (DataSet dataSet : dataSetsWhitoutFather) {
 			removeDataSet(dataSet);

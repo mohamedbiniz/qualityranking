@@ -151,10 +151,14 @@ public abstract class ServiceSearch extends Service {
 			}
 
 		}
-		criteria = getDao().openSession().createCriteria(Document.class).add(
-				Restrictions.eq("dataSet", dataSet)).add(
-				Restrictions.in("id", listIdDocumentsNotInQualiyDimension));
-		Collection<Document> list = criteria.list();
+		Collection<Document> list = new ArrayList<Document>();
+		if (!listIdDocumentsNotInQualiyDimension.isEmpty()) {
+			criteria = getDao().openSession().createCriteria(Document.class)
+					.add(Restrictions.eq("dataSet", dataSet)).add(
+							Restrictions.in("id",
+									listIdDocumentsNotInQualiyDimension));
+			list = criteria.list();
+		}
 		return list;
 	}
 
