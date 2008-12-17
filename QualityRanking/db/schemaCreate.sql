@@ -64,7 +64,7 @@ CREATE TABLE  `foxset`.`dataset` (
   `description` longtext collate latin1_general_ci NOT NULL,
   `method` char(1) collate latin1_general_ci NOT NULL,
   `min_pages` int(11) NOT NULL,
-  `pOfN` int(11) default NULL,
+  `p_of_n` int(11) default NULL,
   `status` char(1) collate latin1_general_ci NOT NULL,
   `collaborator_id` bigint(20) NOT NULL,
   `dataSetFather_id` bigint(20) default NULL,

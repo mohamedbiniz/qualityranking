@@ -84,7 +84,7 @@ public class DataSet implements Serializable {
 	@Column(name = "min_pages", nullable = false)
 	private int minQuantityPages;
 
-	@Column
+	@Column(name = "p_of_n")
 	private int pOfN;
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })

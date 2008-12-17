@@ -181,9 +181,9 @@ public abstract class Service extends Thread {
 			restricionMethod = String.format("and method='%c' ",
 					getDataSetMethod());
 		}
-		String query = String.format("from DataSet "
-				+ "where status='%c' and crawler=1 " + restricionMethod
-				+ "order by creation_datetime", getDataSetInitStatus());
+		String query = String.format("from DataSet " + "where status='%c' "
+				+ restricionMethod + "order by creation_datetime",
+				getDataSetInitStatus());
 		return query;
 	}
 
