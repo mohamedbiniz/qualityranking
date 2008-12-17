@@ -171,6 +171,7 @@ public class HibernateDAO {
 	 * @throws Exception
 	 */
 	public synchronized Serializable create(Object obj) throws Exception {
+		openSession();
 		try {
 			initTransaction();
 			Serializable idGerado = session.save(obj);
@@ -191,6 +192,7 @@ public class HibernateDAO {
 	 * @throws Exception
 	 */
 	public synchronized void update(final Object obj) throws Exception {
+		openSession();
 		try {
 			initTransaction();
 			session.flush();
@@ -212,6 +214,7 @@ public class HibernateDAO {
 	 * @throws Exception
 	 */
 	public synchronized void remove(final Object obj) throws Exception {
+		openSession();
 		try {
 			initTransaction();
 			session.delete(obj);
