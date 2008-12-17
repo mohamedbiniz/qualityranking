@@ -12,6 +12,8 @@ import java.util.List;
  */
 public abstract class SearchEngine {
 
+	protected static final String CHARSET_UTF_8 = "UTF-8";
+
 	public static class Result {
 
 		private String title, URL, summary;

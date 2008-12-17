@@ -208,19 +208,21 @@ public class PopulateDB {
 
 	}
 
-	public static final void popularSearchPofN(int qtdPag) throws Exception {
+	public static final void popularSearchPofN(int qtdPag, String keyWords,
+			int pOfN) throws Exception {
 		// limparDB();
 
 		Language language = createLanguage("english");
 
 		Collaborator collaborator = createCollaboratorFoxSet();
 
-		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, qtdPag, 2, DataSet.STATUS_SEARCH, DataSet.SEARCH_POFN);
+		DataSet dataSet = createDataSet(collaborator, keyWords, keyWords,
+				language, qtdPag, pOfN, DataSet.STATUS_SEARCH,
+				DataSet.SEARCH_POFN);
 
-		createSeedDocument(dataSet, "economist", "economist");
-		createSeedDocument(dataSet, "economy", "economy");
-
+		createSeedDocument(dataSet, keyWords, keyWords);
+		// createSeedDocument(dataSet, "economist", "economist");
+		// createSeedDocument(dataSet, "economy", "economy");
 		createQualityDimensionsWeights();
 
 	}

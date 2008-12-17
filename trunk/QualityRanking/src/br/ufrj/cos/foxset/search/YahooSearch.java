@@ -9,6 +9,7 @@ package br.ufrj.cos.foxset.search;
  * @author Heraldo
  */
 import java.io.StringReader;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class YahooSearch extends SearchEngine {
 		try {
 			List<Result> results = new ArrayList<Result>(getMaxResults());
 
-			query = query.replaceAll(" ", "+");
+			query = URLEncoder.encode(query, CHARSET_UTF_8);
 
 			String URL = "http://search.yahooapis.com/WebSearchService/V1/webSearch?appid="
 					+ getAppID()
