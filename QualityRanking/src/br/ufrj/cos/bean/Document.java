@@ -438,7 +438,7 @@ public class Document implements Serializable, Comparable<Document>, Cloneable {
 		document.setUrl(getUrl());
 		document.setScore(getScore());
 		Collection<Metadata> metadatasOld = getMetadatas();
-		for (Metadata metadataOfDataSetFather : metadatas) {
+		for (Metadata metadataOfDataSetFather : metadatasOld) {
 			Metadata metadata = metadataOfDataSetFather.clone();
 			metadata.setDocument(document);
 			document.addMetadata(metadata);
