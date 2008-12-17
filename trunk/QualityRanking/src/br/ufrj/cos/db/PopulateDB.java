@@ -444,7 +444,6 @@ public class PopulateDB {
 		dataSet.setPOfN(pOfN);
 		dataSet.setStatus(status);
 		dataSet.setMethod(method);
-		dataSet.setCrawler(true);
 		dataSet.setDataSetFather(dataSetFather);
 		dataSet = (DataSet) create(dataSet);
 		return dataSet;
