@@ -53,7 +53,7 @@ switch($_GET["acao"]){
 		$ass['IdIdioma'],
 		$user->ID,
 		$ass['method'],
-		$ass['method'] == 'P' ? $ass['pofn'] : 'NULL',
+		$ass['method'] == 'P' ? $ass['pofn'] : '1',
 		$ass['method'] != 'M' ? 'L' : 'M',
 		$ass['manualEvaluationStrategy']);
 
