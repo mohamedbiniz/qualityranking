@@ -17,7 +17,7 @@ import javax.persistence.Transient;
  */
 @Table(name = "DataSet_Collaborator")
 @Entity
-public class DataSetCollaborator implements Serializable {
+public class DataSetCollaborator implements Serializable, Cloneable {
 
 	@Transient
 	private static final char ROLE_TYPE_E = 'E';
@@ -98,4 +98,12 @@ public class DataSetCollaborator implements Serializable {
 		this.role = role;
 	}
 
+	@Override
+	public DataSetCollaborator clone() throws CloneNotSupportedException {
+		DataSetCollaborator dataSetCollaborator = new DataSetCollaborator();
+		dataSetCollaborator.setCollaborator(getCollaborator());
+		dataSetCollaborator.setDataSet(getDataSet());
+		dataSetCollaborator.setRole(getRole());
+		return dataSetCollaborator;
+	}
 }

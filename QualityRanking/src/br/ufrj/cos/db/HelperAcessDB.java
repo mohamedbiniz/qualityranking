@@ -15,7 +15,6 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import br.ufrj.cos.bean.Collaborator;
 import br.ufrj.cos.bean.ContextQualityDimensionWeight;
 import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.DataSetCollaborator;
@@ -305,12 +304,13 @@ public class HelperAcessDB {
 		return doc;
 	}
 
-	public static Collection<Collaborator> loadCollaborators(DataSet dataSet) {
+	public static Collection<DataSetCollaborator> loadCollaborators(
+			DataSet dataSet) {
 		Criteria criteria = getDao().openSession().createCriteria(
 				DataSetCollaborator.class).add(
 				Restrictions.eq("id.dataSet", dataSet));
-		criteria.setProjection(Projections.property("id.collaborator"));
-		List<Collaborator> collaborators = (List<Collaborator>) criteria.list();
-		return collaborators;
+		List<DataSetCollaborator> dataSetCollaborator = (List<DataSetCollaborator>) criteria
+				.list();
+		return dataSetCollaborator;
 	}
 }
