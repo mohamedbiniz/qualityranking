@@ -22,15 +22,6 @@
         <property name="pathPage" column="PATH_PAGE" type="java.lang.String" />
         <property name="dateCreate" column="DATE_CREATE" type="java.util.Date" />
         <property name="lastModified" column="LAST_MODIFIED" type="java.util.Date" />
-       
-        <!-- 
-        <list name="links">
-        	<key column="page_id" not-null="false"  />
-        	<list-index column="indice" />
-        	<one-to-many  class="br.ufrj.htmlbase.OutputLinkCrawler"/>
-        </list>
-        
-         -->
     </class>
     
 </hibernate-mapping>

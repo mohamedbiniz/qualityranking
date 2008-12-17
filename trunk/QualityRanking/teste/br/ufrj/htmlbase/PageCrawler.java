@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
@@ -37,9 +36,6 @@ public class PageCrawler {
 
 	// lista de urls existentes na pagina
 	protected Collection urls;
-
-	// lista de páginas filhas
-	private Collection<OutputLinkCrawler> links;
 
 	// Lista de metadados que foram obtidos, a partir do Dublin core
 	protected MetadataList metadata = new MetadataList();
@@ -98,6 +94,7 @@ public class PageCrawler {
 
 	public PageCrawler(OutputLinkCrawler link, boolean download)
 			throws IOException {
+		this();
 		String url = link.getUrl();
 
 		setUrl(url);
@@ -110,7 +107,6 @@ public class PageCrawler {
 		String path = makePath(url);
 
 		setPath(path);
-		setLinks(new ArrayList<OutputLinkCrawler>());
 
 		setIdPage(link.getIdPage());
 		if (download) {
@@ -120,6 +116,7 @@ public class PageCrawler {
 	}
 
 	public PageCrawler() {
+		// setLinks(new ArrayList<OutputLinkCrawler>());
 	}
 
 	private String makePath(String url) {
@@ -369,30 +366,6 @@ public class PageCrawler {
 		path = p;
 	}
 
-	public Collection<OutputLinkCrawler> getLink() {
-		return links;
-	}
-
-	public void setLinks(Collection<OutputLinkCrawler> links) {
-		this.links = links;
-	}
-
-	/**
-	 * @param link
-	 * @return pages
-	 */
-	public boolean addLink(OutputLinkCrawler link) {
-		return getLink().add(link);
-	}
-
-	/**
-	 * @param page
-	 * @return pages
-	 */
-	public boolean removeLink(OutputLinkCrawler link) {
-		return getLink().remove(link);
-	}
-
 	/**
 	 * @return the idDataSet
 	 */
@@ -443,5 +416,4 @@ public class PageCrawler {
 	public void setOrdemDownload(long ordemDownload) {
 		this.ordemDownload = ordemDownload;
 	}
-
 }
