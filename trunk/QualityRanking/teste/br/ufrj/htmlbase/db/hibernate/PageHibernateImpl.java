@@ -9,6 +9,7 @@
 
 package br.ufrj.htmlbase.db.hibernate;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -34,6 +35,7 @@ import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.SeedDocument;
 import br.ufrj.cos.db.HibernateDAO;
+import br.ufrj.htmlbase.HtmlBase;
 import br.ufrj.htmlbase.OutputLinkCrawler;
 import br.ufrj.htmlbase.PageCrawler;
 import br.ufrj.htmlbase.db.PageBD;
@@ -66,7 +68,7 @@ public class PageHibernateImpl implements PageBD {
 	}
 
 	public synchronized void insertSeedsLinks(
-			Collection<SeedDocument> seedDocuments) {
+			Collection<SeedDocument> seedDocuments) throws IOException {
 		Session ss = null;
 		Transaction tx = null;
 
@@ -75,15 +77,14 @@ public class PageHibernateImpl implements PageBD {
 		/*
 		 * Esse codigo da persistencia de links precisa ser melhorado
 		 */
-		int idPage = 0;
-		int idLink = 0;
+
 		for (SeedDocument seedDocument : seedDocuments) {
 
 			ss = HibernateSessionFactory.currentSession();
 			tx = ss.beginTransaction();
 
 			OutputLinkCrawler link = new OutputLinkCrawler();
-			link.setIdTest(++idLink);
+
 			link.setDomain(seedDocument.getDomain());
 			link.setUrl(seedDocument.getUrl());
 			link.setDataSet(seedDocument.getDataSet());
@@ -94,6 +95,7 @@ public class PageHibernateImpl implements PageBD {
 			link.setLastModified(date);
 			link.setNextFetch(date);
 			link.setSeed(true);
+			link.setIdTest(HtmlBase.generatePageId(link));
 
 			List result = ss.createCriteria(OutputLinkCrawler.class).add(
 					Expression.eq("idTest", link.getIdTest())).add(

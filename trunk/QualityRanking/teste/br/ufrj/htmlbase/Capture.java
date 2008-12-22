@@ -10,6 +10,7 @@
 package br.ufrj.htmlbase;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -85,7 +86,8 @@ public class Capture {
 
 	}
 
-	private void insertSeedsLinks(Collection<SeedDocument> seedDocuments) {
+	private void insertSeedsLinks(Collection<SeedDocument> seedDocuments)
+			throws IOException {
 		PageHibernateImpl pageDao = new PageHibernateImpl();
 		pageDao.insertSeedsLinks(seedDocuments);
 	}
