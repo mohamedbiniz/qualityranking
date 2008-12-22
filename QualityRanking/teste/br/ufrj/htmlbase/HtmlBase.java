@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -150,17 +151,19 @@ public class HtmlBase extends Thread {
 					PageHibernateImpl.update(page);
 					return true;
 				} else {
+					// renova o pai para o primeiro antepasado diferente do
+					// dominio persistido
 					link.setIdPage(generatePageId(antepassado));
 					PageHibernateImpl.update(link);
 					return false;
 				}
 			}
 		}
-
+		// caso não tenha nenhum pai persistido como PageCrawler
 		return false;
 	}
 
-	private long generatePageId(OutputLinkCrawler antepassado)
+	public static long generatePageId(OutputLinkCrawler antepassado)
 			throws IOException {
 		return (new PageCrawler(antepassado, false)).getId();
 	}
@@ -184,10 +187,11 @@ public class HtmlBase extends Thread {
 		LinkedList<OutputLinkCrawler> antepassados = new LinkedList<OutputLinkCrawler>();
 		Criteria criteria = HibernateDAO.getInstance().openSession()
 				.createCriteria(OutputLinkCrawler.class).add(
-						Restrictions.eq("idTest", link.getIdPage()));
-		Object obj = criteria.uniqueResult();
-		if ((obj != null) && (obj instanceof OutputLinkCrawler)) {
-			antepassados.add((OutputLinkCrawler) obj);
+						Restrictions.eq("idTest", link.getIdPage()))
+				.setMaxResults(1);
+		List<OutputLinkCrawler> links = criteria.list();
+		if (!links.isEmpty()) {
+			antepassados.add(links.get(0));
 		}
 		for (OutputLinkCrawler linkAntepassado : antepassados) {
 			antepassados.addAll(findAllFathers(linkAntepassado));
