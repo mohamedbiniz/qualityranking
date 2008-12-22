@@ -12,6 +12,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
@@ -36,6 +38,9 @@ public class PageCrawler {
 
 	// lista de urls existentes na pagina
 	protected Collection urls;
+
+	// lista de páginas filhas
+	private Set<OutputLinkCrawler> agregatedLinks;
 
 	// Lista de metadados que foram obtidos, a partir do Dublin core
 	protected MetadataList metadata = new MetadataList();
@@ -116,7 +121,7 @@ public class PageCrawler {
 	}
 
 	public PageCrawler() {
-		// setLinks(new ArrayList<OutputLinkCrawler>());
+		setAgregatedLinks(new TreeSet<OutputLinkCrawler>());
 	}
 
 	private String makePath(String url) {
@@ -415,5 +420,36 @@ public class PageCrawler {
 	 */
 	public void setOrdemDownload(long ordemDownload) {
 		this.ordemDownload = ordemDownload;
+	}
+
+	/**
+	 * @return the agregatedLinks
+	 */
+	public Set<OutputLinkCrawler> getAgregatedLinks() {
+		return agregatedLinks;
+	}
+
+	/**
+	 * @param agregatedLinks
+	 *            the agregatedLinks to set
+	 */
+	public void setAgregatedLinks(Set<OutputLinkCrawler> agregatedLinks) {
+		this.agregatedLinks = agregatedLinks;
+	}
+
+	/**
+	 * @param link
+	 * @return pages
+	 */
+	public boolean addAgregatedLink(OutputLinkCrawler link) {
+		return getAgregatedLinks().add(link);
+	}
+
+	/**
+	 * @param page
+	 * @return pages
+	 */
+	public boolean removeAgregatedLink(OutputLinkCrawler link) {
+		return getAgregatedLinks().remove(link);
 	}
 }
