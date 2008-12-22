@@ -184,9 +184,11 @@ public class HtmlBase extends Thread {
 		LinkedList<OutputLinkCrawler> antepassados = new LinkedList<OutputLinkCrawler>();
 		Criteria criteria = HibernateDAO.getInstance().openSession()
 				.createCriteria(OutputLinkCrawler.class).add(
-						Restrictions.eq("idTest", link.getIdPage()))
-				.setMaxResults(1);
-		antepassados.add((OutputLinkCrawler) criteria.uniqueResult());
+						Restrictions.eq("idTest", link.getIdPage()));
+		Object obj = criteria.uniqueResult();
+		if ((obj != null) && (obj instanceof OutputLinkCrawler)) {
+			antepassados.add((OutputLinkCrawler) obj);
+		}
 		for (OutputLinkCrawler linkAntepassado : antepassados) {
 			antepassados.addAll(findAllFathers(linkAntepassado));
 		}
