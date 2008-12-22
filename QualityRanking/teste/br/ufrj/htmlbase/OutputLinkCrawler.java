@@ -188,4 +188,9 @@ public class OutputLinkCrawler implements Serializable {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("%d\t%s", getIdTest(), getUrl());
+	}
+
 }
