@@ -28,6 +28,7 @@ public class OutputLinkCrawler implements Serializable {
 	private Date dateCreate;
 	private Date lastModified;
 	private Date nextFetch;
+	private PageCrawler pageCrawler;
 
 	public OutputLinkCrawler(URL u, long idDataSet) {
 		setDomain(u.getHost());
@@ -159,6 +160,32 @@ public class OutputLinkCrawler implements Serializable {
 	 */
 	public void setSeed(boolean seed) {
 		this.seed = seed;
+	}
+
+	/**
+	 * @return the pageCrawler
+	 */
+	public PageCrawler getPageCrawler() {
+		return pageCrawler;
+	}
+
+	/**
+	 * @param pageCrawler
+	 *            the pageCrawler to set
+	 */
+	public void setPageCrawler(PageCrawler pageCrawler) {
+		this.pageCrawler = pageCrawler;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		boolean result = false;
+		if ((obj != null) && (obj instanceof OutputLinkCrawler)) {
+			OutputLinkCrawler link = (OutputLinkCrawler) obj;
+			result = (this.getIdTest() == link.getIdTest());
+		}
+		return result;
 	}
 
 }
