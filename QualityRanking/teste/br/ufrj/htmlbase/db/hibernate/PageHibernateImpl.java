@@ -516,4 +516,22 @@ public class PageHibernateImpl implements PageBD {
 		return ((BigInteger) sqlQuery.uniqueResult()).longValue();
 	}
 
+	public static List<OutputLinkCrawler> loadFathers(OutputLinkCrawler link) {
+		Session ss = HibernateSessionFactory.currentSession();
+		Transaction tx = null;
+		List<OutputLinkCrawler> links = new ArrayList<OutputLinkCrawler>();
+		try {
+			tx = ss.beginTransaction();
+			Criteria criteria = ss.createCriteria(OutputLinkCrawler.class).add(
+					Restrictions.eq("idTest", link.getIdPage())).setMaxResults(
+					1);
+			links = criteria.list();
+		} catch (HibernateException he) {
+			if (tx != null)
+				tx.rollback();
+			throw he;
+		}
+		return links;
+	}
+
 }

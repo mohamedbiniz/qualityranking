@@ -185,11 +185,7 @@ public class HtmlBase extends Thread {
 
 	private LinkedList<OutputLinkCrawler> findAllFathers(OutputLinkCrawler link) {
 		LinkedList<OutputLinkCrawler> antepassados = new LinkedList<OutputLinkCrawler>();
-		Criteria criteria = HibernateDAO.getInstance().openSession()
-				.createCriteria(OutputLinkCrawler.class).add(
-						Restrictions.eq("idTest", link.getIdPage()))
-				.setMaxResults(1);
-		List<OutputLinkCrawler> links = criteria.list();
+		List<OutputLinkCrawler> links = PageHibernateImpl.loadFathers(link);
 		if (!links.isEmpty()) {
 			antepassados.add(links.get(0));
 		}
