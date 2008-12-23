@@ -1,7 +1,5 @@
 package br.ufrj.htmlbase.db.hibernate;
 
-import java.sql.Connection;
-
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
@@ -76,7 +74,7 @@ public class HibernateSessionFactory {
 		threadLocal.set(null);
 
 		if (session != null) {
-			Connection conn = session.connection();
+			// Connection conn = session.connection();
 			/*
 			 * Statement st; try { st = conn.createStatement();
 			 * st.execute("SHUTDOWN"); } catch (SQLException e) { // TODO Bloco

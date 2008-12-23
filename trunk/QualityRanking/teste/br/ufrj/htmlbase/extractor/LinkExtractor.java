@@ -1,5 +1,6 @@
 package br.ufrj.htmlbase.extractor;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -17,7 +18,8 @@ public class LinkExtractor {
 
 	private static Logger logger = Logger.getLogger(LinkExtractor.class);
 
-	public static Collection getLinks(String path, String domain, long idDataSet) {
+	public static Collection getLinks(String path, String domain, long idDataSet)
+			throws IOException {
 		LinkBean sb = new LinkBean();
 		sb.setURL(path);
 

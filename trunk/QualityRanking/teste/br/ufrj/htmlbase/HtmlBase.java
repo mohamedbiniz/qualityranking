@@ -142,7 +142,7 @@ public class HtmlBase extends Thread {
 			if (isPersistedInPage(antepassado)) {
 				if (antepassado.getDomain().equalsIgnoreCase(link.getDomain())) {
 
-					long id = generatePageId(antepassado);
+					long id = PageHibernateImpl.generatePageId(antepassado);
 					PageCrawler page = (PageCrawler) PageHibernateImpl
 							.loadById(PageCrawler.class, id);
 
@@ -153,7 +153,8 @@ public class HtmlBase extends Thread {
 				} else {
 					// renova o pai para o primeiro antepasado diferente do
 					// dominio persistido
-					link.setIdPage(generatePageId(antepassado));
+					link.setIdPage(PageHibernateImpl
+							.generatePageId(antepassado));
 					PageHibernateImpl.update(link);
 					return false;
 				}
@@ -163,14 +164,9 @@ public class HtmlBase extends Thread {
 		return false;
 	}
 
-	public static long generatePageId(OutputLinkCrawler antepassado)
-			throws IOException {
-		return (new PageCrawler(antepassado, false)).getId();
-	}
-
 	private boolean isPersistedInPage(OutputLinkCrawler antepassado)
 			throws IOException {
-		long id = generatePageId(antepassado);
+		long id = PageHibernateImpl.generatePageId(antepassado);
 
 		Criteria criteria = HibernateDAO.getInstance().openSession()
 				.createCriteria(PageCrawler.class).add(

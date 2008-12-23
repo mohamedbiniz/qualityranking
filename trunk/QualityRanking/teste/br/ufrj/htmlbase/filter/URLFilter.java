@@ -1,5 +1,6 @@
 package br.ufrj.htmlbase.filter;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -12,7 +13,8 @@ import br.ufrj.htmlbase.OutputLinkCrawler;
  */
 public class URLFilter {
 
-	public static Collection getValidOutputLinks(URL[] urls, long idDataSet) {
+	public static Collection getValidOutputLinks(URL[] urls, long idDataSet)
+			throws IOException {
 
 		Hashtable outLinksHash = new Hashtable();
 
@@ -33,7 +35,8 @@ public class URLFilter {
 		return uniqueOutLinks;
 	}
 
-	private static Collection filterUrls(Collection<OutputLinkCrawler> uniqueOutLinks) {
+	private static Collection filterUrls(
+			Collection<OutputLinkCrawler> uniqueOutLinks) {
 
 		ValidFilters filter1 = new ValidFilterDomain();
 

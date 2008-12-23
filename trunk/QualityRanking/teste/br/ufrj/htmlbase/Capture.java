@@ -20,9 +20,12 @@ import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.SeedDocument;
 import br.ufrj.cos.db.HibernateDAO;
 import br.ufrj.cos.services.ServiceCrawler;
+import br.ufrj.htmlbase.db.hibernate.HibernateSessionFactory;
 import br.ufrj.htmlbase.db.hibernate.PageHibernateImpl;
 
 public class Capture {
+
+	private static final String PAI_DAS_SEMENTES = "pai_das_sementes";
 
 	public static void main(String[] args) {
 		int numWorkers = 1;
@@ -80,7 +83,7 @@ public class Capture {
 		} catch (Exception e) {
 			throw e;
 		} finally {
-
+			HibernateSessionFactory.closeSession();
 			deletarPastaTemp(PageCrawler.TEMP_PATH);
 		}
 

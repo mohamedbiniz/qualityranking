@@ -2,11 +2,13 @@ package br.ufrj.htmlbase;
 
 import static br.ufrj.htmlbase.io.MD5Hash.digest;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Date;
 
 import br.ufrj.cos.bean.DataSet;
+import br.ufrj.htmlbase.db.hibernate.PageHibernateImpl;
 import br.ufrj.htmlbase.io.MD5Hash;
 
 /**
@@ -30,12 +32,11 @@ public class OutputLinkCrawler implements Serializable {
 	private Date nextFetch;
 	private PageCrawler pageCrawler;
 
-	public OutputLinkCrawler(URL u, long idDataSet) {
+	public OutputLinkCrawler(URL u, long idDataSet) throws IOException {
 		this();
 		setDomain(u.getHost());
 		setUrl(u.toString());
-		MD5Hash md5 = digest(getUrl());
-		setIdTest(md5.halfDigest());
+		setIdTest(PageHibernateImpl.generatePageId(this));
 		setDateCreate(new Date());
 		setLastModified(new Date());
 		setScore(SCORE);
