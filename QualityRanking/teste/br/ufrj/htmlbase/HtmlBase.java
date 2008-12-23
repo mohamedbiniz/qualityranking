@@ -177,14 +177,16 @@ public class HtmlBase extends Thread {
 
 	private LinkedList<OutputLinkCrawler> findAllFathers(OutputLinkCrawler link) {
 		LinkedList<OutputLinkCrawler> antepassados = new LinkedList<OutputLinkCrawler>();
+		LinkedList<OutputLinkCrawler> newAntepassados = new LinkedList<OutputLinkCrawler>();
 		List<OutputLinkCrawler> links = PageHibernateImpl.loadFathers(link);
 		if (!links.isEmpty()) {
 			antepassados.add(links.get(0));
+			newAntepassados.add(links.get(0));
 		}
 		for (OutputLinkCrawler linkAntepassado : antepassados) {
-			antepassados.addAll(findAllFathers(linkAntepassado));
+			newAntepassados.addAll(findAllFathers(linkAntepassado));
 		}
-		return antepassados;
+		return newAntepassados;
 	}
 
 }
