@@ -7,11 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 
 import br.ufrj.cos.bean.DataSet;
-import br.ufrj.cos.db.HibernateDAO;
 import br.ufrj.cos.services.ServiceCrawler;
 import br.ufrj.htmlbase.db.FactoryBD;
 import br.ufrj.htmlbase.db.PageBD;
@@ -168,11 +165,10 @@ public class HtmlBase extends Thread {
 			throws IOException {
 		long id = PageHibernateImpl.generatePageId(antepassado);
 
-		Criteria criteria = HibernateDAO.getInstance().openSession()
-				.createCriteria(PageCrawler.class).add(
-						Restrictions.eq("id", id));
+		PageCrawler page = (PageCrawler) PageHibernateImpl.loadById(
+				PageCrawler.class, id);
 
-		if (criteria.list().isEmpty()) {
+		if (page == null) {
 			return false;
 
 		}
