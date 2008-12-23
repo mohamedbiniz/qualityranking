@@ -48,8 +48,6 @@ public class PageCrawler {
 	// conteudo da pagina sem links e figuras
 	protected String content;
 
-	private Long id_page_crawler;
-
 	// identificador unico gerado com o MD5 do conteudo
 	protected long id;
 
@@ -455,11 +453,4 @@ public class PageCrawler {
 		return getAgregatedLinks().remove(link);
 	}
 
-	public Long getId_page_crawler() {
-		return id_page_crawler;
-	}
-
-	public void setId_page_crawler(Long id_page_crawler) {
-		this.id_page_crawler = id_page_crawler;
-	}
 }

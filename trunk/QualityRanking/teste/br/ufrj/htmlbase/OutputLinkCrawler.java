@@ -31,6 +31,7 @@ public class OutputLinkCrawler implements Serializable {
 	private PageCrawler pageCrawler;
 
 	public OutputLinkCrawler(URL u, long idDataSet) {
+		this();
 		setDomain(u.getHost());
 		setUrl(u.toString());
 		MD5Hash md5 = digest(getUrl());
@@ -43,7 +44,7 @@ public class OutputLinkCrawler implements Serializable {
 	}
 
 	public OutputLinkCrawler() {
-
+		setPageCrawler(null);
 	}
 
 	public String getUrl() {
