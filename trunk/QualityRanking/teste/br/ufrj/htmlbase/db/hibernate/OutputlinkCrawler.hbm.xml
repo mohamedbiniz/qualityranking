@@ -5,50 +5,48 @@
 
 <hibernate-mapping package="br.ufrj.htmlbase">
 
-    <class name="OutputLinkCrawler" table="OUTPUTLINK_CRAWLER">
+	<class name="OutputLinkCrawler" table="OUTPUTLINK_CRAWLER">
 
-		<id name="idTest" column="ID" type="long"/>
-                   
-        <!--
-        <composite-id>
-            <key-property name="idTest" column="ID" type="long" />            
-        </composite-id>
-         -->
-        
-        <property name="idPage" column="IdPagina" type="long"/>
-        <property name="idDataSet" column="IdDataSet" type="long"/>
-        <property name="score" column="SCORE" type="double" />
-        <property name="url" column="URL" type="java.lang.String" />
-        <property name="domain" column="DOMAIN" type="java.lang.String" />
-        <property name="visited" column="VISITED" type="boolean" />
-        <property name="seed" column="SEED" type="boolean" />
-        <property name="dateCreate" column="DATE_CREATE" type="java.util.Date" />
-        <property name="lastModified" column="LAST_MODIFIED" type="java.util.Date" />
-        <property name="nextFetch" column="NEXT_FETCH" type="java.util.Date" />
-          
-        <many-to-one name="pageCrawler" class="br.ufrj.htmlbase.PageCrawler" 
-         column="id_page_crawler" not-null="false" lazy="false" />
-        
-    </class>
-    
+		<id name="idTest" column="ID" type="long" />
+
+		<property name="idPage" column="IdPagina" type="long" />
+		<property name="idDataSet" column="IdDataSet" type="long" />
+		<property name="score" column="SCORE" type="double" />
+		<property name="url" column="URL" type="java.lang.String" />
+		<property name="domain" column="DOMAIN" type="java.lang.String" />
+		<property name="visited" column="VISITED" type="boolean" />
+		<property name="seed" column="SEED" type="boolean" />
+		<property name="dateCreate" column="DATE_CREATE"
+			type="java.util.Date" />
+		<property name="lastModified" column="LAST_MODIFIED"
+			type="java.util.Date" />
+		<property name="nextFetch" column="NEXT_FETCH"
+			type="java.util.Date" />
+
+		<many-to-one name="pageCrawler"
+			class="br.ufrj.htmlbase.PageCrawler" column="id_page_crawler"
+			not-null="false" lazy="false" />
+
+	</class>
+
 </hibernate-mapping>
 <!-- 
-<hibernate-mapping package="br.ufrj.htmlbase">
-
-    <class name="OutputLink" table="LINKS">
- 
-        <id name="id" column="ID" >
- 			<generator class="assigned" />
- 		</id>
-         
-        <property name="idPage" column="IDPAGE" type="long" />
-        <property name="url" column="URL" type="java.lang.String" />
-        <property name="domain" column="DOMAIN" type="java.lang.String" />
-        <property name="isVisited" column="IS_VISITED" type="boolean" />
-        
-        
-
-    </class>
-    
-</hibernate-mapping>
+	<hibernate-mapping package="br.ufrj.htmlbase">
+	
+	<class name="OutputLink" table="LINKS">
+	
+	<id name="id" column="ID" >
+	<generator class="assigned" />
+	</id>
+	
+	<property name="idPage" column="IDPAGE" type="long" />
+	<property name="url" column="URL" type="java.lang.String" />
+	<property name="domain" column="DOMAIN" type="java.lang.String" />
+	<property name="isVisited" column="IS_VISITED" type="boolean" />
+	
+	
+	
+	</class>
+	
+	</hibernate-mapping>
 -->
