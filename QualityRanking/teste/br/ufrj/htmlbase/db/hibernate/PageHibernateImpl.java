@@ -95,7 +95,8 @@ public class PageHibernateImpl implements PageBD {
 			link.setLastModified(date);
 			link.setNextFetch(date);
 			link.setSeed(true);
-			link.setIdTest(HtmlBase.generatePageId(link));
+			long id = HtmlBase.generatePageId(link);
+			link.setIdTest(id);
 
 			List result = ss.createCriteria(OutputLinkCrawler.class).add(
 					Restrictions.eq("idTest", link.getIdTest())).add(
@@ -171,6 +172,7 @@ public class PageHibernateImpl implements PageBD {
 			tx.commit();
 			HibernateSessionFactory.closeSession();
 		}
+
 	}
 
 	public synchronized Collection getLinksTop(int top) throws SQLException {
@@ -503,7 +505,9 @@ public class PageHibernateImpl implements PageBD {
 		String queryString = String.format("SELECT count(*) FROM %s;",
 				tableName);
 		SQLQuery sqlQuery = ss.createSQLQuery(queryString);
-		return ((BigInteger) sqlQuery.uniqueResult()).intValue();
+		int count = ((BigInteger) sqlQuery.uniqueResult()).intValue();
+		HibernateSessionFactory.closeSession();
+		return count;
 	}
 
 	public long maxPropertyValue(String tableName, String propertyName) {
@@ -513,7 +517,9 @@ public class PageHibernateImpl implements PageBD {
 		String queryString = String.format("SELECT max(%s) FROM %s;",
 				propertyName, tableName);
 		SQLQuery sqlQuery = ss.createSQLQuery(queryString);
-		return ((BigInteger) sqlQuery.uniqueResult()).longValue();
+		long max = ((BigInteger) sqlQuery.uniqueResult()).longValue();
+		HibernateSessionFactory.closeSession();
+		return max;
 	}
 
 	public static List<OutputLinkCrawler> loadFathers(OutputLinkCrawler link) {
@@ -531,6 +537,8 @@ public class PageHibernateImpl implements PageBD {
 				tx.rollback();
 			throw he;
 		}
+
+		HibernateSessionFactory.closeSession();
 		return links;
 	}
 
