@@ -35,11 +35,11 @@ import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.SeedDocument;
 import br.ufrj.cos.db.HibernateDAO;
-import br.ufrj.htmlbase.HtmlBase;
 import br.ufrj.htmlbase.OutputLinkCrawler;
 import br.ufrj.htmlbase.PageCrawler;
 import br.ufrj.htmlbase.db.PageBD;
 import br.ufrj.htmlbase.extractor.metadata.MetadataCrawler;
+import br.ufrj.htmlbase.io.MD5Hash;
 
 /**
  * 
@@ -95,7 +95,7 @@ public class PageHibernateImpl implements PageBD {
 			link.setLastModified(date);
 			link.setNextFetch(date);
 			link.setSeed(true);
-			long id = HtmlBase.generatePageId(link);
+			long id = PageHibernateImpl.generatePageId(link);
 			link.setIdTest(id);
 
 			List result = ss.createCriteria(OutputLinkCrawler.class).add(
@@ -115,6 +115,13 @@ public class PageHibernateImpl implements PageBD {
 				+ " Links Sementes persistidos com sucesso : "
 				+ seedDocuments.size());
 
+	}
+
+	public static long generatePageId(OutputLinkCrawler link)
+			throws IOException {
+		MD5Hash md5 = MD5Hash.digest(link.getUrl());
+		long id = md5.halfDigest();
+		return id;
 	}
 
 	/**
@@ -504,7 +511,11 @@ public class PageHibernateImpl implements PageBD {
 		String queryString = String.format("SELECT count(*) FROM %s;",
 				tableName);
 		SQLQuery sqlQuery = ss.createSQLQuery(queryString);
-		int count = ((BigInteger) sqlQuery.uniqueResult()).intValue();
+		Object objCount = sqlQuery.uniqueResult();
+		int count = 0;
+		if (objCount != null) {
+			count = ((BigInteger) objCount).intValue();
+		}
 		HibernateSessionFactory.closeSession();
 		return count;
 	}
@@ -516,7 +527,10 @@ public class PageHibernateImpl implements PageBD {
 		String queryString = String.format("SELECT max(%s) FROM %s;",
 				propertyName, tableName);
 		SQLQuery sqlQuery = ss.createSQLQuery(queryString);
-		long max = ((BigInteger) sqlQuery.uniqueResult()).longValue();
+		Object objMax = sqlQuery.uniqueResult();
+		long max = 0;
+		if (objMax != null)
+			max = ((BigInteger) objMax).longValue();
 		HibernateSessionFactory.closeSession();
 		return max;
 	}

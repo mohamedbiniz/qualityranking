@@ -229,7 +229,7 @@ public class PageCrawler {
 
 	}
 
-	public boolean process() {
+	public boolean process() throws IOException {
 
 		if (isAllOk()) {
 
@@ -252,7 +252,7 @@ public class PageCrawler {
 		return getContentExtracted(path);
 	}
 
-	private Collection processLinks() {
+	private Collection processLinks() throws IOException {
 
 		return getLinks(path, urlPath.getHost(), idDataSet);
 	}

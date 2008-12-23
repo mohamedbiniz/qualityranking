@@ -29,7 +29,7 @@ public class PageTest extends TestCase {
 		this.dataSet = dataSet;
 	}
 
-	public void testGetPage() {
+	public void testGetPage() throws IOException {
 
 		int numeroMaximoPaginas = HtmlBaseConfProvider.getInstance()
 				.getNumeroMaximoPaginas(dataSet);
