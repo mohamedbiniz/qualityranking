@@ -98,8 +98,8 @@ public class PageHibernateImpl implements PageBD {
 			link.setIdTest(HtmlBase.generatePageId(link));
 
 			List result = ss.createCriteria(OutputLinkCrawler.class).add(
-					Expression.eq("idTest", link.getIdTest())).add(
-					Expression.eq("idPage", link.getIdPage())).list();
+					Restrictions.eq("idTest", link.getIdTest())).add(
+					Restrictions.eq("idPage", link.getIdPage())).list();
 
 			if (result.isEmpty()) {
 				ss.save(link);
