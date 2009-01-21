@@ -231,8 +231,6 @@ public class PopulateDB {
 				DataSet.SEARCH_QUALITYFUZZY);
 
 		createSeedDocument(dataSet, keyWords, keyWords);
-		// createSeedDocument(dataSet, "economist", "economist");
-		// createSeedDocument(dataSet, "economy", "economy");
 
 		createQualityDimensionsWeights();
 
