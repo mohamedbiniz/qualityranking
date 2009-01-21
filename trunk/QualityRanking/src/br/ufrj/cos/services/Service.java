@@ -263,7 +263,7 @@ public abstract class Service extends Thread {
 				documentQualityDimension = new DocumentQualityDimension();
 				documentQualityDimension.setDocument(document);
 				documentQualityDimension.setQualityDimension(qualityDimension);
-				int o = 0;
+
 				double score = 0;
 				String code = qualityDimension.getCodeStr();
 				if (code.equals(QualityDimension.COM)) {
