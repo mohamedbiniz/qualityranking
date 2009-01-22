@@ -536,7 +536,7 @@ BODY;
 	foreach ($linguistic_variables as $linguistic_variable) {
 		$instructions_html .= "<li>{$linguistic_variable['name']}</li><em>{$linguistic_variable['description']}</em>";
 	}
-	$instructions_html .= "<p>Por fim, você informará se a página é relevante para o assunto ({$experiment['subject']}).</p><p>Se você tiver quaisquer dúvidas, por favor, envie um e-mail para <strong>{$experiment['researcher_email']}</strong>.</p></ol>";
+	$instructions_html .= "<p>Por fim, você informará se a página é relevante para o assunto ({$experiment['subject']}).</p><p>Se você tiver quaisquer dúvidas, por favor, envie um e-mail para <strong>{$experiment['researcher_email']}</strong> com cópia para <strong>bernardo.wpacheco@gmail.com</strong>.</p></ol>";
 	
 	// Query and document evaluation
 	$answers = array('' => 'Sem resposta', '1' => 'Sim', '0' => 'Não');
