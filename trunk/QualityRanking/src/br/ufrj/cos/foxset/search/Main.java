@@ -20,7 +20,7 @@ public class Main {
 				.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 						"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
 
-		for (int engine = 0; engine < 1; engine++) {
+		for (int engine = 0; engine < 3; engine++) {
 			SearchEngine se = null;
 			if (engine == 0) {
 				se = new GoogleSearch();
@@ -33,8 +33,9 @@ public class Main {
 				se = new LiveSearch();
 				se.setAppID("6F4477E8615644FDA81A62E15217B400B121E0A4");
 			}
-			se.setMaxResults(10);
-			List<Result> results = se.search("heraldo");
+			se.setMaxResults(600);
+			List<Result> results = se.search("relational database");
+			System.out.println(results.size());
 			for (Result r : results) {
 				System.out.println("Engine: "
 						+ String.valueOf(se.getSearchEngineCode()));

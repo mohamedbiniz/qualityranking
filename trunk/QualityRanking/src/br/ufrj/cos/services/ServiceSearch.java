@@ -71,7 +71,7 @@ public abstract class ServiceSearch extends Service {
 		prepareDataSets(dataSet, dataSetChild);
 
 		String keyWords = getKeywords(dataSet);
-		for (int i = 0; i < se.length; i++) {
+		for (int i = 1; i < se.length; i++) {
 			searchAndPersistPages(dataSet, se[i], keyWords);
 		}
 		mathDocumentAndQualityDimension(dataSet);

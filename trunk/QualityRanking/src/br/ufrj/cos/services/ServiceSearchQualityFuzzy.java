@@ -13,7 +13,6 @@ import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.bean.QualityDimensionWeight;
 import br.ufrj.cos.db.HelperAcessDB;
 import br.ufrj.cos.db.PopulateDB;
-import br.ufrj.cos.foxset.search.GoogleSearch;
 import br.ufrj.cos.foxset.search.LiveSearch;
 import br.ufrj.cos.foxset.search.YahooSearch;
 
@@ -49,9 +48,9 @@ public class ServiceSearchQualityFuzzy extends ServiceSearch {
 		}
 
 		HashMap<String, String> variaveisLinguisticas = new HashMap<String, String>();
-		GoogleSearch googleSearch = new GoogleSearch();
-		variaveisLinguisticas.put(googleSearch.getSearchEngineCode().substring(
-				0, 3), googleSearch.getSearchEngineCode());
+		// GoogleSearch googleSearch = new GoogleSearch();
+		// variaveisLinguisticas.put(googleSearch.getSearchEngineCode().substring(
+		// 0, 3), googleSearch.getSearchEngineCode());
 
 		YahooSearch yahooSearch = new YahooSearch();
 		variaveisLinguisticas.put(yahooSearch.getSearchEngineCode().substring(
