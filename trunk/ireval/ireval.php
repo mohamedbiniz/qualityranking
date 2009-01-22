@@ -308,7 +308,13 @@ BODY;
 				FROM linguistic_variable
 				WHERE experiment_id = {$experiment_id}");
 			if (!$result) {
-				error('Falha ao associar documento a avaliador.');
+				error('Falha ao associar avaliação de documento a avaliador.');
+			}
+			$result = execute("
+				INSERT INTO document_relevancy (document_id, evaluator_id)
+				VALUES ({$doc['id']}, {$evaluator['id']})");
+			if (!$result) {
+				error('Falha ao associar relevância de documento a avaliador.');
 			}
 			$result = execute("
 				INSERT INTO query_evaluation (document_id, query_id, evaluator_id)
@@ -347,7 +353,7 @@ BODY;
 	if ($experiment === FALSE) {
 		error('Experimento inexistente. Por favor, entre em contato com o pesquisador responsável.');
 	}
-	$evaluator = first("SELECT id FROM evaluator WHERE experiment_id = {$experiment_id} AND email = '{$email}'");
+	$evaluator = first("SELECT * FROM evaluator WHERE experiment_id = {$experiment_id} AND email = '{$email}'");
 	if ($evaluator === FALSE) {
 		error("Você não está cadastrado como avaliador para o experimento. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
 	}
@@ -356,6 +362,21 @@ BODY;
 	}
 	$title = $header = "Avaliação de páginas - {$experiment['subject']}";
 	if (isset($_POST['docs'])) {
+		if (!isset($_POST['name']) || !isset($_POST['education_option_id']) || !isset($_POST['activity_id'])) {
+			error("Falha ao salvar dados do avaliador. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
+		}
+		$name = clean($_POST['name']);
+		$education_option_id = clean($_POST['education_option_id']);
+		if ($education_option_id == '') $education_option_id = 'NULL';
+		$activity_id = clean($_POST['activity_id']);
+		if ($activity_id == '') $activity_id = 'NULL';		
+		$result = execute("
+			UPDATE evaluator
+			SET name = '{$name}', education_option_id = {$education_option_id}, activity_id = {$activity_id}
+			WHERE experiment_id = {$experiment_id} AND id = {$evaluator['id']}");
+		if (!$result) {
+			error("Falha ao salvar dados do avaliador. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
+		}
 		if (!isset($_POST['knowledge_rating_id'])) {
 			error("Falha ao salvar auto-avaliação. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
 		}
@@ -378,7 +399,7 @@ BODY;
 					SET relevant = {$answer}
 					WHERE document_id = {$doc_id} AND query_id = {$query_id} AND evaluator_id = {$evaluator['id']}");
 				if (!$result) {
-					error("Falha ao salvar auto-avaliação. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
+					error("Falha ao salvar avaliação. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
 				}
 			}
 			foreach ($doc['linguistic_variables'] as $linguistic_variable_id => $linguistic_term_id) {
@@ -390,17 +411,34 @@ BODY;
 					SET linguistic_term_id = {$linguistic_term_id}
 					WHERE document_id = {$doc_id} AND evaluator_id = {$evaluator['id']} AND linguistic_variable_id = {$linguistic_variable_id}");
 				if (!$result) {
-					error("Falha ao salvar auto-avaliação. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
+					error("Falha ao salvar avaliação. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
 				}
+			}
+			$relevant = clean($doc['relevant']);
+			if ($relevant == '') $relevant = 'NULL';
+			$result = execute("
+					UPDATE document_relevancy
+					SET relevant = {$relevant}
+					WHERE document_id = {$doc_id} AND evaluator_id = {$evaluator['id']}");
+			if (!$result) {
+				error("Falha ao salvar avaliação. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
 			}
 		}
 		$nulls = query("
+			SELECT 1 FROM evaluator
+			WHERE experiment_id = {$experiment_id} AND id = {$evaluator['id']}
+			AND (name IS NULL OR education_option_id IS NULL OR activity_id IS NULL)
+			UNION
 			SELECT 1 FROM experiment_evaluation
 			WHERE experiment_id = {$experiment_id} AND evaluator_id = {$evaluator['id']} AND knowledge_rating_id IS NULL
 			UNION
 			SELECT 1 FROM document_evaluation AS de
 			INNER JOIN document AS d ON d.id = de.document_id
 			WHERE d.experiment_id = {$experiment_id} AND de.evaluator_id = {$evaluator['id']} AND de.linguistic_term_id IS NULL
+			UNION
+			SELECT 1 FROM document_relevancy AS dr
+			INNER JOIN document AS d ON d.id = dr.document_id
+			WHERE d.experiment_id = {$experiment_id} AND dr.evaluator_id = {$evaluator['id']} AND dr.relevant IS NULL
 			UNION
 			SELECT 1 FROM query_evaluation AS qe
 			INNER JOIN document AS d ON d.id = qe.document_id
@@ -423,7 +461,28 @@ BODY;
 		}
 		success();
 	}
-	
+
+	// Evaluator
+	$education_options = query("SELECT * FROM education_option WHERE experiment_id = {$experiment_id} ORDER BY id");
+	$activities = query("SELECT * FROM activity WHERE experiment_id = {$experiment_id} ORDER BY id");
+	if ($evaluator === FALSE|| empty($education_options) || empty($activities)) {
+		error("Falha ao carregar dados do avaliador. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
+	}
+	array_unshift($education_options, array('id' => '', 'name' => 'Sem resposta'));
+	array_unshift($activities, array('id' => '', 'name' => 'Sem resposta'));
+	$evaluator_html = '<h2>Sobre você</h2><p>Nome: <input type="text" name="name" value="' . $evaluator['name'] . '" /></p>';
+	$evaluator_html .= '<p>Escolaridade: <select name="education_option_id">';
+	foreach ($education_options as $education_option) {
+		$selected = $evaluator['education_option_id'] === $education_option['id'] ? ' selected="selected"' : '';
+		$evaluator_html .= '<option value="' . $education_option['id'] . '"' . $selected . '>' . $education_option['name'] . '</option>';
+	}
+	$evaluator_html .= '</select></p>';
+	$evaluator_html .= '<p>Atividade: <select name="activity_id">';
+	foreach ($activities as $activity) {
+		$selected = $evaluator['activity_id'] === $activity['id'] ? ' selected="selected"' : '';
+		$evaluator_html .= '<option value="' . $activity['id'] . '"' . $selected . '>' . $activity['name'] . '</option>';
+	}
+	$evaluator_html .= '</select></p>';	
 	// Experiment evaluation
 	$experiment_evaluation = first("
 		SELECT * FROM experiment_evaluation
@@ -441,9 +500,10 @@ BODY;
 	$ratings_html .= '</select>';
 	// Queries
 	$docs = query("
-		SELECT DISTINCT d.id, d.url
+		SELECT DISTINCT d.id, d.url, dr.relevant
 		FROM document_evaluation AS de
 		INNER JOIN document AS d ON d.id = de.document_id
+		INNER JOIN document_relevancy AS dr ON dr.document_id = de.document_id AND dr.evaluator_id = de.evaluator_id
 		WHERE d.experiment_id = {$experiment_id} AND de.evaluator_id = {$evaluator['id']}
 		ORDER BY d.id");
 	$doc_count = count($docs);
@@ -457,7 +517,7 @@ BODY;
 		error("Falha ao carregar avaliação. Por favor, entre em contato com o pesquisador responsável no e-mail {$experiment['researcher_email']}.");
 	}
 	// Instructions
-	$instructions_html = "<h2>Avaliação das páginas</h2>Você será responsável por avaliar <strong>{$doc_count} páginas</strong>.
+	$instructions_html = "<h2>Avaliação das páginas</h2>Você será responsável por avaliar <strong>{$doc_count} páginas</strong> no contexto de {$experiment['subject']}.
 		Para <strong>cada página</strong> apresentada, você deve: <ol><li>Visitá-la clicando no link fornecido (você pode mantê-la aberta durante a avaliação e consultá-la sempre que preciso).</li>
 		<p>Em seguida, você responderá às seguintes <strong>{$query_count} perguntas</strong>, escolhendo <strong>Sim</strong> ou <strong>Não</strong>:</p>";
 	foreach ($queries as $query) {
@@ -472,11 +532,12 @@ BODY;
 		}
 		$linguistic_term_names .= "<strong>{$linguistic_terms[$i]['name']}</strong>";
 	}
-	$instructions_html .= "<p>Por fim, você avaliará <strong>{$linguistic_variable_count} atributos</strong> de qualidade da página, qualificando cada atributo como {$linguistic_term_names}:</p>";
+	$instructions_html .= "<p>Depois, você avaliará <strong>{$linguistic_variable_count} atributos</strong> de qualidade da página, qualificando cada atributo como {$linguistic_term_names}:</p>";
 	foreach ($linguistic_variables as $linguistic_variable) {
 		$instructions_html .= "<li>{$linguistic_variable['name']}</li><em>{$linguistic_variable['description']}</em>";
 	}
-	$instructions_html .= '</ol>';
+	$instructions_html .= "<p>Por fim, você informará se a página é relevante para o assunto ({$experiment['subject']}).</p><p>Se você tiver quaisquer dúvidas, por favor, envie um e-mail para <strong>{$experiment['researcher_email']}</strong>.</p></ol>";
+	
 	// Query and document evaluation
 	$answers = array('' => 'Sem resposta', '1' => 'Sim', '0' => 'Não');
 	array_unshift($linguistic_terms, array('id' => '', 'name' => 'Sem resposta'));
@@ -521,6 +582,12 @@ BODY;
 			}
 			$docs_html .= '</select></li>';
 		}
+		$docs_html .= '<p>A página é relevante para o assunto (' . $experiment['subject'] . ')? <select name="docs[' . $doc['id'] . '][relevant]">';
+		foreach ($answers as $value => $answer) {
+			$selected = strcmp($doc['relevant'], $value) == 0 ? ' selected="selected"' : '';
+			$docs_html .= '<option value="' . $value . '"' . $selected . '>' . $answer . '</option>';
+		}
+		$docs_html .= '</select></p>';
 		$docs_html .= '</ol>';
 	}
 	$body = <<<BODY
@@ -528,6 +595,7 @@ BODY;
 		<input type="hidden" name="experiment_id" value="{$experiment_id}" />
 		<input type="hidden" name="email" value="{$email}" />
 		Bem-vindo, <strong>{$email}</strong>! Obrigado por aceitar participar da nossa pesquisa!
+		{$evaluator_html}
 		{$ratings_html}
 		{$instructions_html}
 		{$docs_html}

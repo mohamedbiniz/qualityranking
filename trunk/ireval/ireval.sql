@@ -60,6 +60,44 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
+-- Table `ireval`.`education_option`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ireval`.`education_option` ;
+
+CREATE  TABLE IF NOT EXISTS `ireval`.`education_option` (
+  `id` INT NOT NULL AUTO_INCREMENT ,
+  `experiment_id` INT NOT NULL ,
+  `name` VARCHAR(50) NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX fk_experiment_education_option (`experiment_id` ASC) ,
+  CONSTRAINT `fk_experiment_education_option`
+    FOREIGN KEY (`experiment_id` )
+    REFERENCES `ireval`.`experiment` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `ireval`.`activity`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ireval`.`activity` ;
+
+CREATE  TABLE IF NOT EXISTS `ireval`.`activity` (
+  `id` INT NOT NULL AUTO_INCREMENT ,
+  `experiment_id` INT NOT NULL ,
+  `name` VARCHAR(50) NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX fk_experiment_activity (`experiment_id` ASC) ,
+  CONSTRAINT `fk_experiment_activity`
+    FOREIGN KEY (`experiment_id` )
+    REFERENCES `ireval`.`experiment` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `ireval`.`evaluator`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ireval`.`evaluator` ;
@@ -68,11 +106,26 @@ CREATE  TABLE IF NOT EXISTS `ireval`.`evaluator` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `experiment_id` INT NOT NULL ,
   `email` VARCHAR(255) NOT NULL ,
+  `name` VARCHAR(255) NULL ,
+  `education_option_id` INT NULL ,
+  `activity_id` INT NULL ,
   PRIMARY KEY (`id`) ,
   INDEX fk_experiment_evaluator (`experiment_id` ASC) ,
+  INDEX fk_education_option_evaluator (`education_option_id` ASC) ,
+  INDEX fk_activity_evaluator (`activity_id` ASC) ,
   CONSTRAINT `fk_experiment_evaluator`
     FOREIGN KEY (`experiment_id` )
     REFERENCES `ireval`.`experiment` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_education_option_evaluator`
+    FOREIGN KEY (`education_option_id` )
+    REFERENCES `ireval`.`education_option` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_activity_evaluator`
+    FOREIGN KEY (`activity_id` )
+    REFERENCES `ireval`.`activity` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -226,6 +279,31 @@ CREATE  TABLE IF NOT EXISTS `ireval`.`query_evaluation` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_evaluator_query_evaluation`
+    FOREIGN KEY (`evaluator_id` )
+    REFERENCES `ireval`.`evaluator` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `ireval`.`document_relevancy`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ireval`.`document_relevancy` ;
+
+CREATE  TABLE IF NOT EXISTS `ireval`.`document_relevancy` (
+  `document_id` INT NOT NULL ,
+  `evaluator_id` INT NOT NULL ,
+  `relevant` BOOLEAN NULL ,
+  PRIMARY KEY (`document_id`, `evaluator_id`) ,
+  INDEX fk_document_document_relevancy (`document_id` ASC) ,
+  INDEX fk_evaluator_document_relevancy (`evaluator_id` ASC) ,
+  CONSTRAINT `fk_document_document_relevancy`
+    FOREIGN KEY (`document_id` )
+    REFERENCES `ireval`.`document` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_evaluator_document_relevancy`
     FOREIGN KEY (`evaluator_id` )
     REFERENCES `ireval`.`evaluator` (`id` )
     ON DELETE NO ACTION
