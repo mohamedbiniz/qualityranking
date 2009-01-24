@@ -7,6 +7,8 @@ package br.ufrj.cos.foxset.search;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +22,7 @@ public class GoogleWebSearch extends SearchEngine {
 	public List<Result> search(String query) throws SearchException {
 		try {
 			List<Result> results = new ArrayList<Result>(getMaxResults());
+			Set<String> urls = new TreeSet<String>();
 			int start = 0;
 			boolean hasNext = false;
 			do {
@@ -41,16 +44,20 @@ public class GoogleWebSearch extends SearchEngine {
 						+ Pattern.quote("<br>"));
 				Matcher m = p.matcher((String) wf.getContent());
 				while (m.find()) {
-					Result r = new Result();
-					r.setTitle(m.group(2).replaceAll("\\<(.+?)\\>", ""));
-					r.setURL(m.group(1));
-					r.setSummary(m.group(3).replaceAll("\\<(.+?)\\>", ""));
-					results.add(r);
-					// Fabrício, pode tirar esse print!!
-					// System.out.println(results.size() + ": " + r.getURL());
-					if (results.size() == getMaxResults()) {
-						hasNext = false;
-						break;
+					String url = m.group(1);
+					if (urls.add(url)) {
+						Result r = new Result();
+						r.setTitle(m.group(2).replaceAll("\\<(.+?)\\>", ""));
+						r.setURL(url);
+						r.setSummary(m.group(3).replaceAll("\\<(.+?)\\>", ""));
+						results.add(r);
+						// Fabrício, pode tirar esse print!!
+						// System.out.println(results.size() + ": " +
+						// r.getURL());
+						if (results.size() == getMaxResults()) {
+							hasNext = false;
+							break;
+						}
 					}
 				}
 			} while (hasNext);
