@@ -52,8 +52,7 @@ public class GoogleWebSearch extends SearchEngine {
 						r.setSummary(m.group(3).replaceAll("\\<(.+?)\\>", ""));
 						results.add(r);
 						// Fabrício, pode tirar esse print!!
-						// System.out.println(results.size() + ": " +
-						// r.getURL());
+						System.out.println(results.size() + ": " + r.getURL());
 						if (results.size() == getMaxResults()) {
 							hasNext = false;
 							break;
