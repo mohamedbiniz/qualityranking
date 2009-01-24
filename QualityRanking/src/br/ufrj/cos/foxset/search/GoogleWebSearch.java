@@ -6,19 +6,9 @@ package br.ufrj.cos.foxset.search;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.soap.SOAPElement;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * 
@@ -34,7 +24,8 @@ public class GoogleWebSearch extends SearchEngine {
 			boolean hasNext = false;
 			do {
 				WebFile wf = new WebFile("http://www.google.com/search?q="
-						+ URLEncoder.encode(query, "utf-8") + "&hl=en&start=" + start);
+						+ URLEncoder.encode(query, "utf-8") + "&hl=en&start="
+						+ start);
 				start += 10;
 				Pattern pNext = Pattern.compile(Pattern
 						.quote("<img src=\"nav_next.gif\""));
@@ -56,7 +47,7 @@ public class GoogleWebSearch extends SearchEngine {
 					r.setSummary(m.group(3).replaceAll("\\<(.+?)\\>", ""));
 					results.add(r);
 					// Fabrício, pode tirar esse print!!
-					System.out.println(results.size() + ": " + r.getURL());
+					// System.out.println(results.size() + ": " + r.getURL());
 					if (results.size() == getMaxResults()) {
 						hasNext = false;
 						break;

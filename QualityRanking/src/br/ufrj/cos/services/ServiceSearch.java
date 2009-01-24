@@ -25,7 +25,7 @@ import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.bean.SeedDocument;
 import br.ufrj.cos.db.HelperAcessDB;
 import br.ufrj.cos.db.PopulateDB;
-import br.ufrj.cos.foxset.search.GoogleSearch;
+import br.ufrj.cos.foxset.search.GoogleWebSearch;
 import br.ufrj.cos.foxset.search.LiveSearch;
 import br.ufrj.cos.foxset.search.SearchEngine;
 import br.ufrj.cos.foxset.search.WebFile;
@@ -47,7 +47,7 @@ public abstract class ServiceSearch extends Service {
 				dataSetMethod, PAUSA_SEARCH);
 		se = new SearchEngine[3];
 
-		se[0] = new GoogleSearch();
+		se[0] = new GoogleWebSearch();
 		se[0].setAppID("F4ZdLRNQFHKUvggiU+9+60sA8vc3fohb");
 
 		se[1] = new YahooSearch();
@@ -71,7 +71,7 @@ public abstract class ServiceSearch extends Service {
 		prepareDataSets(dataSet, dataSetChild);
 
 		String keyWords = getKeywords(dataSet);
-		for (int i = 1; i < se.length; i++) {
+		for (int i = 0; i < se.length; i++) {
 			searchAndPersistPages(dataSet, se[i], keyWords);
 		}
 		mathDocumentAndQualityDimension(dataSet);

@@ -10,7 +10,7 @@ import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.bean.QualityDimensionWeight;
 import br.ufrj.cos.db.HelperAcessDB;
 import br.ufrj.cos.db.PopulateDB;
-import br.ufrj.cos.foxset.search.GoogleSearch;
+import br.ufrj.cos.foxset.search.GoogleWebSearch;
 import br.ufrj.cos.foxset.search.LiveSearch;
 import br.ufrj.cos.foxset.search.YahooSearch;
 
@@ -28,7 +28,7 @@ public class ServiceSearchPofN extends ServiceSearch {
 		QualityDimensionWeight qualityDimensionWeight = null;
 
 		HashMap<String, String> variaveisLinguisticas = new HashMap<String, String>();
-		GoogleSearch googleSearch = new GoogleSearch();
+		GoogleWebSearch googleSearch = new GoogleWebSearch();
 		variaveisLinguisticas.put(googleSearch.getSearchEngineCode().substring(
 				0, 3), googleSearch.getSearchEngineCode());
 
