@@ -23,7 +23,7 @@ public class Main {
 		for (int engine = 0; engine < 3; engine++) {
 			SearchEngine se = null;
 			if (engine == 0) {
-				se = new GoogleSearch();
+				se = new GoogleWebSearch();
 				se.setAppID("F4ZdLRNQFHKUvggiU+9+60sA8vc3fohb");
 			} else if (engine == 1) {
 				se = new YahooSearch();
