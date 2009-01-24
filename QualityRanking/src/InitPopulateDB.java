@@ -17,7 +17,7 @@ public class InitPopulateDB {
 
 			// Descomentar abaixo para inicializar o BD a fim de permitir
 			// sistema entrar em produção de modo correto
-			PopulateDB.initFoxSet();
+			// PopulateDB.initFoxSet();
 
 			// Descomentar abaixo para testar o pOfN (contexto economia)
 			// PopulateDB.popularSearchPofN(5, "relational database", new
@@ -25,7 +25,7 @@ public class InitPopulateDB {
 
 			// Descomentar abaixo para testar o quality fuzzy (contexto
 			// relational database)
-			// PopulateDB.popularSearchQF(600, "relational database");
+			PopulateDB.popularSearchQF(600, "relational database");
 
 			// Descomentar abaixo para testar o crawler com contexto de economia
 			// PopulateDB.popularTradicionalEconomia();
