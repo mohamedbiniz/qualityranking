@@ -180,7 +180,7 @@ public abstract class ServiceSearch extends Service {
 				dataSet, se.getSearchEngineCode());
 
 		int position = 0;
-
+		// insertFirst(dataSet, results, qualityDimension);
 		for (Result result : results) {
 			System.gc();
 			Document document = new Document();
@@ -201,6 +201,27 @@ public abstract class ServiceSearch extends Service {
 			updateDocumentLinks(document);
 			position++;
 		}
+	}
+
+	private void insertFirst(DataSet dataSet, List<Result> results,
+			QualityDimension qualityDimension) throws Exception {
+		System.gc();
+		Document document = new Document();
+		document.setDataSet(dataSet);
+		document.setUrl("http://www.shlomifish.org/lecture/PostgreSQL/");
+		Document documentPersisted = HelperAcessDB
+				.getPersistedDocument(document);
+		if (documentPersisted == null) {
+			getDao().create(document);
+			extractMetadatas(document);
+		} else {
+			document = documentPersisted;
+		}
+		if (qualityDimension != null) {
+			updateSearchRankingScore(document, qualityDimension,
+					results.size(), 0);
+		}
+		updateDocumentLinks(document);
 	}
 
 	private void updateDocumentLinks(Document document) throws Exception {
@@ -260,7 +281,11 @@ public abstract class ServiceSearch extends Service {
 		score = ((double) sizeResults - (double) position)
 				/ ((double) sizeResults);
 		documentQualityDimension.setScore(new BigDecimal(score));
-		getDao().create(documentQualityDimension);
+		try {
+			getDao().create(documentQualityDimension);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private String getKeywords(DataSet dataSet) {

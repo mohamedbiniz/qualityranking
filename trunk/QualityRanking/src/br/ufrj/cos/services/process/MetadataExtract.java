@@ -6,6 +6,7 @@ package br.ufrj.cos.services.process;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
@@ -42,7 +43,17 @@ public class MetadataExtract {
 
 		connection = (HttpURLConnection) getUrl().openConnection();
 		connection.setUseCaches(false);
-
+		try {
+			connection.getContent();
+		} catch (SocketException se) {
+			System.err.println(String.format(
+					"Não foi possível capturar o conteúdo da url: %s",
+					getUrlPath()));
+			connection.disconnect();
+			return listMetadatas;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		for (MetadataType metadataType : metadataTypes) {
 			byte[] value = null;
 			try {
