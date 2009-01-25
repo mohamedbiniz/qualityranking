@@ -52,7 +52,11 @@ public class MetadataExtract {
 			connection.disconnect();
 			return listMetadatas;
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out
+					.println(String
+							.format(
+									"WARNING: Provavelmente não será possível extrair metadados da url: %s",
+									getUrlPath()));
 		}
 		for (MetadataType metadataType : metadataTypes) {
 			byte[] value = null;

@@ -531,7 +531,7 @@ public abstract class Service extends Thread {
 		return diffDays;
 	}
 
-	protected void fuzzy(DataSet dataSet) throws Exception {
+	public static void fuzzy(DataSet dataSet) throws Exception {
 		Collection<ContextQualityDimensionWeight> listCQDWeights = HelperAcessDB
 				.loadContextQualityDimensionWeights(dataSet);
 
@@ -541,6 +541,9 @@ public abstract class Service extends Thread {
 
 		Collection<Document> documents = HelperAcessDB.loadDocuments(dataSet);
 		for (Document document : documents) {
+
+			if (document.getScore() != null)
+				continue;
 
 			double[] qds = HelperAcessDB
 					.loadDocumentQualityDimensionScores(document);
@@ -565,8 +568,9 @@ public abstract class Service extends Thread {
 
 			}
 			document.setScore(new BigDecimal(documentScore));
-			getDao().update(document);
+			HibernateDAO.getInstance().update(document);
 		}
+
 	}
 
 	/**
