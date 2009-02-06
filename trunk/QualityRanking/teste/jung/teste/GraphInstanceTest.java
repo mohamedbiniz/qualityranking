@@ -43,7 +43,7 @@ public class GraphInstanceTest extends TestCase {
 		 * 
 		 */
 
-		Graph graph = graphInstance.load("pajek578.txt");
+		Graph graph = graphInstance.load("pajek18.txt");
 
 		graphInstance.displayGraph(graph);
 

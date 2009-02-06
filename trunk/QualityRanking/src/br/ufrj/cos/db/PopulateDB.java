@@ -69,9 +69,14 @@ public class PopulateDB {
 
 		Collaborator collaborator = createCollaboratorFoxSet();
 
-		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, qtdPag, DataSet.STATUS_SEARCH,
+		DataSet dataSet = createDataSet(collaborator, "relational_database",
+				"relational_database", language, qtdPag, DataSet.STATUS_SEARCH,
 				DataSet.CRAWLER_QUALITYFUZZY);
+
+		createSeedDocument(
+				dataSet,
+				"education-portal.com",
+				"http://education-portal.com/articles/Database_Administrator_Certification%3A_Certificate_Program_Overview.html");
 
 		createSeedDocument(dataSet, "redbook.cs.berkeley.edu",
 				"http://redbook.cs.berkeley.edu/redbook3/lecs.html");
@@ -83,11 +88,6 @@ public class PopulateDB {
 				dataSet,
 				"computer.howstuffworks.com",
 				"http://computer.howstuffworks.com/framed.htm?parent=relational-database.htm&url=http://www.edm2.com/0612/msql7.html");
-
-		createSeedDocument(
-				dataSet,
-				"education-portal.com",
-				"http://education-portal.com/articles/Database_Administrator_Certification%3A_Certificate_Program_Overview.html");
 
 		createSeedDocument(
 				dataSet,
@@ -119,8 +119,8 @@ public class PopulateDB {
 			} else if (code.equals(QualityDimension.TIM)) {
 				weight = 2;
 			}
-			qualityDimensionWeight = HelperAcessDB
-					.loadQualityDimensionWeight(weight);
+			qualityDimensionWeight = HelperAcessDB.findQualityDimensionWeights(
+					qualityDimension, null, weight).iterator().next();
 
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
@@ -136,24 +136,24 @@ public class PopulateDB {
 		Collaborator collaborator = createCollaboratorFoxSet();
 
 		DataSet dataSet = createDataSet(collaborator, "economy", "economy",
-				language, 60, DataSet.STATUS_SEARCH,
+				language, 20, DataSet.STATUS_SEARCH,
 				DataSet.CRAWLER_QUALITYFUZZY);
 
 		// http://www.economist.com
 		createSeedDocument(dataSet, "www.economist.com",
 				"http://www.economist.com/");
 
-		// http://www.economypedia.com/
-		createSeedDocument(dataSet, "www.economypedia.com",
-				"http://www.economypedia.com/");
-
-		// http://www.economywatch.com/
-		createSeedDocument(dataSet, "www.economywatch.com",
-				"http://www.economywatch.com/");
-
-		// http://www.economy.com/
-		createSeedDocument(dataSet, "www.economy.com",
-				"http://www.economy.com/");
+		// // http://www.economypedia.com/
+		// createSeedDocument(dataSet, "www.economypedia.com",
+		// "http://www.economypedia.com/");
+		//
+		// // http://www.economywatch.com/
+		// createSeedDocument(dataSet, "www.economywatch.com",
+		// "http://www.economywatch.com/");
+		//
+		// // http://www.economy.com/
+		// createSeedDocument(dataSet, "www.economy.com",
+		// "http://www.economy.com/");
 
 		// createSeedDocument(dataSet, "www.ufpi.br", "http://www.ufpi.br/");
 		//
@@ -192,8 +192,8 @@ public class PopulateDB {
 				weight = 2;
 			}
 
-			qualityDimensionWeight = HelperAcessDB
-					.loadQualityDimensionWeight(weight);
+			qualityDimensionWeight = HelperAcessDB.findQualityDimensionWeights(
+					qualityDimension, null, weight).iterator().next();
 
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
@@ -257,8 +257,8 @@ public class PopulateDB {
 			} else if (code.equals(QualityDimension.TIM)) {
 				weight = 2;
 			}
-			qualityDimensionWeight = HelperAcessDB
-					.loadQualityDimensionWeight(weight);
+			qualityDimensionWeight = HelperAcessDB.findQualityDimensionWeights(
+					qualityDimension, null, weight).iterator().next();
 
 			createContextQualityDimensionWeight(dataSet, qualityDimension,
 					qualityDimensionWeight);
@@ -335,7 +335,15 @@ public class PopulateDB {
 		qualityDimensionWeight = new QualityDimensionWeight();
 		qualityDimensionWeight.setDescription(description);
 		qualityDimensionWeight.setWeight(weight);
-		qualityDimensionWeight = (QualityDimensionWeight) create(qualityDimensionWeight);
+
+		QualityDimensionWeight qualityDimensionWeightOld = HelperAcessDB
+				.findQualityDimensionWeights(null, description, weight)
+				.iterator().next();
+		if (qualityDimensionWeightOld == null) {
+			qualityDimensionWeight = (QualityDimensionWeight) createOrUpdate(qualityDimensionWeight);
+		} else {
+			qualityDimensionWeight = qualityDimensionWeightOld;
+		}
 		return qualityDimensionWeight;
 	}
 
@@ -375,7 +383,7 @@ public class PopulateDB {
 		seedDocument.setDomain(domain);
 		seedDocument.setUrl(url);
 
-		seedDocument = (SeedDocument) create(seedDocument);
+		seedDocument = (SeedDocument) createOrUpdate(seedDocument);
 
 		return seedDocument;
 	}
@@ -467,8 +475,14 @@ public class PopulateDB {
 		collaborator.setPassword(password);
 		collaborator.setUsername(username);
 		collaborator.setActive(active);
+		Collaborator collaboratorOld = (Collaborator) getDao()
+				.loadByUniqueField(Collaborator.class, "username", username);
+		if (collaboratorOld == null) {
+			collaborator = (Collaborator) createOrUpdate(collaborator);
+		} else {
+			collaborator = collaboratorOld;
+		}
 
-		collaborator = (Collaborator) create(collaborator);
 		return collaborator;
 	}
 
@@ -479,7 +493,13 @@ public class PopulateDB {
 	public static Language createLanguage(String name) throws Exception {
 		Language language = new Language();
 		language.setName(name);
-		language = (Language) create(language);
+		Language languageOld = (Language) getDao().loadByUniqueField(
+				Language.class, "name", name);
+		if (languageOld == null) {
+			language = (Language) createOrUpdate(language);
+		} else {
+			language = languageOld;
+		}
 		return language;
 	}
 

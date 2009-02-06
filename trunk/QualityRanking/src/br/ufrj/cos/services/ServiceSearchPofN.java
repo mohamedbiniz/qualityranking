@@ -46,8 +46,8 @@ public class ServiceSearchPofN extends ServiceSearch {
 					variaveisLinguisticas, code);
 
 			int weight = 1;
-			qualityDimensionWeight = HelperAcessDB
-					.loadQualityDimensionWeight(weight);
+			qualityDimensionWeight = HelperAcessDB.findQualityDimensionWeights(
+					qualityDimension, null, weight).iterator().next();
 			PopulateDB.createContextQualityDimensionWeight(dataSet,
 					qualityDimension, qualityDimensionWeight);
 			PopulateDB.createContextQualityDimensionWeight(dataSetChild,

@@ -43,7 +43,7 @@ public abstract class ServiceSearch extends Service {
 	private SearchEngine[] se;
 
 	public ServiceSearch(char dataSetMethod) {
-		super(DataSet.STATUS_SEARCH, DataSet.STATUS_AUTOMATIC_EVALUATION,
+		super(DataSet.STATUS_SEARCH, DataSet.STATUS_MANUAL_EVALUATION,
 				dataSetMethod, PAUSA_SEARCH);
 		se = new SearchEngine[3];
 
@@ -80,7 +80,14 @@ public abstract class ServiceSearch extends Service {
 
 		exportDocumentsFromDataSetFather(dataSetChild);
 
+		toDiscardDataSet(dataSet);
+
 		applyFinalRanking(dataSetChild);
+
+	}
+
+	private void toDiscardDataSet(DataSet dataSet) {
+		// TODO Auto-generated method stub
 
 	}
 
