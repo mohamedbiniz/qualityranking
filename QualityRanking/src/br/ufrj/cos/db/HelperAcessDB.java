@@ -254,18 +254,24 @@ public class HelperAcessDB {
 		return list;
 	}
 
-	public static QualityDimensionWeight loadQualityDimensionWeight(int weight) {
-		QualityDimensionWeight qualityDimensionWeight = (QualityDimensionWeight) getDao()
-				.loadByUniqueField(QualityDimensionWeight.class, "weight",
-						new Integer(weight));
-		return qualityDimensionWeight;
+	public static List<QualityDimensionWeight> findQualityDimensionWeights(
+			QualityDimension qualityDimension, String description, int weight) {
+		Criteria criteria = getDao().getSession().createCriteria(
+				QualityDimensionWeight.class).add(
+				Restrictions.eq("weight", new Integer(weight)));
+		if (qualityDimension != null) {
+			// TODO
+		}
+		if (description != null) {
+			criteria.add(Restrictions.eq("description", description));
+		}
+		return criteria.list();
 
 	}
 
 	public static Collection<SeedDocument> loadSeedDocuments(DataSet dataSet) {
 		List<SeedDocument> list = (List<SeedDocument>) getDao().loadByField(
 				SeedDocument.class, "dataSet", dataSet);
-
 		return list;
 	}
 

@@ -68,7 +68,8 @@ public class ServiceSearchQualityFuzzy extends ServiceSearch {
 
 			int weight = 1;
 			QualityDimensionWeight qualityDimensionWeight = HelperAcessDB
-					.loadQualityDimensionWeight(weight);
+					.findQualityDimensionWeights(qualityDimension, null, weight)
+					.iterator().next();
 			PopulateDB.createContextQualityDimensionWeight(dataSet,
 					qualityDimension, qualityDimensionWeight);
 		}
