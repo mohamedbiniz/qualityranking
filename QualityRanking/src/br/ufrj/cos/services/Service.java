@@ -20,6 +20,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -553,6 +555,13 @@ public abstract class Service extends Thread {
 							contextWeights);
 				} catch (MatLabException mle) {
 					System.err.println(mle.getMessage());
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"Possivelmente o serviço do MatLab não está iniciado ou houve erro no mesmo!\n"
+											+ "É necessário (re)iniciar o serviço do MatLab antes de continuar!",
+									"Erro no MatLab",
+									JOptionPane.WARNING_MESSAGE);
 				}
 			}
 
