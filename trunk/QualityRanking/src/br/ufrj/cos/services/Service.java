@@ -40,6 +40,7 @@ import br.ufrj.cos.db.HibernateDAO;
 import br.ufrj.cos.enume.MetadataType;
 import br.ufrj.cos.matlab.JobSend;
 import br.ufrj.cos.matlab.client.MatClient;
+import br.ufrj.cos.matlab.exception.MatLabException;
 import br.ufrj.cos.services.process.MetadataExtract;
 import edu.uci.ics.jung.algorithms.importance.AbstractRanker;
 import edu.uci.ics.jung.algorithms.importance.HITS;
@@ -545,39 +546,46 @@ public abstract class Service extends Thread {
 			double[] qds = HelperAcessDB
 					.loadDocumentQualityDimensionScores(document);
 
-			double documentScore = fuzzy(qtdQualityDimensions, qds,
-					contextWeights);
+			Double documentScore = null;
+			while (documentScore == null) {
+				try {
+					documentScore = fuzzy(qtdQualityDimensions, qds,
+							contextWeights);
+				} catch (MatLabException mle) {
+					System.err.println(mle.getMessage());
+				}
+			}
 
-			document.setScore(new BigDecimal(documentScore));
+			document.setScore(new BigDecimal(documentScore.doubleValue()));
 			HibernateDAO.getInstance().update(document);
 		}
 
 	}
 
-	public static double fuzzy(int qtdQualityDimensions, double[] qds,
-			double[] contextWeights) {
+	public static Double fuzzy(int qtdQualityDimensions, double[] qds,
+			double[] contextWeights) throws MatLabException {
 		JobSend jobSend = new JobSend("fuzzyDocument", qtdQualityDimensions,
 				contextWeights, qds);
 		MatClient c = null;
 		Double documentScore = null;
-		while (documentScore == null) {
-			try {
-				c = MatClient.getInstance();
-				documentScore = c.createJob(jobSend);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (NumberFormatException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} finally {
-				if (documentScore == null) {
-					System.err
-							.println("ERRO: É PRECISO REINICIAR O SERVICO DO MATLAB!");
-				}
+
+		try {
+			c = MatClient.getInstance();
+			documentScore = c.createJob(jobSend);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+			if (documentScore == null) {
+				throw new MatLabException(
+						"ERRO NO SERVICO DO MATLAB! É PRECISO REINICIAR O SERVICO DO MATLAB!");
 			}
+
 		}
-		return documentScore.doubleValue();
+		return documentScore;
 	}
 
 	/**
