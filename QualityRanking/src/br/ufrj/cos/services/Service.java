@@ -531,46 +531,53 @@ public abstract class Service extends Thread {
 		return diffDays;
 	}
 
-	public static void fuzzy(DataSet dataSet) throws Exception {
+	public static void fuzzyDataSet(DataSet dataSet) throws Exception {
 		Collection<ContextQualityDimensionWeight> listCQDWeights = HelperAcessDB
 				.loadContextQualityDimensionWeights(dataSet);
 
-		int qtdQualityDimensions = HelperAcessDB.loadQualityDimensions(dataSet,
-				listCQDWeights).size();
+		int qtdQualityDimensions = HelperAcessDB.loadQualityDimensions(dataSet)
+				.size();
 		double contextWeights[] = HelperAcessDB.getWeights(listCQDWeights);
 
 		Collection<Document> documents = HelperAcessDB.loadDocuments(dataSet);
 		for (Document document : documents) {
 
-			if (document.getScore() != null)
-				continue;
-
 			double[] qds = HelperAcessDB
 					.loadDocumentQualityDimensionScores(document);
 
-			JobSend jobSend = new JobSend("fuzzyDocument",
-					qtdQualityDimensions, contextWeights, qds);
-			MatClient c = null;
-			double documentScore = 0;
-			try {
-				c = MatClient.getInstance();
-				documentScore = c.createJob(jobSend);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
+			double documentScore = fuzzy(qtdQualityDimensions, qds,
+					contextWeights);
 
-			}
 			document.setScore(new BigDecimal(documentScore));
 			HibernateDAO.getInstance().update(document);
 		}
 
+	}
+
+	public static double fuzzy(int qtdQualityDimensions, double[] qds,
+			double[] contextWeights) {
+		JobSend jobSend = new JobSend("fuzzyDocument", qtdQualityDimensions,
+				contextWeights, qds);
+		MatClient c = null;
+		Double documentScore = null;
+		while (documentScore == null) {
+			try {
+				c = MatClient.getInstance();
+				documentScore = c.createJob(jobSend);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} finally {
+				if (documentScore == null) {
+					System.err
+							.println("ERRO: É PRECISO REINICIAR O SERVICO DO MATLAB!");
+				}
+			}
+		}
+		return documentScore.doubleValue();
 	}
 
 	/**

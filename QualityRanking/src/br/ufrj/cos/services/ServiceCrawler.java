@@ -40,7 +40,7 @@ public class ServiceCrawler extends Service {
 		Collection<Document> documents = crawler.exportPages(dataSet, getDao());
 		extractMetadatasOfDocuments(documents);
 		derivacaoMetadados(dataSet);
-		fuzzy(dataSet);
+		fuzzyDataSet(dataSet);
 	}
 
 	private void extractMetadatasOfDocuments(Collection<Document> documents)

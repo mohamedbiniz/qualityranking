@@ -7,11 +7,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
@@ -32,43 +33,35 @@ import br.ufrj.cos.bean.SeedDocument;
 public class HelperAcessDB {
 
 	public static double[] loadDocumentQualityDimensionScores(Document document) {
-		Collection<DocumentQualityDimension> list = (Collection<DocumentQualityDimension>) getDao()
-				.listAll(DocumentQualityDimension.class);
 
-		List<Double> scores = new ArrayList<Double>();
-		for (Iterator<DocumentQualityDimension> iterator = list.iterator(); iterator
-				.hasNext();) {
-			DocumentQualityDimension documentQualityDimension = (DocumentQualityDimension) iterator
-					.next();
-			if (documentQualityDimension.getDocument().getId() == document
-					.getId()) {
-				scores.add(documentQualityDimension.getScore().doubleValue());
-			}
-		}
+		Criteria criteria = HibernateDAO.getInstance().openSession()
+				.createCriteria(DocumentQualityDimension.class);
+		DocumentQualityDimension d = new DocumentQualityDimension();
+
+		criteria.add(Restrictions.eq("id.document", document));
+		criteria.addOrder(Order.asc("id.qualityDimension"));
+		criteria.setProjection(Projections.property("score"));
+
+		List<BigDecimal> scores = criteria.list();
 
 		double[] scoresVector = new double[scores.size()];
 		int i = 0;
-		for (Double d : scores) {
-			scoresVector[i++] = d;
+		for (BigDecimal s : scores) {
+			scoresVector[i++] = s.doubleValue();
 		}
 		return scoresVector;
 	}
 
 	public static Collection<ContextQualityDimensionWeight> loadContextQualityDimensionWeights(
 			DataSet dataSet) {
-		Collection<ContextQualityDimensionWeight> list = (Collection<ContextQualityDimensionWeight>) getDao()
-				.listAll(ContextQualityDimensionWeight.class);
-
-		for (Iterator<ContextQualityDimensionWeight> iterator = list.iterator(); iterator
-				.hasNext();) {
-			ContextQualityDimensionWeight contextQualityDimensionWeight = (ContextQualityDimensionWeight) iterator
-					.next();
-			if (contextQualityDimensionWeight.getDataSet().getId() != dataSet
-					.getId()) {
-				iterator.remove();
-			}
-		}
-		return list;
+		Criteria criteria = getDao().openSession().createCriteria(
+				ContextQualityDimensionWeight.class).add(
+				Restrictions.eq("id.dataSet", dataSet)).addOrder(
+				Order.asc("id.qualityDimension"));
+		criteria
+				.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+		List<ContextQualityDimensionWeight> listCQDW = criteria.list();
+		return listCQDW;
 	}
 
 	public static ContextQualityDimensionWeight loadContextQualityDimensionWeight(
@@ -110,24 +103,17 @@ public class HelperAcessDB {
 
 	public static Collection<QualityDimension> loadQualityDimensions(
 			DataSet dataSet) {
-		Collection<ContextQualityDimensionWeight> listCQDWeights = HelperAcessDB
-				.loadContextQualityDimensionWeights(dataSet);
-		return loadQualityDimensions(dataSet, listCQDWeights);
-	}
 
-	public static Collection<QualityDimension> loadQualityDimensions(
-			DataSet dataSet,
-			Collection<ContextQualityDimensionWeight> listCQDWeights) {
+		Criteria criteria = getDao().openSession().createCriteria(
+				ContextQualityDimensionWeight.class).add(
+				Restrictions.eq("id.dataSet", dataSet)).setProjection(
+				Projections.property("id.qualityDimension"));
+		criteria
+				.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+		Collection<QualityDimension> listQualityDimensions = criteria.list();
 
-		HashMap<Long, QualityDimension> listMap = new HashMap<Long, QualityDimension>();
-		for (ContextQualityDimensionWeight contextQualityDimensionWeight : listCQDWeights) {
-			QualityDimension qualityDimension = contextQualityDimensionWeight
-					.getQualityDimension();
-			if (!listMap.containsKey(qualityDimension.getId())) {
-				listMap.put(qualityDimension.getId(), qualityDimension);
-			}
-		}
-		return listMap.values();
+		return listQualityDimensions;
+
 	}
 
 	public static List<Document> loadDocuments(DataSet dataSet) {
@@ -141,19 +127,11 @@ public class HelperAcessDB {
 		Criteria criteria = getDao().openSession().createCriteria(
 				DocumentDocument.class).add(
 				Restrictions.eq("id.fatherDocument", fatherDocument))
-				.setProjection(Projections.property("id.childDocument.id"));
-		Collection<Long> lisIdChilds = criteria.list();
-		List<Document> list = new ArrayList<Document>();
-		if (!lisIdChilds.isEmpty()) {
-			criteria = getDao().openSession().createCriteria(Document.class)
-					.add(
-							Restrictions.eq("dataSet", fatherDocument
-									.getDataSet())).add(
-							Restrictions.in("id", lisIdChilds));
-			list = criteria.list();
-		}
-
-		return list;
+				.setProjection(Projections.property("id.childDocument"));
+		criteria
+				.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+		List<Document> lisIdChilds = criteria.list();
+		return lisIdChilds;
 	}
 
 	public static List<Document> findRootDocuments(DataSet dataSet) {

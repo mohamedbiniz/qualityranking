@@ -75,15 +75,14 @@ public class MatClient {
 		sock.close();
 	}
 
-	public double createJob(JobSend job) throws IOException,
+	public Double createJob(JobSend job) throws IOException,
 			NumberFormatException, ClassNotFoundException {
 		sendRequest = job;
 		// uncomment for debugging purposes
 		// System.out.println("Send Matlab request" );
-		double rez = 0.0;
+		Double rez = null;
 		try {
 			out.writeObject(sendRequest);
-
 			while ((fromServer = in.readObject()) != null) {
 				// comment this out when not debugging
 				if (fromServer instanceof String) {
@@ -98,10 +97,10 @@ public class MatClient {
 						if (sendRequest instanceof JobSend) {
 							JobSend jobSend = (JobSend) sendRequest;
 							if (jobSend.getFunction().equals("fuzzyDocument"))
-								rez = Double.parseDouble(fromServerStr);
+								rez = new Double(Double
+										.parseDouble(fromServerStr));
 							break;
 						}
-
 					}
 				}
 			}
