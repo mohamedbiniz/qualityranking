@@ -512,4 +512,13 @@ public class DataSet implements Serializable {
 		pOfN = ofN;
 	}
 
+    /**
+     * 
+     * @return
+     */
+    @Override
+    public String toString() {
+        return String.format("%d - %s", getId(), getContext());
+    }
+    
 }

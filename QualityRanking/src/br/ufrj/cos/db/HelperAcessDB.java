@@ -32,11 +32,28 @@ import br.ufrj.cos.bean.SeedDocument;
  */
 public class HelperAcessDB {
 
+	public static List<DataSet> findDataSetsAutomaticEvaluated() {
+		Criteria criteria = HibernateDAO.getInstance().openSession()
+				.createCriteria(DataSet.class);
+
+		criteria.add(
+				Restrictions.or(Restrictions.eq("method",
+						DataSet.CRAWLER_QUALITYFUZZY), Restrictions.eq(
+						"method", DataSet.SEARCH_QUALITYFUZZY))).add(
+				Restrictions.or(Restrictions.eq("status",
+						DataSet.STATUS_MANUAL_EVALUATION), Restrictions.eq(
+						"status", DataSet.STATUS_FINALIZED)));
+		criteria.addOrder(Order.asc("creationDate"));
+
+		List<DataSet> dataSets = criteria.list();
+		return dataSets;
+
+	}
+
 	public static double[] loadDocumentQualityDimensionScores(Document document) {
 
 		Criteria criteria = HibernateDAO.getInstance().openSession()
 				.createCriteria(DocumentQualityDimension.class);
-		DocumentQualityDimension d = new DocumentQualityDimension();
 
 		criteria.add(Restrictions.eq("id.document", document));
 		criteria.addOrder(Order.asc("id.qualityDimension"));
