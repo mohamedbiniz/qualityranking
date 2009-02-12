@@ -76,7 +76,7 @@ public abstract class ServiceSearch extends Service {
 		}
 		mathDocumentAndQualityDimension(dataSet);
 
-		fuzzy(dataSet);
+		fuzzyDataSet(dataSet);
 
 		exportDocumentsFromDataSetFather(dataSetChild);
 

@@ -111,7 +111,7 @@ public class ServiceSearchQualityFuzzy extends ServiceSearch {
 	@Override
 	protected void applyFinalRanking(DataSet dataSet) throws Exception {
 		derivacaoMetadados(dataSet);
-		fuzzy(dataSet);
+		fuzzyDataSet(dataSet);
 	}
 
 }
