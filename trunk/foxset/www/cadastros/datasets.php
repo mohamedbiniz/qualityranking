@@ -75,16 +75,20 @@ switch($_GET["acao"]){
 					}
 				}
 			}
-			if ($ass['method'] == 'C') {
+			if ($ass['method'] != 'M') {
 				// Adding seed pages
 				$sql = array();
-				$seedURLs = explode(' ', $ass['seedURLs']);
-				foreach ($seedURLs as $seedURL) {
-					if (stripos($seedURL, '://') === false) {
-						$seedURL = 'http://' . $seedURL;
+				if ($ass['method'] == 'C') {
+					$seedURLs = explode(' ', $ass['seedURLs']);
+					foreach ($seedURLs as $seedURL) {
+						if (stripos($seedURL, '://') === false) {
+							$seedURL = 'http://' . $seedURL;
+						}
+						$partsURL = parse_url($seedURL);
+						$sql[] = sprintf("INSERT INTO dataset_seed_documents (dataset_id, url, domain) VALUES (%s, '%s', '%s')", $iddataset, $seedURL, $partsURL['host']);
 					}
-					$partsURL = parse_url($seedURL);
-					$sql[] = sprintf("INSERT INTO dataset_seed_documents (dataset_id, url, domain) VALUES (%s, '%s', '%s')", $iddataset, $seedURL, $partsURL['host']);
+				} else { // Gambi pro Fabrimar
+					$sql[] = sprintf("INSERT INTO dataset_seed_documents (dataset_id, url, domain) VALUES (%s, '%s', '%s')", $iddataset, $ass['seedURLs'], $ass['seedURLs']);
 				}
 				foreach ($sql as $sqlatual) {
 					if (!$db->query($sqlatual)){
@@ -151,7 +155,7 @@ switch($_GET["acao"]){
 		break;
 
 	case "criar":
-		$sql = sprintf("SELECT id, name FROM quality_dimension");
+		$sql = sprintf("SELECT id, name FROM quality_dimension WHERE code NOT IN ('LIV', 'GOO', 'YAH')");
 		$db->query($sql);
 		$qds = array();
 		while ($tmp = $db->fetch_assoc()) {
