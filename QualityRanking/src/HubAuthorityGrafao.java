@@ -1,4 +1,3 @@
-
 //import br.ufrj.cos.bri.SearchEngine.Result;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +21,7 @@ import br.ufrj.cos.GraphInstance;
 import br.ufrj.cos.foxset.search.GoogleSearch;
 import br.ufrj.cos.foxset.search.SearchEngine;
 import br.ufrj.cos.foxset.search.SearchException;
+import br.ufrj.cos.foxset.search.WebFile;
 import br.ufrj.cos.foxset.search.YahooSearch;
 import br.ufrj.cos.foxset.search.SearchEngine.Result;
 import edu.uci.ics.jung.algorithms.importance.HITS;
@@ -58,7 +58,7 @@ public class HubAuthorityGrafao {
 		}
 		try {
 			Integer id = docs.get(url);
-			WebDocument wf = new WebDocument(url);
+			WebFile wf = new WebFile(url);
 			Map<String, Integer> fl = wf.getForwardLinks();
 			System.out.println("Rec. " + nivel + ", FL = " + fl.size() + ": "
 					+ id + " - " + url);
