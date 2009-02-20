@@ -182,7 +182,7 @@ public class HubAuthorityGrafao {
 		pwResultado = new PrintWriter(new FileWriter("resultado.txt"));
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
 		connIreval = DriverManager
-				.getConnection("jdbc:mysql://localhost/ireval?user=root&password=123");
+				.getConnection("jdbc:mysql://localhost/ireval?user=foxset&password=xamusko");
 		ResultSet rs = connIreval
 				.createStatement()
 				.executeQuery(
