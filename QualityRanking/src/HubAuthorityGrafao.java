@@ -150,7 +150,7 @@ public class HubAuthorityGrafao {
 			pwResultado.flush();
 			if (connFoxset == null) {
 				connFoxset = DriverManager
-						.getConnection("jdbc:mysql://localhost/foxset?user=root&password=123");
+						.getConnection("jdbc:mysql://localhost/foxset?user=foxset&password=xamusko");
 				psSelect = connFoxset
 						.prepareStatement("SELECT id FROM document WHERE dataset_id = 578 AND url = ?");
 				psUpdate = connFoxset
