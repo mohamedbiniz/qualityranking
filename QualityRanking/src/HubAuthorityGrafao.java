@@ -58,6 +58,7 @@ public class HubAuthorityGrafao {
 		}
 		try {
 			Integer id = docs.get(url);
+			// WebDocument wf = new WebDocument(url);
 			WebFile wf = new WebFile(url);
 			Map<String, Integer> fl = wf.getForwardLinks();
 			System.out.println("Rec. " + nivel + ", FL = " + fl.size() + ": "
