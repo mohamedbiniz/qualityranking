@@ -15,7 +15,6 @@ public class CorrecaoScore {
 		try {
 			Service.fuzzyDataSet(dataSet);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		HibernateDAO.getInstance().closeSession();
