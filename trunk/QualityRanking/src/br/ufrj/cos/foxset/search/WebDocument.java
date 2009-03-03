@@ -13,12 +13,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import sun.net.www.http.Hurryable;
+
+
+
 public class WebDocument {
+	
+	public static int qtdLinks = 10;
 
 	private Map<String, List<String>> headers;
 	private URL url;
@@ -71,9 +79,32 @@ public class WebDocument {
 		 * httpConn.getContent()) != null && content instanceof InputStream) {
 		 * content = readStream(length, (InputStream) content); }
 		 */
-
-		BufferedReader br = new BufferedReader(new InputStreamReader(url
-				.openStream()));
+		// http://connect.educause.edu/crss/node/30473
+		// InputStream stream = url.openStream();
+		ThreadStream threadStream = new ThreadStream(url);
+		ExecutorService tpes = Executors.newFixedThreadPool(1);
+		tpes.execute(threadStream);
+		try {
+			int qtdVerf = 0;
+			while (!threadStream.isPronto()) {
+				if (qtdVerf++ == 10)
+					break;
+				Thread.sleep(500);
+			}
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		} finally {
+			tpes.shutdown();
+		}
+		// try {
+		// threadStream.join(10000);
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// }
+		InputStream stream = threadStream.getStream();
+		if (stream == null)
+			throw new IOException("Erro ao ler stream da url " + url.getPath());
+		BufferedReader br = new BufferedReader(new InputStreamReader(stream));
 		String line = null;
 		StringBuffer sb = new StringBuffer();
 		while ((line = br.readLine()) != null) {
@@ -152,7 +183,7 @@ public class WebDocument {
 		return lastModified;
 	}
 
-	public Map<String, Integer> getForwardLinks() {
+	public  Map<String, Integer> getForwardLinks() {
 		if (forwardLinks == null) {
 			forwardLinks = new HashMap<String, Integer>();
 			Pattern p = Pattern.compile(Pattern.quote("href=\"") + "("
@@ -163,7 +194,8 @@ public class WebDocument {
 				return forwardLinks;
 			}
 			Matcher m = p.matcher(str);
-			while (m.find()) {
+			int j=0;
+			while (m.find()/*&& (j++<=qtdLinks)*/) {
 				String matchedURL = m.group(1);
 				Integer count = forwardLinks.get(matchedURL);
 				forwardLinks.put(matchedURL, count == null ? 1 : count + 1);
