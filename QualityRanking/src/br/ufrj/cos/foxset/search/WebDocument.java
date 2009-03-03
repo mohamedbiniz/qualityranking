@@ -20,12 +20,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import sun.net.www.http.Hurryable;
-
-
-
 public class WebDocument {
-	
+
 	public static int qtdLinks = 10;
 
 	private Map<String, List<String>> headers;
@@ -105,10 +101,13 @@ public class WebDocument {
 		if (stream == null)
 			throw new IOException("Erro ao ler stream da url " + url.getPath());
 		BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+		System.out.println("Numero de caracteres");
 		String line = null;
 		StringBuffer sb = new StringBuffer();
 		while ((line = br.readLine()) != null) {
 			sb.append(line);
+			// if (sb.length() * (new Character('a')).SIZE > 512 * 1024)
+			// break;
 		}
 		content = sb.toString();
 
@@ -183,7 +182,7 @@ public class WebDocument {
 		return lastModified;
 	}
 
-	public  Map<String, Integer> getForwardLinks() {
+	public Map<String, Integer> getForwardLinks() {
 		if (forwardLinks == null) {
 			forwardLinks = new HashMap<String, Integer>();
 			Pattern p = Pattern.compile(Pattern.quote("href=\"") + "("
@@ -194,9 +193,9 @@ public class WebDocument {
 				return forwardLinks;
 			}
 			Matcher m = p.matcher(str);
-			int j=0;
-			while (m.find()/*&& (j++<=qtdLinks)*/) {
-				String matchedURL = m.group(1);
+			int j = 0;
+			while (m.find()/* && (j++<=qtdLinks) */) {
+				String matchedURL = m.group(1).trim();
 				Integer count = forwardLinks.get(matchedURL);
 				forwardLinks.put(matchedURL, count == null ? 1 : count + 1);
 			}
@@ -228,7 +227,7 @@ public class WebDocument {
 						+ Pattern.quote("\"") + "]+)");
 				Matcher m = p.matcher(wf.getContentAsString());
 				while (m.find()) {
-					String matchedURL = m.group(1);
+					String matchedURL = m.group(1).trim();
 					Integer count = backLinks.get(matchedURL);
 					backLinks.put(matchedURL, count == null ? 1 : count + 1);
 				}
