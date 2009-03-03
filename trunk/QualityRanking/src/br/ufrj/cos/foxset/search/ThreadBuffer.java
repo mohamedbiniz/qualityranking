@@ -3,54 +3,45 @@
  */
 package br.ufrj.cos.foxset.search;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.io.InputStreamReader;
 
 /**
  * @author Fabricio
  * 
  */
-public class ThreadStream extends ThreadFoxSet {
-
-	private URL url = null;
+public class ThreadBuffer extends ThreadFoxSet {
 
 	private InputStream stream = null;
 
+	private StringBuffer content = null;
+
 	private boolean pronto = false;
 
-	public ThreadStream(URL url) {
+	public ThreadBuffer(InputStream stream) {
 		setPronto(false);
-		setUrl(url);
+		setStream(stream);
 	}
 
 	@Override
 	public void run() {
 		super.run();
-		InputStream stream = null;
+		StringBuffer content = null;
 		try {
-			stream = getUrl().openStream();
-
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader(stream));
+			String line = null;
+			content = new StringBuffer();
+			while ((line = br.readLine()) != null) {
+				content.append(line);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		setStream(stream);
+		setContent(content);
 		setPronto(true);
-	}
-
-	/**
-	 * @return the url
-	 */
-	public URL getUrl() {
-		return url;
-	}
-
-	/**
-	 * @param url
-	 *            the url to set
-	 */
-	public void setUrl(URL url) {
-		this.url = url;
 	}
 
 	/**
@@ -81,6 +72,21 @@ public class ThreadStream extends ThreadFoxSet {
 	 */
 	public void setPronto(boolean pronto) {
 		this.pronto = pronto;
+	}
+
+	/**
+	 * @return the content
+	 */
+	public StringBuffer getContent() {
+		return content;
+	}
+
+	/**
+	 * @param content
+	 *            the content to set
+	 */
+	public void setContent(StringBuffer content) {
+		this.content = content;
 	}
 
 }
