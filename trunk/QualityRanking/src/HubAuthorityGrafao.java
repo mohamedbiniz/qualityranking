@@ -226,7 +226,7 @@ public class HubAuthorityGrafao {
 	public static void main(String[] args) throws Exception {
 		pwResultado = new PrintWriter(new FileWriter("resultado.txt"));
 		File objetos = null;
-		boolean onlyJung = true;
+		boolean onlyJung = false;
 		if (!onlyJung) {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			connIreval = DriverManager

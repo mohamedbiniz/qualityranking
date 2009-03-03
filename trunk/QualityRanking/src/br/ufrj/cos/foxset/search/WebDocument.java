@@ -101,7 +101,6 @@ public class WebDocument {
 		if (stream == null)
 			throw new IOException("Erro ao ler stream da url " + url.getPath());
 		BufferedReader br = new BufferedReader(new InputStreamReader(stream));
-		System.out.println("Numero de caracteres");
 		String line = null;
 		StringBuffer sb = new StringBuffer();
 		while ((line = br.readLine()) != null) {
