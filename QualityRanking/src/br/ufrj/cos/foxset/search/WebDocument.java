@@ -1,9 +1,7 @@
 package br.ufrj.cos.foxset.search;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -75,43 +73,48 @@ public class WebDocument {
 		 * httpConn.getContent()) != null && content instanceof InputStream) {
 		 * content = readStream(length, (InputStream) content); }
 		 */
-		// http://connect.educause.edu/crss/node/30473
-		// InputStream stream = url.openStream();
+
 		ThreadStream threadStream = new ThreadStream(url);
-		ExecutorService tpes = Executors.newFixedThreadPool(1);
-		tpes.execute(threadStream);
+		waitThread(threadStream, 10);
+
+		InputStream stream = threadStream.getStream();
+		if (stream == null)
+			throw new IOException("Erro ao ler stream da url " + url.getPath());
+
+		ThreadBuffer threadBuffer = new ThreadBuffer(stream);
+		waitThread(threadBuffer, 3 * 60);
+		StringBuffer sb = threadBuffer.getContent();
+		if (sb == null)
+			throw new IOException("Erro ao ler conteúdo stream da url "
+					+ url.getPath());
+		content = sb.toString();
+
+		httpConn.disconnect();
+		System.out.println("Saindo... Length: " + sb.length());
+	}
+
+	/**
+	 * @param threadBuffer
+	 */
+	private void waitThread(ThreadFoxSet thread, int sec) {
+		int timeSleep = 500; // meio segundo
+		int qtdMaxVer = (sec * 1000) / timeSleep;
+		ExecutorService tpes = null;
+		tpes = Executors.newFixedThreadPool(1);
+		tpes.execute(thread);
 		try {
 			int qtdVerf = 0;
-			while (!threadStream.isPronto()) {
-				if (qtdVerf++ == 10)
+			while (!thread.isPronto()) {
+				if (qtdVerf++ == qtdMaxVer)
 					break;
-				Thread.sleep(500);
+				Thread.sleep(timeSleep);
 			}
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		} finally {
 			tpes.shutdown();
+			tpes = null;
 		}
-		// try {
-		// threadStream.join(10000);
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// }
-		InputStream stream = threadStream.getStream();
-		if (stream == null)
-			throw new IOException("Erro ao ler stream da url " + url.getPath());
-		BufferedReader br = new BufferedReader(new InputStreamReader(stream));
-		String line = null;
-		StringBuffer sb = new StringBuffer();
-		while ((line = br.readLine()) != null) {
-			sb.append(line);
-			// if (sb.length() * (new Character('a')).SIZE > 512 * 1024)
-			// break;
-		}
-		content = sb.toString();
-
-		httpConn.disconnect();
-		System.out.println("Saindo... Length: " + sb.length());
 	}
 
 	private Object readStream(int length, InputStream stream)
