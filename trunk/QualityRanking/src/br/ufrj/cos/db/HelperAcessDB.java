@@ -4,11 +4,18 @@
 package br.ufrj.cos.db;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.CriteriaSpecification;
@@ -313,5 +320,25 @@ public class HelperAcessDB {
 		List<DataSetCollaborator> dataSetCollaborator = (List<DataSetCollaborator>) criteria
 				.list();
 		return dataSetCollaborator;
+	}
+
+	public static Set<String> loadUrlsValidasFromIreval()
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException, SQLException {
+		Set<String> urls = new HashSet<String>();
+		Class.forName("com.mysql.jdbc.Driver").newInstance();
+		Connection connIreval = DriverManager
+				.getConnection("jdbc:mysql://localhost/ireval?user=foxset&password=xamusko");
+		Statement connStat = connIreval.createStatement();
+
+		ResultSet rs = connStat
+				.executeQuery("SELECT d.url FROM document AS d "
+						+ "WHERE d.experiment_id = 1 AND "
+						+ "((SELECT COUNT(DISTINCT evaluator_id) FROM document_evaluation AS de "
+						+ "WHERE de.document_id = d.id AND de.linguistic_term_id IS NOT NULL) = 3)");
+		while (rs.next()) {
+			urls.add(rs.getString("url"));
+		}
+		return urls;
 	}
 }

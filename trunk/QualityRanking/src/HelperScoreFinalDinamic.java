@@ -1,6 +1,8 @@
 import java.awt.Component;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -28,9 +30,15 @@ public class HelperScoreFinalDinamic {
 	 * @param weightREP
 	 * @param weightCOM
 	 * @param weightTIM
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
 	public static String generateScores(Long idDataSet, int weightREP,
-			int weightCOM, int weightTIM, Component component) {
+			int weightCOM, int weightTIM, Component component)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException, SQLException {
 		HashMap<String, Integer> mapWeights = putWeights(weightREP, weightCOM,
 				weightTIM);
 
@@ -44,7 +52,9 @@ public class HelperScoreFinalDinamic {
 	}
 
 	public static String reFuzzyDataSet(DataSet dataSet,
-			HashMap<String, Integer> mapWeights, Component component) {
+			HashMap<String, Integer> mapWeights, Component component)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException, SQLException {
 		String result = "";
 		Collection<ContextQualityDimensionWeight> listCQDWeights = HelperAcessDB
 				.loadContextQualityDimensionWeights(dataSet);
@@ -56,8 +66,10 @@ public class HelperScoreFinalDinamic {
 
 		int o = JOptionPane.OK_OPTION;
 		Collection<Document> documents = HelperAcessDB.loadDocuments(dataSet);
+		Set<String> urlsIreval = HelperAcessDB.loadUrlsValidasFromIreval();
 		for (Document document : documents) {
-
+			if (!urlsIreval.contains(document.getUrl()))
+				continue;
 			double[] qds = HelperAcessDB
 					.loadDocumentQualityDimensionScores(document);
 

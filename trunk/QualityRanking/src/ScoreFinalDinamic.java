@@ -50,8 +50,14 @@ public class ScoreFinalDinamic extends javax.swing.JFrame {
 				weightCOM = Integer.parseInt(jTextFieldCOM.getText());
 				weightTIM = Integer.parseInt(jTextFieldTIM.getText());
 
-				String result = HelperScoreFinalDinamic.generateScores(
-						idDataSet, weightREP, weightCOM, weightTIM, this);
+				String result = null;
+				try {
+					result = HelperScoreFinalDinamic.generateScores(idDataSet,
+							weightREP, weightCOM, weightTIM, this);
+				} catch (Exception e) {
+					result = "Possível erro na conexão com o banco ireval";
+					e.printStackTrace();
+				}
 				jTextAreaResults.setText(result);
 			} catch (NullPointerException npe) {
 				JOptionPane.showMessageDialog(this, "Selecione um dataSet!",
