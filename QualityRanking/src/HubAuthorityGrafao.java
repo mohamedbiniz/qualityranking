@@ -226,6 +226,8 @@ public class HubAuthorityGrafao {
 	public static void main(String[] args) throws Exception {
 		pwResultado = new PrintWriter(new FileWriter("resultado.txt"));
 		File objetos = null;
+		// se jah tiver o arquivo pajek.txt atribuir
+		// valor true, atribuir false caso contrário
 		boolean onlyJung = false;
 		if (!onlyJung) {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
