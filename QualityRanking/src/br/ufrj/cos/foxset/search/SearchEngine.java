@@ -7,10 +7,6 @@ package br.ufrj.cos.foxset.search;
 import java.util.Date;
 import java.util.List;
 
-import com.mathworks.toolbox.instrument.icb.IJFrame.SetParameterRunnable;
-
-import sun.reflect.Reflection;
-
 /**
  * 
  * @author Heraldo
@@ -59,6 +55,12 @@ public abstract class SearchEngine {
 
 		public void setModificationDate(Date modificationDate) {
 			this.modificationDate = modificationDate;
+		}
+
+		public void setModificationDate(String modificationDateStrUnixTime) {
+			int unixTime = new Integer(modificationDateStrUnixTime).intValue();
+			long timestamp = unixTime * 1000; // msec
+			setModificationDate(new Date(timestamp));
 		}
 	}
 
