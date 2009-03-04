@@ -29,9 +29,11 @@ import br.ufrj.cos.bean.DataSetCollaborator;
 import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.DocumentDocument;
 import br.ufrj.cos.bean.DocumentQualityDimension;
+import br.ufrj.cos.bean.Metadata;
 import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.bean.QualityDimensionWeight;
 import br.ufrj.cos.bean.SeedDocument;
+import br.ufrj.cos.enume.MetadataType;
 
 /**
  * @author Fabricio
@@ -341,4 +343,38 @@ public class HelperAcessDB {
 		}
 		return urls;
 	}
+
+	public static Metadata loadMetadata(Document document,
+			MetadataType metadataType) {
+		Metadata metadata = null;
+		Metadata metadataExample = new Metadata();
+		metadataExample.setDocument(document);
+		metadataExample.setType(metadataType);
+		List<String> listExcludeParams = new ArrayList<String>();
+		listExcludeParams.add("id");
+		listExcludeParams.add("value");
+		List<Metadata> list = (List<Metadata>) getDao().findByExample(
+				metadataExample, listExcludeParams);
+		// List<Metadata> list = (List<Metadata>) getDao().loadByField(
+		// Metadata.class, "type", metadataType);
+		if (!list.isEmpty()) {
+			metadata = list.get(0);
+		}
+		return metadata;
+	}
+
+	public static DocumentQualityDimension loadDocumentQualityDimension(
+			Document document, QualityDimension qualityDimension) {
+		Criteria criteria = HibernateDAO.getInstance().openSession()
+				.createCriteria(DocumentQualityDimension.class);
+
+		criteria.add(Restrictions.eq("id.document", document));
+		criteria.add(Restrictions.eq("id.qualityDimension", qualityDimension));
+
+		DocumentQualityDimension documentQualityDimension = (DocumentQualityDimension) criteria
+				.uniqueResult();
+
+		return documentQualityDimension;
+	}
+
 }

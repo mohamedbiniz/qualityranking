@@ -37,7 +37,7 @@ public class HubAuthorityGrafao {
 
 	public static int qtdPag = 200;
 	public static int qtdLinks = 10;
-	public static int qtdLevels = 2;
+	public static int qtdLevels = 3;
 
 	private static Connection connIreval, connFoxset;
 	private static PreparedStatement psSelect, psUpdate;

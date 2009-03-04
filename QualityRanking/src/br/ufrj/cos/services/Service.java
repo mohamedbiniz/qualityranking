@@ -486,20 +486,10 @@ public abstract class Service extends Thread {
 
 	private byte[] getMetadata(Document document, MetadataType metadataType) {
 		byte[] value = null;
-		Metadata metadataExample = new Metadata();
-		metadataExample.setDocument(document);
-		metadataExample.setType(metadataType);
-		List<String> listExcludeParams = new ArrayList<String>();
-		listExcludeParams.add("id");
-		listExcludeParams.add("value");
-		List<Metadata> list = (List<Metadata>) getDao().findByExample(
-				metadataExample, listExcludeParams);
-		// List<Metadata> list = (List<Metadata>) getDao().loadByField(
-		// Metadata.class, "type", metadataType);
-		if (!list.isEmpty()) {
-			Metadata metadata = list.get(0);
+		Metadata metadata = null;
+		metadata = HelperAcessDB.loadMetadata(document, metadataType);
+		if (metadata != null)
 			value = metadata.getValue();
-		}
 		return value;
 	}
 
