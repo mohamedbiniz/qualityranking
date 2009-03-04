@@ -1,4 +1,5 @@
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
 
 import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
@@ -36,7 +38,11 @@ public class CorrecaoScore {
 				DataSet.class, new Long(578));
 		try {
 			// Service.fuzzyDataSet(dataSet);
-			corrigirMetadataDate(dataSet);
+			// corrigirMetadataDate(dataSet);
+			System.gc();
+			int[] a = count(dataSet);
+			System.out.println(a[0]);
+			System.out.println(a[1]);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -50,6 +56,46 @@ public class CorrecaoScore {
 		// l, i, l, i, l, i, l, i));
 		// }
 
+	}
+
+	private static int[] count(DataSet dataSet) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, SQLException,
+			ParseException {
+
+		int a[] = new int[2];
+		a[0] = 0;
+		a[1] = 0;
+		Set<String> urlsIreval = HelperAcessDB.loadUrlsValidasFromIreval();
+
+		List<Document> documents = HelperAcessDB.loadDocuments(dataSet);
+		for (Document document : documents) {
+
+			Metadata metadata = HelperAcessDB.loadMetadata(document,
+					MetadataType.DATE);
+
+			DateFormat dateFormat = new SimpleDateFormat(
+					MetadataExtract.DATE_FORMAT);
+			if (metadata != null) {
+				Date dataAtualizacao = dateFormat.parse(new String(metadata
+						.getValue()));
+				if (dataAtualizacao.after(getMinDate())) {
+					a[0]++;
+					if (urlsIreval.contains(document.getUrl()))
+						a[1]++;
+				}
+			}
+
+		}
+		return a;
+	}
+
+	private static Date getMinDate() {
+		Calendar c = new GregorianCalendar();
+		c.setTime(new Date(0));
+		c.set(Calendar.YEAR, 2009);
+		c.set(Calendar.MONTH, Calendar.JANUARY);
+		c.set(Calendar.DAY_OF_MONTH, 1);
+		return c.getTime();
 	}
 
 	private static void corrigirMetadataDate(DataSet dataSet) throws Exception {
@@ -68,15 +114,15 @@ public class CorrecaoScore {
 
 			metadata.setValue(metadataExtract.extract().get(MetadataType.DATE));
 			getDao().update(metadata);
-			
+
 			for (QualityDimension qualityDimension : qualityDimensions) {
 				documentQualityDimension = HelperAcessDB
 						.loadDocumentQualityDimension(document,
 								qualityDimension);
 
-				double score = 0;
 				String code = qualityDimension.getCodeStr();
 				if (code.equals(QualityDimension.TIM)) {
+					double score = 0;
 					score = getTimeliness(document, metadata);
 					documentQualityDimension.setScore(new BigDecimal(score));
 					getDao().update(documentQualityDimension);
