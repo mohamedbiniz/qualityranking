@@ -145,7 +145,7 @@ public class MetadataExtract {
 	private Date extractDateFromSearch(URL url) {
 		Date date = null;
 		SearchEngine search = new YahooSearch();
-		String urlStr = url.getPath();
+		String urlStr = url.toString();
 		try {
 			search.findModificationDate(urlStr);
 		} catch (SearchException e) {

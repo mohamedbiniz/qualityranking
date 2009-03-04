@@ -79,14 +79,14 @@ public class WebDocument {
 
 		InputStream stream = threadStream.getStream();
 		if (stream == null)
-			throw new IOException("Erro ao ler stream da url " + url.getPath());
+			throw new IOException("Erro ao ler stream da url " + url.toString());
 
 		ThreadBuffer threadBuffer = new ThreadBuffer(stream);
 		waitThread(threadBuffer, 3 * 60);
 		StringBuffer sb = threadBuffer.getContent();
 		if (sb == null)
 			throw new IOException("Erro ao ler conteúdo stream da url "
-					+ url.getPath());
+					+ url.toString());
 		content = sb.toString();
 
 		httpConn.disconnect();
