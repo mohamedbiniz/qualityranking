@@ -67,7 +67,8 @@ public class CorrecaoScore {
 					MetadataType.DATE);
 
 			metadata.setValue(metadataExtract.extract().get(MetadataType.DATE));
-
+			getDao().update(metadata);
+			
 			for (QualityDimension qualityDimension : qualityDimensions) {
 				documentQualityDimension = HelperAcessDB
 						.loadDocumentQualityDimension(document,
