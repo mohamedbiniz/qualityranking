@@ -147,7 +147,7 @@ public class MetadataExtract {
 		SearchEngine search = new YahooSearch();
 		String urlStr = url.toString();
 		try {
-			search.findModificationDate(urlStr);
+			date = search.findModificationDate(urlStr);
 		} catch (SearchException e) {
 			System.err.println(String.format(
 					"Erro ao tentar extrair a data de atualização"
