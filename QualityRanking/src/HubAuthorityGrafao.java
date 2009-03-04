@@ -279,7 +279,7 @@ public class HubAuthorityGrafao {
 		}
 		jung();
 		pwResultado.close();
-		if (objetos != null)
-			objetos.delete();
+		//if (objetos != null)
+			//objetos.delete();
 	}
 }
