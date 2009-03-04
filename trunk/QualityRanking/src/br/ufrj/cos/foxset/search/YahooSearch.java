@@ -65,6 +65,8 @@ public class YahooSearch extends SearchEngine {
 						.getTextContent());
 				result.setSummary(elem.getElementsByTagName("Summary").item(0)
 						.getTextContent());
+				result.setModificationDate(elem.getElementsByTagName("ModificationDate").item(0)
+						.getTextContent());
 				results.add(result);
 			}
 
@@ -81,7 +83,12 @@ public class YahooSearch extends SearchEngine {
 
 	@Override
 	public Date findModificationDateImpl(String urlStr) throws SearchException {
-		// TODO Auto-generated method stub
+		List<Result> results = searchImpl(urlStr);
+		for (Result result : results) {
+			if (result.getURL().equalsIgnoreCase(urlStr)) {
+				return result.getModificationDate();
+			}
+		}
 		return null;
 	}
 
