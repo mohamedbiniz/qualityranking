@@ -121,7 +121,7 @@ public class HubAuthorityGrafao {
 
 	public static void pajek() throws Exception {
 		PrintWriter writer = new PrintWriter(new FileWriter("pajek.txt"));
-		writer.println("*Vertices " + docs.size() + 1);
+		writer.println("*Vertices " + urls.size());
 		for (String url : docs.keySet()) {
 			Integer id = docs.get(url);
 			writer.println(id + " \"" + url + "\"");
