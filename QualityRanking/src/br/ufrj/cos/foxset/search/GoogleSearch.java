@@ -5,6 +5,7 @@
 package br.ufrj.cos.foxset.search;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.soap.SOAPElement;
@@ -23,7 +24,7 @@ import org.w3c.dom.NodeList;
 public class GoogleSearch extends SearchEngine {
 
 	@Override
-	public List<Result> search(String query) throws SearchException {
+	public List<Result> searchImpl(String query) throws SearchException {
 		try {
 			List<Result> results = new ArrayList<Result>(getMaxResults());
 
@@ -79,5 +80,11 @@ public class GoogleSearch extends SearchEngine {
 	@Override
 	public String getSearchEngineCode() {
 		return "GOOGLE";
+	}
+
+	@Override
+	public Date findModificationDateImpl(String urlStr) throws SearchException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

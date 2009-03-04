@@ -6,6 +6,7 @@ package br.ufrj.cos.foxset.search;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -19,7 +20,7 @@ import java.util.regex.Pattern;
 public class GoogleWebSearch extends SearchEngine {
 
 	@Override
-	public List<Result> search(String query) throws SearchException {
+	public List<Result> searchImpl(String query) throws SearchException {
 		try {
 			List<Result> results = new ArrayList<Result>(getMaxResults());
 			Set<String> urls = new TreeSet<String>();
@@ -69,5 +70,11 @@ public class GoogleWebSearch extends SearchEngine {
 	@Override
 	public String getSearchEngineCode() {
 		return "GOOGLE";
+	}
+
+	@Override
+	public Date findModificationDateImpl(String urlStr) throws SearchException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -194,7 +194,7 @@ public class WebDocument {
 			if (str == null) {
 				return forwardLinks;
 			}
-			Matcher m = p.matcher(str);
+			Matcher m = p.matcher(str.toLowerCase());
 			int j = 0;
 			while (m.find()/* && (j++<=qtdLinks) */) {
 				String matchedURL = m.group(1).trim();
