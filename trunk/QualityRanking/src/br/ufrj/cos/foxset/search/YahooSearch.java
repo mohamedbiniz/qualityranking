@@ -11,6 +11,7 @@ package br.ufrj.cos.foxset.search;
 import java.io.StringReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -27,11 +28,7 @@ import org.xml.sax.InputSource;
 public class YahooSearch extends SearchEngine {
 
 	@Override
-	public List<Result> search(String query) throws SearchException {
-		System
-				.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-						"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-
+	public List<Result> searchImpl(String query) throws SearchException {
 		try {
 			List<Result> results = new ArrayList<Result>(getMaxResults());
 
@@ -81,4 +78,11 @@ public class YahooSearch extends SearchEngine {
 	public String getSearchEngineCode() {
 		return "YAHOO";
 	}
+
+	@Override
+	public Date findModificationDateImpl(String urlStr) throws SearchException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

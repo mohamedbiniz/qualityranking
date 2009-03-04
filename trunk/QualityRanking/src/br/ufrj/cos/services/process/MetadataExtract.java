@@ -11,7 +11,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import org.htmlparser.Parser;
@@ -21,6 +23,9 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
 import br.ufrj.cos.enume.MetadataType;
+import br.ufrj.cos.foxset.search.SearchEngine;
+import br.ufrj.cos.foxset.search.SearchException;
+import br.ufrj.cos.foxset.search.YahooSearch;
 
 /**
  * @author Fabricio
@@ -122,13 +127,43 @@ public class MetadataExtract {
 	}
 
 	private byte[] extractDate(URLConnection connection) {
+		Date minDate = getMinDate();
 		byte[] result = null;
 		Date lastModified = new Date(connection.getLastModified());
+		if ((lastModified == null) || (lastModified.before(minDate))) {
+			Date date = extractDateFromSearch(connection.getURL());
+			if (date != null)
+				lastModified = date;
+		}
 		if (lastModified != null) {
 			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 			result = dateFormat.format(lastModified).getBytes();
 		}
 		return result;
+	}
+
+	private Date extractDateFromSearch(URL url) {
+		Date date = null;
+		SearchEngine search = new YahooSearch();
+		String urlStr = url.getPath();
+		try {
+			search.findModificationDate(urlStr);
+		} catch (SearchException e) {
+			System.err.println(String.format(
+					"Erro ao tentar extrair a data de atualização"
+							+ " usando a EngineSearch do %s da url: %s", search
+							.getSearchEngineCode(), urlStr));
+		}
+		return date;
+	}
+
+	private Date getMinDate() {
+		Calendar c = new GregorianCalendar();
+		c.setTime(new Date(0));
+		c.set(Calendar.YEAR, 1970);
+		c.set(Calendar.MONTH, Calendar.JANUARY);
+		c.set(Calendar.DAY_OF_MONTH, 1);
+		return c.getTime();
 	}
 
 	private byte[] extractTitle(URLConnection connection)
