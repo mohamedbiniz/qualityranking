@@ -28,6 +28,10 @@ public class YahooSearch extends SearchEngine {
 
 	@Override
 	public List<Result> search(String query) throws SearchException {
+		System
+				.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+						"com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
+
 		try {
 			List<Result> results = new ArrayList<Result>(getMaxResults());
 
