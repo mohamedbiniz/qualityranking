@@ -215,7 +215,8 @@ BODY;
 	$url = "http://{$_SERVER['HTTP_HOST']}{$phpself}?action=evaluate&id={$experiment['id']}";
 	$body = <<<BODY
 	Avaliação: <strong>{$status}</strong> <a href="{$phpself}?action={$status_action}_experiment&id={$experiment['id']}">{$status_link}</a><br />
-	URL para avaliadores: <a href="{$url}" target="_blank">{$url}</a>
+	URL para avaliadores: <a href="{$url}" target="_blank">{$url}</a><br />
+	<a href="{$phpself}?action=planilha&id={$experiment['id']}">Gerar planilha</a>
 BODY;
 	$evaluators = query("
 		SELECT e.email, ee.start_datetime, ee.end_datetime FROM evaluator AS e
@@ -231,6 +232,91 @@ BODY;
 	}
 	$body .= '</tbody></table></p>';
 	$body .= '<p><a href="' . $phpself . '?action=admin">Voltar</a></p>';
+	success();
+} else if ($action == 'planilha') {
+	$experiment = getExperiment();
+	$min_evals = isset($_GET['min_evals']) ? clean($_GET['min_evals']) : 3;
+	$header = "Planilha do experimento {$experiment['id']} - {$experiment['subject']}";
+	$docs = query("
+		SELECT d.id, d.url
+		FROM document AS d
+		WHERE d.experiment_id = {$experiment['id']} AND ((SELECT COUNT(DISTINCT evaluator_id) FROM document_evaluation AS de WHERE 	de.document_id = d.id AND de.linguistic_term_id IS NOT NULL) = {$min_evals})");
+	$body = '<table border="1"><thead><tr>';
+	$body .= '<td>ID</td><td>URL</td>';
+	$queries = query("
+		SELECT id FROM query WHERE experiment_id = {$experiment['id']} ORDER BY id
+	"); 
+	$lvs = query("
+		SELECT id, name FROM linguistic_variable
+		WHERE experiment_id = {$experiment['id']}
+		ORDER BY id
+	"); 
+	$pesos = array('Péssima' => -2, 'Ruim' => -1, 'Regular' => 0, 'Boa' => 1, 'Excelente' => 2);
+	$pesos_flip = array_flip($pesos);
+	for ($i = 1; $i <= count($queries); ++$i) {
+		for ($j = 1; $j <= $min_evals; ++$j) {
+			$body .= "<td>Q{$i}/E{$j}</td>";
+		}
+	}
+	foreach ($lvs as $lv) {
+		for ($j = 1; $j <= $min_evals; ++$j) {
+			$body .= "<td>{$lv['name']}/E{$j}</td>";
+		}
+		$body .= "<td>{$lv['name']}/Média</td>";
+	}
+	for ($j = 1; $j <= $min_evals; ++$j) {
+		$body .= "<td>Relevante/E{$j}</td>";
+	}
+	$body .= '</tr></thead><tbody>';
+	foreach ($docs as $doc) {
+		$limit = count($queries) * $min_evals;
+		$body .= '<tr>';
+		$body .= "<td>{$doc['id']}</td><td>{$doc['url']}</td>";
+		$qes = query("
+			SELECT query_id, evaluator_id, relevant
+			FROM query_evaluation
+			WHERE document_id = {$doc['id']}
+			ORDER BY relevant DESC, query_id, evaluator_id
+			LIMIT {$limit}
+		");
+		foreach ($qes as $qe) {
+			$body .= "<td>{$qe['relevant']}</td>";
+		}
+		$limit = count($lvs) * $min_evals;
+		$des = query("
+			SELECT lt.name
+			FROM document_evaluation AS de
+			INNER JOIN linguistic_term AS lt ON (lt.id = de.linguistic_term_id)
+			WHERE de.document_id = {$doc['id']}
+			ORDER BY de.linguistic_term_id DESC, de.linguistic_variable_id, de.evaluator_id
+			LIMIT {$limit}
+		");
+		$media = 0;
+		$i = 0;
+		foreach ($des as $de) {
+			$peso = $pesos[$de['name']];
+			$media += $peso;
+			$body .= "<td>{$de['name']} ({$peso})</td>";
+			if (++$i == $min_evals) {
+				$media /= (float) $min_evals;
+				$peso = round($media);
+				$body .= "<td>{$pesos_flip[$peso]} ({$media})</td>";
+				$media = $i = 0;
+			}
+		}
+		$drs = query("
+			SELECT relevant
+			FROM document_relevancy
+			WHERE document_id = {$doc['id']}
+			ORDER BY relevant DESC, evaluator_id
+			LIMIT {$min_evals}
+		");
+		foreach ($drs as $dr) {
+			$body .= "<td>{$dr['relevant']}</td>";
+		}
+		$body .= '</tr>';
+	}
+	$body .= '</tbody></table>';
 	success();
 } else if ($action == 'generate_experiment') {
 	$title = 'IREval';
