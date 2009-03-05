@@ -46,9 +46,6 @@ public class Document implements Serializable, Comparable<Document>, Cloneable {
 
 	@Column
 	private double score;
-	
-	@Column
-	private double fuzzy;
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST,
 			CascadeType.MERGE })
@@ -452,20 +449,6 @@ public class Document implements Serializable, Comparable<Document>, Cloneable {
 	@Override
 	public String toString() {
 		return String.format("%s", getUrl());
-	}
-
-	/**
-	 * @return the fuzzy
-	 */
-	public double getFuzzy() {
-		return fuzzy;
-	}
-
-	/**
-	 * @param fuzzy the fuzzy to set
-	 */
-	public void setFuzzy(double fuzzy) {
-		this.fuzzy = fuzzy;
 	}
 
 }
