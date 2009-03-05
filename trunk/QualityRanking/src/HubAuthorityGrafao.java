@@ -35,9 +35,9 @@ import edu.uci.ics.jung.graph.Graph;
 
 public class HubAuthorityGrafao {
 
-	public static int qtdPag = 200;
+	public static int qtdPag = 100;
 	public static int qtdLinks = 10;
-	public static int qtdLevels = 3;
+	public static int qtdLevels = 1;
 
 	private static Connection connIreval, connFoxset;
 	private static PreparedStatement psSelect, psUpdate;
@@ -113,8 +113,11 @@ public class HubAuthorityGrafao {
 					idPai = ++idMax;
 					docs.put(pai, idPai);
 				}
-				lines.add(idPai + " " + id + " 1");
-				getLinks(pai, nivel + 1, max);
+				lines.add(idPai + " " + id + " 1");				
+				
+				if (++j <= qtdLinks) {
+					getLinks(pai, nivel + 1, max);
+				}
 			}
 			wf = null;
 			System.gc();
@@ -154,7 +157,7 @@ public class HubAuthorityGrafao {
 		for (Object obj : rankings) {
 			NodeRanking ranking = (NodeRanking) obj;
 			if (ranking.originalPos == id) {
-				return Double.isNaN(ranking.rankScore) ? 0 : ranking.rankScore;
+				return (Double.isNaN(ranking.rankScore) ? 0 : ranking.rankScore);
 			}
 		}
 		System.out.println("ZERO!");
@@ -172,10 +175,10 @@ public class HubAuthorityGrafao {
 		hitsHub.evaluate();
 		for (String url : urls) {
 			double authority = getScore(hitsAuthority, url);
-			System.out.println(String.format("Authority (%s):\n%.5f", url,
+			System.out.println(String.format("Authority (%s):\n%.30f", url,
 					authority));
 			double hub = getScore(hitsHub, url);
-			System.out.println(String.format("Hub (%s):\n%.5f", url, hub));
+			System.out.println(String.format("Hub (%s):\n%.30f", url, hub));
 			pwResultado.println(authority + " " + hub + " " + url);
 			pwResultado.flush();
 			if (connFoxset == null) {
