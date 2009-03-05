@@ -477,7 +477,7 @@ public abstract class Service extends Thread {
 			}
 			if (lastModified != null) {
 				double diffDates = calcDiffDays(getNow(), lastModified);
-				double quo = (diffDates + 1);
+				double quo = (diffDates / (3 * 30)) + 1;
 				score = 1 / (quo > 1 ? quo : 1);
 			}
 		}
