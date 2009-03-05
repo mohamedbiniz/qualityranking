@@ -5,6 +5,7 @@ package br.ufrj.cos.foxset.search;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.URL;
 
 /**
@@ -17,25 +18,20 @@ public class ThreadStream extends ThreadFoxSet {
 
 	private InputStream stream = null;
 
-	private boolean pronto = false;
-
 	public ThreadStream(URL url) {
 		setPronto(false);
 		setUrl(url);
 	}
 
 	@Override
-	public void run() {
-		super.run();
+	public void execute() throws ConnectException {
 		InputStream stream = null;
 		try {
 			stream = getUrl().openStream();
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		setStream(stream);
-		setPronto(true);
 	}
 
 	/**
@@ -66,21 +62,6 @@ public class ThreadStream extends ThreadFoxSet {
 	 */
 	public void setStream(InputStream stream) {
 		this.stream = stream;
-	}
-
-	/**
-	 * @return the pronto
-	 */
-	public boolean isPronto() {
-		return pronto;
-	}
-
-	/**
-	 * @param pronto
-	 *            the pronto to set
-	 */
-	public void setPronto(boolean pronto) {
-		this.pronto = pronto;
 	}
 
 }

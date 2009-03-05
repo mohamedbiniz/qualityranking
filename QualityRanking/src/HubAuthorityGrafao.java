@@ -35,7 +35,7 @@ import edu.uci.ics.jung.graph.Graph;
 
 public class HubAuthorityGrafao {
 
-	public static int qtdPag = 100;
+	public static int qtdPag = 103;
 	public static int qtdMaxBackLinks = 100;
 	public static int qtdLinks = 10;
 	public static int qtdLevels = 1;
@@ -201,14 +201,14 @@ public class HubAuthorityGrafao {
 				int id = rs.getInt("id");
 				System.out.println("ID no FoxseT: " + id);
 				System.out
-						.println(String.format("Authority : %.5f", authority));
-				psUpdate.setBigDecimal(1, new BigDecimal(round(authority)));
+						.println(String.format("Authority : %.50f", authority));
+				psUpdate.setDouble(1, authority);
 				psUpdate.setInt(2, id);
 				psUpdate.setInt(3, 79); // Reputation
 
 				int rows = psUpdate.executeUpdate();
-				System.out.println(String.format("Hub : %.5f", hub));
-				psUpdate.setBigDecimal(1, new BigDecimal(round(hub)));
+				System.out.println(String.format("Hub : %.50f", hub));
+				psUpdate.setDouble(1, hub);
 				psUpdate.setInt(2, id);
 				psUpdate.setInt(3, 81); // completeness
 
@@ -218,10 +218,6 @@ public class HubAuthorityGrafao {
 				System.out.println("Nao ha URL no Foxset: " + url);
 			}
 		}
-	}
-
-	private static double round(double authority) {
-		return new Double(Math.round(authority * 100000)) / 100000.0;
 	}
 
 	private static void carregarUrls() throws IOException {
