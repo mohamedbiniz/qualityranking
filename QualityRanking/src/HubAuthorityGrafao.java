@@ -36,8 +36,10 @@ import edu.uci.ics.jung.graph.Graph;
 public class HubAuthorityGrafao {
 
 	public static int qtdPag = 100;
+	public static int qtdMaxBackLinks = 100;
 	public static int qtdLinks = 10;
 	public static int qtdLevels = 1;
+	public static boolean discardSameDomain = true;
 
 	private static Connection connIreval, connFoxset;
 	private static PreparedStatement psSelect, psUpdate;
@@ -47,7 +49,8 @@ public class HubAuthorityGrafao {
 	private static Set<String> lines = new HashSet<String>();
 	private static int idMax = 0;
 
-	public static Set<Result> getBackLinks(String url) throws SearchException {
+	public static Set<Result> getBackLinks(String url, int maxBackLinks,
+			boolean discardSameDomain) throws SearchException, IOException {
 		int engine = 1;
 		SearchEngine se = null;
 		if (engine == 0) {
@@ -58,10 +61,12 @@ public class HubAuthorityGrafao {
 			se
 					.setAppID("j3ANBxbV34FKDH_U3kGw0Jwj5Zbc__TDAYAzRopuJMGa8WBt0mtZlj4n1odUtMR8hco-");
 		}
+		se.setMaxResults(maxBackLinks);
 		List<Result> results = se.search("link:" + url);
 		Set<Result> setURLS = new HashSet<Result>();
 		for (Result result : results) {
-			if (!WebDocument.discardUrl(result.getURL()))
+			if (!WebDocument
+					.discardUrl(result.getURL(), discardSameDomain, url))
 				setURLS.add(result);
 		}
 		return setURLS;
@@ -86,20 +91,20 @@ public class HubAuthorityGrafao {
 					docs.put(filho, idFilho);
 				}
 				lines.add(id + " " + idFilho + " 1");
-				if (++i <= qtdLinks) {
-					getLinks(filho, nivel + 1, max);
-				}
+				// if (++i <= qtdLinks) {
+				getLinks(filho, nivel + 1, max);
+				// }
 			}
 
 			Set<Result> results = null;
 			try {
-				results = getBackLinks(url);
+				results = getBackLinks(url, qtdMaxBackLinks, discardSameDomain);
 			} catch (Exception e) {
 				try {
 					Thread.sleep(1000);
 				} catch (Exception ee) {
 				}
-				results = getBackLinks(url);
+				results = getBackLinks(url, qtdMaxBackLinks, discardSameDomain);
 			}
 			System.out.println("Rec. " + nivel + ", BL = " + results.size()
 					+ ": " + id + " - " + url);
@@ -113,11 +118,10 @@ public class HubAuthorityGrafao {
 					idPai = ++idMax;
 					docs.put(pai, idPai);
 				}
-				lines.add(idPai + " " + id + " 1");				
-				
-				if (++j <= qtdLinks) {
-					getLinks(pai, nivel + 1, max);
-				}
+				lines.add(idPai + " " + id + " 1");
+				// if (++j <= qtdLinks) {
+				getLinks(pai, nivel + 1, max);
+				// }
 			}
 			wf = null;
 			System.gc();
