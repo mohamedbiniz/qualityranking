@@ -214,8 +214,8 @@ public class WebDocument {
 		return forwardLinks;
 	}
 
-	public Map<String, Integer> getBackLinks() throws MalformedURLException,
-			IOException {
+	public Map<String, Integer> getBackLinks(boolean discardSameDomain)
+			throws MalformedURLException, IOException {
 		if (backLinks == null) {
 			backLinks = new HashMap<String, Integer>();
 			int start = 0;
@@ -241,7 +241,8 @@ public class WebDocument {
 					String matchedURL = m.group(1).trim();
 
 					// Filtra sites proibidos.
-					if (discardUrl(matchedURL))
+					if (discardUrl(matchedURL, discardSameDomain, url
+							.toString()))
 						break;
 					Integer count = backLinks.get(matchedURL);
 					backLinks.put(matchedURL, count == null ? 1 : count + 1);
@@ -251,14 +252,22 @@ public class WebDocument {
 		return backLinks;
 	}
 
-	public static boolean discardUrl(String url) {
+	public static boolean discardUrl(String urlNowStr,
+			boolean discardSameDomain, String urlLinkStr) throws IOException {
 		// Filtra sites proibidos.
 		Pattern p1 = Pattern
 				.compile("\\/ad\\/|\\/ads\\/|\\/ads\\.|\\/ad\\.|\\?|\\.blog|\\/blog|\\/dblp");
-		Matcher m1 = p1.matcher(url.toLowerCase());
+		Matcher m1 = p1.matcher(urlNowStr.toLowerCase());
 		if (m1.find()) {
-			System.out.println("URL desconsiderada = " + url);
+			System.out.println("URL desconsiderada = " + urlNowStr);
 			return true;
+		}
+		if (discardSameDomain) {
+			URL urlNow = new URL(urlNowStr);
+			URL urlLink = new URL(urlLinkStr);
+			if (urlNow.getHost().equalsIgnoreCase(urlLink.getHost())) {
+				return true;
+			}
 		}
 		return false;
 	}
