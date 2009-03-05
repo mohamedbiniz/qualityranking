@@ -276,7 +276,7 @@ public abstract class Service extends Thread {
 				} else if (code.equals(QualityDimension.TIM)) {
 					score = getTimeliness(document);
 				}
-				documentQualityDimension.setScore(new BigDecimal(score));
+				documentQualityDimension.setScore(score);
 				getDao().create(documentQualityDimension);
 			}
 
@@ -556,7 +556,7 @@ public abstract class Service extends Thread {
 				}
 			}
 
-			document.setScore(new BigDecimal(documentScore.doubleValue()));
+			document.setScore(documentScore.doubleValue());
 			HibernateDAO.getInstance().update(document);
 		}
 

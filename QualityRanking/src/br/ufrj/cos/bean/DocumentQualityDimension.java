@@ -20,8 +20,11 @@ public class DocumentQualityDimension implements Serializable {
 	@EmbeddedId
 	private DocumentQualityDimensionPk id;
 
-	@Column(nullable = false, precision = 31, scale = 30)
-	private BigDecimal score;
+	@Column
+	private double score;
+
+	@Column
+	private double fuzzy;
 
 	public DocumentQualityDimension() {
 		setId(new DocumentQualityDimensionPk());
@@ -75,7 +78,7 @@ public class DocumentQualityDimension implements Serializable {
 	/**
 	 * @return the score
 	 */
-	public BigDecimal getScore() {
+	public double getScore() {
 		return score;
 	}
 
@@ -83,7 +86,22 @@ public class DocumentQualityDimension implements Serializable {
 	 * @param score
 	 *            the score to set
 	 */
-	public void setScore(BigDecimal score) {
+	public void setScore(double score) {
 		this.score = score;
+	}
+
+	/**
+	 * @return the fuzzy
+	 */
+	public double getFuzzy() {
+		return fuzzy;
+	}
+
+	/**
+	 * @param fuzzy
+	 *            the fuzzy to set
+	 */
+	public void setFuzzy(double fuzzy) {
+		this.fuzzy = fuzzy;
 	}
 }

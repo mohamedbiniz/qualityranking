@@ -44,8 +44,11 @@ public class Document implements Serializable, Comparable<Document>, Cloneable {
 	@Column(nullable = false)
 	private boolean active;
 
-	@Column(precision = 31, scale = 30)
-	private BigDecimal score;
+	@Column
+	private double score;
+	
+	@Column
+	private double fuzzy;
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST,
 			CascadeType.MERGE })
@@ -301,7 +304,7 @@ public class Document implements Serializable, Comparable<Document>, Cloneable {
 	/**
 	 * @return the score
 	 */
-	public BigDecimal getScore() {
+	public double getScore() {
 		return score;
 	}
 
@@ -309,7 +312,7 @@ public class Document implements Serializable, Comparable<Document>, Cloneable {
 	 * @param score
 	 *            the score to set
 	 */
-	public void setScore(BigDecimal score) {
+	public void setScore(double score) {
 		this.score = score;
 	}
 
@@ -449,6 +452,20 @@ public class Document implements Serializable, Comparable<Document>, Cloneable {
 	@Override
 	public String toString() {
 		return String.format("%s", getUrl());
+	}
+
+	/**
+	 * @return the fuzzy
+	 */
+	public double getFuzzy() {
+		return fuzzy;
+	}
+
+	/**
+	 * @param fuzzy the fuzzy to set
+	 */
+	public void setFuzzy(double fuzzy) {
+		this.fuzzy = fuzzy;
 	}
 
 }
