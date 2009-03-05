@@ -397,4 +397,17 @@ public class HelperAcessDB {
 		return scoresVector;
 	}
 
+	public static Collection<ContextQualityDimensionWeight> loadContextQualityDimensionWeightsOfQualityDimension(
+			DataSet dataSet, QualityDimension qualityDimension) {
+		Criteria criteria = getDao().openSession().createCriteria(
+				ContextQualityDimensionWeight.class).add(
+				Restrictions.eq("id.dataSet", dataSet)).add(
+				Restrictions.eq("id.qualityDimension", qualityDimension))
+				.addOrder(Order.asc("id.qualityDimension"));
+		criteria
+				.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+		List<ContextQualityDimensionWeight> listCQDW = criteria.list();
+		return listCQDW;
+	}
+
 }
