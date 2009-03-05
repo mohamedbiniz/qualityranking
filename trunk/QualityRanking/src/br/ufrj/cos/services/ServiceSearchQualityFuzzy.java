@@ -85,7 +85,7 @@ public class ServiceSearchQualityFuzzy extends ServiceSearch {
 		for (Document documentOfDataSetFather : documents) {
 			Document document = documentOfDataSetFather.clone();
 			document.setDataSet(dataSet);
-			document.setScore(null);
+			document.setScore(0);
 			dataSet.addDocument(document);
 		}
 

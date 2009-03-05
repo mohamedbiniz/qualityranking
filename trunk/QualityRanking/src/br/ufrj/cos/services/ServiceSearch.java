@@ -287,7 +287,7 @@ public abstract class ServiceSearch extends Service {
 		double score = 0;
 		score = ((double) sizeResults - (double) position)
 				/ ((double) sizeResults);
-		documentQualityDimension.setScore(new BigDecimal(score));
+		documentQualityDimension.setScore(score);
 		try {
 			getDao().create(documentQualityDimension);
 		} catch (Exception e) {

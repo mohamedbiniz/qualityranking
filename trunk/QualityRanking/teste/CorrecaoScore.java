@@ -104,7 +104,7 @@ public class CorrecaoScore {
 				}
 			}
 
-			document.setScore(new BigDecimal(documentScore.doubleValue()));
+			document.setScore(documentScore.doubleValue());
 			HibernateDAO.getInstance().update(document);
 		}
 
@@ -198,7 +198,7 @@ public class CorrecaoScore {
 						double score = 0;
 						score = getTimeliness(document, metadata);
 						documentQualityDimension
-								.setScore(new BigDecimal(score));
+								.setScore(score);
 						getDao().update(documentQualityDimension);
 					}
 
