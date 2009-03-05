@@ -20,7 +20,7 @@ public class DocumentQualityDimension implements Serializable {
 	@EmbeddedId
 	private DocumentQualityDimensionPk id;
 
-	@Column(nullable = false, precision = 6, scale = 5)
+	@Column(nullable = false, precision = 31, scale = 30)
 	private BigDecimal score;
 
 	public DocumentQualityDimension() {
