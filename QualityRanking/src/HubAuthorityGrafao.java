@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import br.ufrj.cos.GraphInstance;
 import br.ufrj.cos.foxset.search.GoogleSearch;
@@ -35,9 +37,9 @@ import edu.uci.ics.jung.graph.Graph;
 
 public class HubAuthorityGrafao {
 
-	public static int qtdPag = 2;
-	public static int qtdLinks = 5;
-	public static int qtdLevels = 2;
+	public static int qtdPag = 200;
+	public static int qtdLinks = 10;
+	public static int qtdLevels = 3;
 
 	private static Connection connIreval, connFoxset;
 	private static PreparedStatement psSelect, psUpdate;
@@ -47,7 +49,7 @@ public class HubAuthorityGrafao {
 	private static Set<String> lines = new HashSet<String>();
 	private static int idMax = 0;
 
-	public static List<Result> getBackLinks(String url) throws SearchException {
+	public static Set<Result> getBackLinks(String url) throws SearchException {
 		int engine = 1;
 		SearchEngine se = null;
 		if (engine == 0) {
@@ -58,8 +60,16 @@ public class HubAuthorityGrafao {
 			se
 					.setAppID("j3ANBxbV34FKDH_U3kGw0Jwj5Zbc__TDAYAzRopuJMGa8WBt0mtZlj4n1odUtMR8hco-");
 		}
-		return se.search("link:" + url);
+		List<Result> results = se.search("link:" + url);
+		Set<Result> setURLS = new HashSet<Result>();
+		for (Result result : results) {
+			if (!WebDocument.discardUrl(result.getURL()))
+				setURLS.add(result);
+		}
+		return setURLS;
 	}
+
+	
 
 	public static void getLinks(String url, int nivel, int max) {
 		if (nivel > max) {
@@ -72,7 +82,8 @@ public class HubAuthorityGrafao {
 			System.out.println("Rec. " + nivel + ", FL = " + fl.size() + ": "
 					+ id + " - " + url);
 			int i = 0;
-			for (String filho : fl.keySet()) {
+			for (String filhoStr : fl.keySet()) {
+				String filho = tratarURL(filhoStr);
 				Integer idFilho = docs.get(filho);
 				if (idFilho == null) {
 					idFilho = ++idMax;
@@ -84,7 +95,7 @@ public class HubAuthorityGrafao {
 				}
 			}
 
-			List<Result> results = null;
+			Set<Result> results = null;
 			try {
 				results = getBackLinks(url);
 			} catch (Exception e) {
@@ -100,7 +111,7 @@ public class HubAuthorityGrafao {
 			for (Result r : results) {
 				// if (++j > 2)
 				// break;
-				String pai = r.getURL();
+				String pai = tratarURL(r.getURL());
 				Integer idPai = docs.get(pai);
 				if (idPai == null) {
 					idPai = ++idMax;
@@ -119,9 +130,17 @@ public class HubAuthorityGrafao {
 		}
 	}
 
+	private static String tratarURL(String filho) {
+		filho = filho.toLowerCase();
+		if (filho.endsWith("/")) {
+			filho = filho.substring(0, filho.length() - 1);
+		}
+		return filho;
+	}
+
 	public static void pajek() throws Exception {
 		PrintWriter writer = new PrintWriter(new FileWriter("pajek.txt"));
-		writer.println("*Vertices " + docs.size());
+		writer.println("*Vertices " + (docs.size() + 2));
 		for (String url : docs.keySet()) {
 			Integer id = docs.get(url);
 			writer.println(id + " \"" + url + "\"");
@@ -277,9 +296,9 @@ public class HubAuthorityGrafao {
 			}
 			pajek();
 		}
-		jung();
+		//jung();
 		pwResultado.close();
-		//if (objetos != null)
-			//objetos.delete();
+		// if (objetos != null)
+		// objetos.delete();
 	}
 }

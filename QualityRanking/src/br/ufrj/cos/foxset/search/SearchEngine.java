@@ -19,7 +19,7 @@ public abstract class SearchEngine {
 
 	protected static final String CHARSET_UTF_8 = "UTF-8";
 
-	public static class Result {
+	public static class Result implements Comparable<Result> {
 
 		private String title, URL, summary;
 
@@ -30,7 +30,7 @@ public abstract class SearchEngine {
 		}
 
 		public void setURL(String URL) {
-			this.URL = URL;
+			this.URL = URL.trim();
 		}
 
 		public String getSummary() {
@@ -61,6 +61,21 @@ public abstract class SearchEngine {
 			int unixTime = new Integer(modificationDateStrUnixTime).intValue();
 			long timestamp = unixTime * 1000; // msec
 			setModificationDate(new Date(timestamp));
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Result) {
+				Result r = (Result) obj;
+				int c = compareTo(r);
+				if (c == 0)
+					return true;
+			}
+			return false;
+		}
+
+		public int compareTo(Result r) {
+			return getURL().compareToIgnoreCase(r.getURL());
 		}
 	}
 
