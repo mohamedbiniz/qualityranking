@@ -134,6 +134,8 @@ public class MetadataExtract {
 			Date date = extractDateFromSearch(connection.getURL());
 			if (date != null)
 				lastModified = date;
+			if (lastModified == null || (lastModified.before(minDate)))
+				lastModified = minDate;
 		}
 		if (lastModified != null) {
 			DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
@@ -157,10 +159,10 @@ public class MetadataExtract {
 		return date;
 	}
 
-	private Date getMinDate() {
+	public static Date getMinDate() {
 		Calendar c = new GregorianCalendar();
 		c.setTime(new Date(0));
-		c.set(Calendar.YEAR, 1970);
+		c.set(Calendar.YEAR, 2000);
 		c.set(Calendar.MONTH, Calendar.JANUARY);
 		c.set(Calendar.DAY_OF_MONTH, 1);
 		return c.getTime();

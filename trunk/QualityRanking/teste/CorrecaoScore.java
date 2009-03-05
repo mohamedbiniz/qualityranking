@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -10,6 +11,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
+import br.ufrj.cos.bean.ContextQualityDimensionWeight;
 import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.bean.DocumentQualityDimension;
@@ -18,6 +22,7 @@ import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.db.HelperAcessDB;
 import br.ufrj.cos.db.HibernateDAO;
 import br.ufrj.cos.enume.MetadataType;
+import br.ufrj.cos.matlab.exception.MatLabException;
 import br.ufrj.cos.services.Service;
 import br.ufrj.cos.services.process.MetadataExtract;
 
@@ -37,12 +42,13 @@ public class CorrecaoScore {
 		DataSet dataSet = (DataSet) HibernateDAO.getInstance().loadById(
 				DataSet.class, new Long(578));
 		try {
-			// Service.fuzzyDataSet(dataSet);
-			// corrigirMetadataDate(dataSet);
-			System.gc();
-			int[] a = count(dataSet);
-			System.out.println(a[0]);
-			System.out.println(a[1]);
+
+			corrigirMetadataDate(dataSet);
+			fuzzyDataSet(dataSet);
+			// System.gc();
+			// int[] a = count(dataSet);
+			// System.out.println(a[0]);
+			// System.out.println(a[1]);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -55,6 +61,52 @@ public class CorrecaoScore {
 		// "=SE(%s%d<C2;B2;SE(%s%d<C3;B3;SE(%s%d<C4;B4;SE(%s%d<C5;B5;B6))))",
 		// l, i, l, i, l, i, l, i));
 		// }
+
+	}
+
+	public static void fuzzyDataSet(DataSet dataSet) throws Exception {
+		QualityDimension qualityDimension = HelperAcessDB.loadQualityDimension(
+				dataSet, QualityDimension.TIM);
+
+		Collection<ContextQualityDimensionWeight> listCQDWeights = HelperAcessDB
+				.loadContextQualityDimensionWeightsOfQualityDimension(dataSet,
+						qualityDimension);
+
+		int qtdQualityDimensions = HelperAcessDB.loadQualityDimensions(dataSet)
+				.size();
+		double contextWeights[] = HelperAcessDB.getWeights(listCQDWeights);
+
+		Collection<Document> documents = HelperAcessDB.loadDocuments(dataSet);
+
+		for (Document document : documents) {
+
+			// double[] qds = HelperAcessDB
+			// .loadDocumentQualityDimensionScores(document);
+			double[] qds = HelperAcessDB
+					.loadDocumentQualityDimensionScoresOfQualityDimension(
+							document, qualityDimension);
+
+			Double documentScore = null;
+			while (documentScore == null) {
+				try {
+					// documentScore = fuzzy(qtdQualityDimensions, qds,
+					// contextWeights);
+					documentScore = Service.fuzzy(1, qds, contextWeights);
+				} catch (MatLabException mle) {
+					System.err.println(mle.getMessage());
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"Possivelmente o serviço do MatLab não está iniciado ou houve erro no mesmo!\n"
+											+ "É necessário (re)iniciar o serviço do MatLab antes de continuar!",
+									"Erro no MatLab",
+									JOptionPane.WARNING_MESSAGE);
+				}
+			}
+
+			document.setScore(new BigDecimal(documentScore.doubleValue()));
+			HibernateDAO.getInstance().update(document);
+		}
 
 	}
 
@@ -107,27 +159,49 @@ public class CorrecaoScore {
 
 		for (Document document : documents) {
 			System.gc();
-			MetadataExtract metadataExtract = new MetadataExtract(document
-					.getUrl());
+
 			Metadata metadata = HelperAcessDB.loadMetadata(document,
 					MetadataType.DATE);
 
-			metadata.setValue(metadataExtract.extract().get(MetadataType.DATE));
-			getDao().update(metadata);
+			if (metadata != null) {
 
-			for (QualityDimension qualityDimension : qualityDimensions) {
-				documentQualityDimension = HelperAcessDB
-						.loadDocumentQualityDimension(document,
-								qualityDimension);
+				// try {
+				// MetadataExtract metadataExtract = new
+				// MetadataExtract(document.getUrl());
+				// metadata.setValue(metadataExtract.extract().get(
+				// MetadataType.DATE));
+				// } catch (IOException e) {
+				// DateFormat dateFormat = new SimpleDateFormat(
+				// MetadataExtract.DATE_FORMAT);
+				// metadata.setValue(dateFormat.format(
+				// MetadataExtract.getMinDate()).getBytes());
+				// }
 
-				String code = qualityDimension.getCodeStr();
-				if (code.equals(QualityDimension.TIM)) {
-					double score = 0;
-					score = getTimeliness(document, metadata);
-					documentQualityDimension.setScore(new BigDecimal(score));
-					getDao().update(documentQualityDimension);
+//				DateFormat dateFormat = new SimpleDateFormat(
+//						MetadataExtract.DATE_FORMAT);
+//				Date data = dateFormat.parse(new String(metadata.getValue()));
+//				if (data.before(MetadataExtract.getMinDate())) {
+//					data = MetadataExtract.getMinDate();
+//					metadata.setValue(dateFormat.format(
+//							MetadataExtract.getMinDate()).getBytes());
+//					getDao().update(metadata);
+//				}
+
+				for (QualityDimension qualityDimension : qualityDimensions) {
+					documentQualityDimension = HelperAcessDB
+							.loadDocumentQualityDimension(document,
+									qualityDimension);
+
+					String code = qualityDimension.getCodeStr();
+					if (code.equals(QualityDimension.TIM)) {
+						double score = 0;
+						score = getTimeliness(document, metadata);
+						documentQualityDimension
+								.setScore(new BigDecimal(score));
+						getDao().update(documentQualityDimension);
+					}
+
 				}
-
 			}
 
 		}
@@ -135,7 +209,9 @@ public class CorrecaoScore {
 
 	private static double getTimeliness(Document document, Metadata metadata) {
 		double score = 0;
-		byte[] metadataValue = metadata.getValue();
+		byte[] metadataValue = null;
+		if (metadata != null)
+			metadataValue = metadata.getValue();
 		if (metadataValue != null) {
 			DateFormat dateFormat = new SimpleDateFormat(
 					MetadataExtract.DATE_FORMAT);
@@ -151,7 +227,7 @@ public class CorrecaoScore {
 			}
 			if (lastModified != null) {
 				double diffDates = calcDiffDays(getNow(), lastModified);
-				double quo = (diffDates + 1);
+				double quo = (diffDates / (3 * 30)) + 1;
 				score = 1 / (quo > 1 ? quo : 1);
 			}
 		}
