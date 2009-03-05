@@ -65,8 +65,8 @@ public class YahooSearch extends SearchEngine {
 						.getTextContent());
 				result.setSummary(elem.getElementsByTagName("Summary").item(0)
 						.getTextContent());
-				result.setModificationDate(elem.getElementsByTagName("ModificationDate").item(0)
-						.getTextContent());
+				result.setModificationDate(elem.getElementsByTagName(
+						"ModificationDate").item(0).getTextContent());
 				results.add(result);
 			}
 
