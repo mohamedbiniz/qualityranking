@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 
 /**
  * @author Fabricio
@@ -18,16 +19,13 @@ public class ThreadBuffer extends ThreadFoxSet {
 
 	private StringBuffer content = null;
 
-	private boolean pronto = false;
-
 	public ThreadBuffer(InputStream stream) {
 		setPronto(false);
 		setStream(stream);
 	}
 
 	@Override
-	public void run() {
-		super.run();
+	public void execute() throws ConnectException {
 		StringBuffer content = null;
 		try {
 			BufferedReader br = new BufferedReader(
@@ -41,7 +39,6 @@ public class ThreadBuffer extends ThreadFoxSet {
 			e.printStackTrace();
 		}
 		setContent(content);
-		setPronto(true);
 	}
 
 	/**
@@ -57,21 +54,6 @@ public class ThreadBuffer extends ThreadFoxSet {
 	 */
 	public void setStream(InputStream stream) {
 		this.stream = stream;
-	}
-
-	/**
-	 * @return the pronto
-	 */
-	public boolean isPronto() {
-		return pronto;
-	}
-
-	/**
-	 * @param pronto
-	 *            the pronto to set
-	 */
-	public void setPronto(boolean pronto) {
-		this.pronto = pronto;
 	}
 
 	/**
