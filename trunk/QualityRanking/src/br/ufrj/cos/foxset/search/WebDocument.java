@@ -198,6 +198,14 @@ public class WebDocument {
 			int j = 0;
 			while (m.find()/* && (j++<=qtdLinks) */) {
 				String matchedURL = m.group(1).trim();
+				
+				//Filtra sites proibidos.
+				Pattern p1 = Pattern.compile("\\/ad\\/|\\/ads\\/|\\/ads\\.|\\/ad\\.|\\.\\?|\\.blog|\\/blog|\\/dblp");
+				Matcher m1 = p1.matcher(matchedURL.toLowerCase());
+				if (m1.find()){
+					System.out.println("URL desconsiderada FL= " + matchedURL);
+					break;
+				}				
 				Integer count = forwardLinks.get(matchedURL);
 				forwardLinks.put(matchedURL, count == null ? 1 : count + 1);
 			}
@@ -230,6 +238,15 @@ public class WebDocument {
 				Matcher m = p.matcher(wf.getContentAsString());
 				while (m.find()) {
 					String matchedURL = m.group(1).trim();
+					
+					//Filtra sites proibidos.
+					Pattern p1 = Pattern.compile("\\/ad\\/|\\/ads\\/|\\/ads\\.|\\/ad\\.|\\.\\?|\\.blog|\\/blog|\\/dblp");
+					Matcher m1 = p1.matcher(matchedURL.toLowerCase());
+					if (m1.find()){
+						System.out.println("URL desconsiderada BL= " + matchedURL);
+						break;
+					}
+					
 					Integer count = backLinks.get(matchedURL);
 					backLinks.put(matchedURL, count == null ? 1 : count + 1);
 				}

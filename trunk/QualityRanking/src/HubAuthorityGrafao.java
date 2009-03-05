@@ -35,9 +35,9 @@ import edu.uci.ics.jung.graph.Graph;
 
 public class HubAuthorityGrafao {
 
-	public static int qtdPag = 200;
-	public static int qtdLinks = 10;
-	public static int qtdLevels = 3;
+	public static int qtdPag = 2;
+	public static int qtdLinks = 5;
+	public static int qtdLevels = 2;
 
 	private static Connection connIreval, connFoxset;
 	private static PreparedStatement psSelect, psUpdate;
@@ -121,7 +121,7 @@ public class HubAuthorityGrafao {
 
 	public static void pajek() throws Exception {
 		PrintWriter writer = new PrintWriter(new FileWriter("pajek.txt"));
-		writer.println("*Vertices " + urls.size());
+		writer.println("*Vertices " + docs.size());
 		for (String url : docs.keySet()) {
 			Integer id = docs.get(url);
 			writer.println(id + " \"" + url + "\"");
