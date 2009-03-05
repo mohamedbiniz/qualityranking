@@ -280,7 +280,7 @@ public class HubAuthorityGrafao {
 					continue;
 				}
 				Integer idAtual = rs.getInt("id");
-				String urlAtual = rs.getString("url");
+				String urlAtual = tratarURL(rs.getString("url"));
 				System.out.println("Select: " + idAtual + " - " + urlAtual);
 				docs.put(urlAtual, ++idMax);
 				urls.add(urlAtual);
