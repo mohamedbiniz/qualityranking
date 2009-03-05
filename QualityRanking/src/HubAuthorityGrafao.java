@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import br.ufrj.cos.GraphInstance;
 import br.ufrj.cos.foxset.search.GoogleSearch;
@@ -68,8 +66,6 @@ public class HubAuthorityGrafao {
 		}
 		return setURLS;
 	}
-
-	
 
 	public static void getLinks(String url, int nivel, int max) {
 		if (nivel > max) {
