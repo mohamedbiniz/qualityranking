@@ -177,15 +177,16 @@ public class CorrecaoScore {
 				// MetadataExtract.getMinDate()).getBytes());
 				// }
 
-//				DateFormat dateFormat = new SimpleDateFormat(
-//						MetadataExtract.DATE_FORMAT);
-//				Date data = dateFormat.parse(new String(metadata.getValue()));
-//				if (data.before(MetadataExtract.getMinDate())) {
-//					data = MetadataExtract.getMinDate();
-//					metadata.setValue(dateFormat.format(
-//							MetadataExtract.getMinDate()).getBytes());
-//					getDao().update(metadata);
-//				}
+				// DateFormat dateFormat = new SimpleDateFormat(
+				// MetadataExtract.DATE_FORMAT);
+				// Date data = dateFormat.parse(new
+				// String(metadata.getValue()));
+				// if (data.before(MetadataExtract.getMinDate())) {
+				// data = MetadataExtract.getMinDate();
+				// metadata.setValue(dateFormat.format(
+				// MetadataExtract.getMinDate()).getBytes());
+				// getDao().update(metadata);
+				// }
 
 				for (QualityDimension qualityDimension : qualityDimensions) {
 					documentQualityDimension = HelperAcessDB
@@ -227,6 +228,7 @@ public class CorrecaoScore {
 			}
 			if (lastModified != null) {
 				double diffDates = calcDiffDays(getNow(), lastModified);
+				//Verificação de Atualização trimestral
 				double quo = (diffDates / (3 * 30)) + 1;
 				score = 1 / (quo > 1 ? quo : 1);
 			}
