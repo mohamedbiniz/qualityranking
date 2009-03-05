@@ -296,7 +296,7 @@ public class HubAuthorityGrafao {
 			}
 			pajek();
 		}
-		//jung();
+		jung();
 		pwResultado.close();
 		// if (objetos != null)
 		// objetos.delete();
