@@ -44,7 +44,7 @@ public class Document implements Serializable, Comparable<Document>, Cloneable {
 	@Column(nullable = false)
 	private boolean active;
 
-	@Column(precision = 6, scale = 5)
+	@Column(precision = 31, scale = 30)
 	private BigDecimal score;
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST,
