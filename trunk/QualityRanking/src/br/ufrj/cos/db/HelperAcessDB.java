@@ -337,7 +337,7 @@ public class HelperAcessDB {
 				.executeQuery("SELECT d.url FROM document AS d "
 						+ "WHERE d.experiment_id = 1 AND "
 						+ "((SELECT COUNT(DISTINCT evaluator_id) FROM document_evaluation AS de "
-						+ "WHERE de.document_id = d.id AND de.linguistic_term_id IS NOT NULL) = 3)");
+						+ "WHERE de.document_id = d.id AND de.linguistic_term_id IS NOT NULL) > 0)");
 		while (rs.next()) {
 			urls.add(rs.getString("url"));
 		}

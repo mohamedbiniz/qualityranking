@@ -36,9 +36,9 @@ import edu.uci.ics.jung.graph.Graph;
 
 public class HubAuthorityGrafao {
 
-	public static int qtdPag = 103;
-	public static int qtdMaxBackLinks = 100;
-	public static int qtdLinks = 10;
+	public static int qtdPag = 350;
+	public static int qtdMaxBackLinks = 50;
+	public static int qtdLinks = 50;
 	public static int qtdLevels = 1;
 	public static boolean discardSameDomain = true;
 
@@ -300,7 +300,7 @@ public class HubAuthorityGrafao {
 					.executeQuery("SELECT d.id, d.url FROM document AS d "
 							+ "WHERE d.experiment_id = 1 AND "
 							+ "((SELECT COUNT(DISTINCT evaluator_id) FROM document_evaluation AS de "
-							+ "WHERE de.document_id = d.id AND de.linguistic_term_id IS NOT NULL) = 3)");
+							+ "WHERE de.document_id = d.id AND de.linguistic_term_id IS NOT NULL) > 0)");
 			int i = 0, iAnt = -1;
 			objetos = new File("objetos.bin");
 			if (objetos.exists()) {
