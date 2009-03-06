@@ -54,4 +54,4 @@ else
     fprintf('Erro. Argumento inválido.\n');
 end
 fid = fopen(file, 'wt');
-fprintf(fid, '%12.8f\n', xCentroid);
+fprintf(fid, '%151.150f\n', xCentroid);

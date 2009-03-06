@@ -68,11 +68,11 @@ public class HelperAcessDB {
 		criteria.addOrder(Order.asc("id.qualityDimension"));
 		criteria.setProjection(Projections.property("score"));
 
-		List<BigDecimal> scores = criteria.list();
+		List<Double> scores = criteria.list();
 
 		double[] scoresVector = new double[scores.size()];
 		int i = 0;
-		for (BigDecimal s : scores) {
+		for (Double s : scores) {
 			scoresVector[i++] = s.doubleValue();
 		}
 		return scoresVector;
@@ -387,11 +387,11 @@ public class HelperAcessDB {
 		criteria.addOrder(Order.asc("id.qualityDimension"));
 		criteria.setProjection(Projections.property("score"));
 
-		List<BigDecimal> scores = criteria.list();
-
+		List<Double> scores = criteria.list();
+		
 		double[] scoresVector = new double[scores.size()];
 		int i = 0;
-		for (BigDecimal s : scores) {
+		for (Double s : scores) {
 			scoresVector[i++] = s.doubleValue();
 		}
 		return scoresVector;
