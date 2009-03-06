@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import br.ufrj.cos.GraphInstance;
+import br.ufrj.cos.bean.Document;
+import br.ufrj.cos.db.HelperAcessDB;
+import br.ufrj.cos.db.HibernateDAO;
 import br.ufrj.cos.foxset.search.GoogleSearch;
 import br.ufrj.cos.foxset.search.SearchEngine;
 import br.ufrj.cos.foxset.search.SearchException;
@@ -133,12 +137,54 @@ public class HubAuthorityGrafao {
 		}
 	}
 
-	private static String tratarURL(String filho) {
-		filho = filho.toLowerCase();
-		if (filho.endsWith("/")) {
-			filho = filho.substring(0, filho.length() - 1);
+	private static String tratarURL(String url) {
+		String newUrl = url.toLowerCase();
+		if (newUrl.endsWith("/")) {
+			newUrl = newUrl.substring(0, newUrl.length() - 1);
 		}
-		return filho;
+		try {
+			atualizarURL(url, newUrl);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return newUrl;
+	}
+
+	private static void atualizarURL(String url, String newUrl)
+			throws Exception {
+		HibernateDAO dao = HibernateDAO.getInstance();
+		dao.openSession();
+
+		Connection cIreval = DriverManager
+				.getConnection("jdbc:mysql://localhost/ireval?user=foxset&password=xamusko");
+
+		PreparedStatement pUpdate = cIreval.prepareStatement("UPDATE document "
+				+ "SET url = ? WHERE url = ?");
+
+		List<Document> documents = (List<Document>) dao.loadByField(
+				Document.class, "url", url);
+		for (Document document : documents) {
+
+			try {
+				document.setUrl(newUrl);
+				dao.initTransaction();
+				dao.getSession().flush();
+				dao.getSession().clear();
+				dao.getSession().update(document);
+				dao.commitTransaction();
+				pUpdate.setString(1, newUrl);
+				pUpdate.setString(2, url); // Reputation
+				pUpdate.executeUpdate();
+			} catch (Exception e) {
+				dao.rollbackTransaction();
+				throw e;
+			}
+
+		}
+
+		if (dao.getSession().isOpen())
+			dao.closeSession();
 	}
 
 	public static void pajek() throws Exception {
@@ -200,8 +246,8 @@ public class HubAuthorityGrafao {
 			if (rs.next()) {
 				int id = rs.getInt("id");
 				System.out.println("ID no FoxseT: " + id);
-				System.out
-						.println(String.format("Authority : %.50f", authority));
+				System.out.println(String
+						.format("Authority : %.50f", authority));
 				psUpdate.setDouble(1, authority);
 				psUpdate.setInt(2, id);
 				psUpdate.setInt(3, 79); // Reputation
@@ -246,7 +292,7 @@ public class HubAuthorityGrafao {
 		File objetos = null;
 		// se jah tiver o arquivo pajek.txt atribuir
 		// valor true, atribuir false caso contrário
-		boolean onlyJung = false;
+		boolean onlyJung = true;
 		if (!onlyJung) {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			connIreval = DriverManager
