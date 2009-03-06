@@ -43,8 +43,15 @@ public class CorrecaoScore {
 				DataSet.class, new Long(578));
 		try {
 
-			//corrigirMetadataDate(dataSet);
-			fuzzyDataSet(dataSet);
+			// corrigirMetadataDate(dataSet);
+			/**
+			 * O fuzzyDataSet serve para atualizar para apenas uma dimensao
+			 * definida no segundo parametro da função. QualityDimension.TIM //
+			 * .COM // .REP O resultado estará no campo score da tabela
+			 * document.
+			 */
+			fuzzyDataSet(dataSet, QualityDimension.TIM);
+			// Service.fuzzyDataSet(dataSet);
 			// System.gc();
 			// int[] a = count(dataSet);
 			// System.out.println(a[0]);
@@ -64,9 +71,10 @@ public class CorrecaoScore {
 
 	}
 
-	public static void fuzzyDataSet(DataSet dataSet) throws Exception {
+	public static void fuzzyDataSet(DataSet dataSet, String qd)
+			throws Exception {
 		QualityDimension qualityDimension = HelperAcessDB.loadQualityDimension(
-				dataSet, QualityDimension.TIM);
+				dataSet, qd);
 
 		Collection<ContextQualityDimensionWeight> listCQDWeights = HelperAcessDB
 				.loadContextQualityDimensionWeightsOfQualityDimension(dataSet,
@@ -197,8 +205,7 @@ public class CorrecaoScore {
 					if (code.equals(QualityDimension.TIM)) {
 						double score = 0;
 						score = getTimeliness(document, metadata);
-						documentQualityDimension
-								.setScore(score);
+						documentQualityDimension.setScore(score);
 						getDao().update(documentQualityDimension);
 					}
 
@@ -228,7 +235,7 @@ public class CorrecaoScore {
 			}
 			if (lastModified != null) {
 				double diffDates = calcDiffDays(getNow(), lastModified);
-				//Verificação de Atualização trimestral
+				// Verificação de Atualização trimestral
 				double quo = (diffDates / (3 * 30)) + 1;
 				score = 1 / (quo > 1 ? quo : 1);
 			}
