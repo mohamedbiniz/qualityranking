@@ -75,7 +75,13 @@ public abstract class SearchEngine {
 		}
 
 		public int compareTo(Result r) {
-			return getURL().compareToIgnoreCase(r.getURL());
+			if (getURL() == null && r.getURL() == null) {
+				return 0;
+			} else if (getURL() == null) {
+				return -1;
+			} else {
+				return getURL().compareToIgnoreCase(r.getURL());
+			}
 		}
 	}
 
