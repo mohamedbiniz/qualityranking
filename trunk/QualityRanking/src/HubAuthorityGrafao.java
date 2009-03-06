@@ -142,7 +142,6 @@ public class HubAuthorityGrafao {
 		try {
 			atualizarURL(url, newUrl);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return newUrl;
