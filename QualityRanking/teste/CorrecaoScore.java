@@ -43,7 +43,7 @@ public class CorrecaoScore {
 				DataSet.class, new Long(578));
 		try {
 
-			corrigirMetadataDate(dataSet);
+			//corrigirMetadataDate(dataSet);
 			fuzzyDataSet(dataSet);
 			// System.gc();
 			// int[] a = count(dataSet);
