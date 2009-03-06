@@ -427,7 +427,7 @@ public class HibernateDAO {
 	/**
 	 * Inicia a transação.
 	 */
-	public void beginTransation() {
+	private void beginTransation() {
 		transaction = session.beginTransaction();
 	}
 
@@ -452,7 +452,7 @@ public class HibernateDAO {
 	/**
 	 * Inicializa a transação caso ela ainda não esteja iniciada.
 	 */
-	private void initTransaction() {
+	public void initTransaction() {
 		if (!wasStarted()) {
 			beginTransation();
 		}
