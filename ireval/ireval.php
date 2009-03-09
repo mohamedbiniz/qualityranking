@@ -240,7 +240,7 @@ BODY;
 	$docs = query("
 		SELECT d.id, d.url
 		FROM document AS d
-		WHERE d.experiment_id = {$experiment['id']} AND ((SELECT COUNT(DISTINCT evaluator_id) FROM document_evaluation AS de WHERE 	de.document_id = d.id AND de.linguistic_term_id IS NOT NULL) = {$min_evals})");
+		WHERE d.experiment_id = {$experiment['id']} AND ((SELECT COUNT(DISTINCT evaluator_id) FROM document_evaluation AS de WHERE 	de.document_id = d.id AND de.linguistic_term_id IS NOT NULL) >= {$min_evals})");
 	$body = '<table border="1"><thead><tr>';
 	$body .= '<td>ID</td><td>URL</td>';
 	$queries = query("
