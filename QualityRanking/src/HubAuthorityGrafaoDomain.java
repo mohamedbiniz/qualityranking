@@ -39,9 +39,9 @@ import edu.uci.ics.jung.graph.Graph;
 
 public class HubAuthorityGrafaoDomain {
 
-	public static int qtdPag = 5;
-	public static int qtdMaxBackLinks = 10;
-	public static int qtdLinks = 10;
+	public static int qtdPag = 350;
+	public static int qtdMaxBackLinks = 50;
+	public static int qtdLinks = 50;
 	public static int qtdLevels = 1;
 	public static boolean discardSameDomain = true;
 
