@@ -21,7 +21,7 @@ if (length(cdq)==QD && length(qds)==QD )
 	
 	for i = 1:TL
 	    q=0;
-	    d=0;
+	    d=1;
 	    for j = 1:QD
 	        q = q + cdq(j)*SQERPagina(i,j);
 	        d = d + cdq(j);
