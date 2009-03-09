@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -75,6 +76,9 @@ public class CorrecaoScore {
 			throws Exception {
 		QualityDimension qualityDimension = HelperAcessDB.loadQualityDimension(
 				dataSet, qd);
+		
+		Collection<String> qualityDimensions = new ArrayList<String>();
+		qualityDimensions.add(qualityDimension.getCodeStr());
 
 		Collection<ContextQualityDimensionWeight> listCQDWeights = HelperAcessDB
 				.loadContextQualityDimensionWeightsOfQualityDimension(dataSet,
@@ -91,8 +95,8 @@ public class CorrecaoScore {
 			// double[] qds = HelperAcessDB
 			// .loadDocumentQualityDimensionScores(document);
 			double[] qds = HelperAcessDB
-					.loadDocumentQualityDimensionScoresOfQualityDimension(
-							document, qualityDimension);
+					.loadDocumentQualityDimensionScoresOfQualityDimensions(
+							document, qualityDimensions);
 
 			Double documentScore = null;
 			while (documentScore == null) {

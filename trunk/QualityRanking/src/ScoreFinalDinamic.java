@@ -42,13 +42,19 @@ public class ScoreFinalDinamic extends javax.swing.JFrame {
 			try {
 				Long idDataSet = Long
 						.parseLong(elementDataSet.split(" ", 2)[0]);
-				int weightREP = 0;
-				int weightCOM = 0;
-				int weightTIM = 0;
+				Integer weightREP = null;
+				Integer weightCOM = null;
+				Integer weightTIM = null;
 
-				weightREP = Integer.parseInt(jTextFieldREP.getText());
-				weightCOM = Integer.parseInt(jTextFieldCOM.getText());
-				weightTIM = Integer.parseInt(jTextFieldTIM.getText());
+				if (!jTextFieldREP.getText().equals("")) {
+					weightREP = Integer.parseInt(jTextFieldREP.getText());
+				}
+				if (!jTextFieldCOM.getText().equals("")) {
+					weightCOM = Integer.parseInt(jTextFieldCOM.getText());
+				}
+				if (!jTextFieldTIM.getText().equals("")) {
+					weightTIM = Integer.parseInt(jTextFieldTIM.getText());
+				}
 
 				String result = null;
 				try {

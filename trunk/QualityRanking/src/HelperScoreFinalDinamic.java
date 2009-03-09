@@ -1,5 +1,7 @@
 import java.awt.Component;
+import java.lang.reflect.Array;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -35,8 +37,8 @@ public class HelperScoreFinalDinamic {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	public static String generateScores(Long idDataSet, int weightREP,
-			int weightCOM, int weightTIM, Component component)
+	public static String generateScores(Long idDataSet, Integer weightREP,
+			Integer weightCOM, Integer weightTIM, Component component)
 			throws InstantiationException, IllegalAccessException,
 			ClassNotFoundException, SQLException {
 		HashMap<String, Integer> mapWeights = putWeights(weightREP, weightCOM,
@@ -59,8 +61,9 @@ public class HelperScoreFinalDinamic {
 		Collection<ContextQualityDimensionWeight> listCQDWeights = HelperAcessDB
 				.loadContextQualityDimensionWeights(dataSet);
 
-		int qtdQualityDimensions = HelperAcessDB.loadQualityDimensions(dataSet)
-				.size();
+		// int qtdQualityDimensions =
+		// HelperAcessDB.loadQualityDimensions(dataSet)
+		// .size();
 
 		double contextWeights[] = getWeights(listCQDWeights, mapWeights);
 
@@ -71,12 +74,13 @@ public class HelperScoreFinalDinamic {
 			if (!urlsIreval.contains(document.getUrl()))
 				continue;
 			double[] qds = HelperAcessDB
-					.loadDocumentQualityDimensionScores(document);
+					.loadDocumentQualityDimensionScoresOfQualityDimensions(
+							document, mapWeights.keySet());
 
 			Double documentScore = null;
 			while (documentScore == null) {
 				try {
-					documentScore = Service.fuzzy(qtdQualityDimensions, qds,
+					documentScore = Service.fuzzy(qds.length, qds,
 							contextWeights);
 				} catch (MatLabException mle) {
 					System.err.println(mle.getMessage());
@@ -108,25 +112,33 @@ public class HelperScoreFinalDinamic {
 	/**
 	 * @return
 	 */
-	private static HashMap<String, Integer> putWeights(int weightREP,
-			int weightCOM, int weightTIM) {
+	private static HashMap<String, Integer> putWeights(Integer weightREP,
+			Integer weightCOM, Integer weightTIM) {
 		HashMap<String, Integer> mapWeights = new HashMap<String, Integer>();
-		mapWeights.put(QualityDimension.REP, new Integer(weightREP));
-		mapWeights.put(QualityDimension.COM, new Integer(weightCOM));
-		mapWeights.put(QualityDimension.TIM, new Integer(weightTIM));
+		if (weightREP != null)
+			mapWeights.put(QualityDimension.REP, new Integer(weightREP));
+		if (weightCOM != null)
+			mapWeights.put(QualityDimension.COM, new Integer(weightCOM));
+		if (weightTIM != null)
+			mapWeights.put(QualityDimension.TIM, new Integer(weightTIM));
 		return mapWeights;
 	}
 
 	private static double[] getWeights(
 			Collection<ContextQualityDimensionWeight> listCQDWeights,
 			HashMap<String, Integer> mapWeights) {
-		double[] weights = new double[listCQDWeights.size()];
-		int i = 0;
+		ArrayList<Double> weights = new ArrayList<Double>();
 		for (ContextQualityDimensionWeight contextQualityDimensionWeight : listCQDWeights) {
-			weights[i++] = mapWeights.get(
-					contextQualityDimensionWeight.getQualityDimension()
-							.getCodeStr()).doubleValue();
+			Integer w = mapWeights.get(contextQualityDimensionWeight
+					.getQualityDimension().getCodeStr());
+			if (w != null)
+				weights.add(w.doubleValue());
 		}
-		return weights;
+		double[] arrayWeights = new double[weights.size()];
+		int i = 0;
+		for (Double w : weights) {
+			arrayWeights[i++] = w;
+		}
+		return arrayWeights;
 	}
 }

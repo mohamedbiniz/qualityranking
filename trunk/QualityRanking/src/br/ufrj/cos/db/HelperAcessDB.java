@@ -377,18 +377,27 @@ public class HelperAcessDB {
 		return documentQualityDimension;
 	}
 
-	public static double[] loadDocumentQualityDimensionScoresOfQualityDimension(
-			Document document, QualityDimension qualityDimension) {
+	public static double[] loadDocumentQualityDimensionScoresOfQualityDimensions(
+			Document document, Collection<String> qualityDimensions) {
 		Criteria criteria = HibernateDAO.getInstance().openSession()
 				.createCriteria(DocumentQualityDimension.class);
 
+		Collection<char[]> qdsCHAR = new ArrayList<char[]>();
+		for (String qd : qualityDimensions) {
+			qdsCHAR.add(qd.toCharArray());
+		}
+		Criteria criteria2 = HibernateDAO.getInstance().openSession()
+		.createCriteria(QualityDimension.class);
+		criteria2.add(Restrictions.in("code", qdsCHAR));
+		Collection<QualityDimension> qds = criteria2.list();
+		
 		criteria.add(Restrictions.eq("id.document", document));
-		criteria.add(Restrictions.eq("id.qualityDimension", qualityDimension));
+		criteria.add(Restrictions.in("id.qualityDimension", qds));
 		criteria.addOrder(Order.asc("id.qualityDimension"));
 		criteria.setProjection(Projections.property("score"));
 
 		List<Double> scores = criteria.list();
-		
+
 		double[] scoresVector = new double[scores.size()];
 		int i = 0;
 		for (Double s : scores) {
