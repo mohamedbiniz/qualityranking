@@ -387,10 +387,10 @@ public class HelperAcessDB {
 			qdsCHAR.add(qd.toCharArray());
 		}
 		Criteria criteria2 = HibernateDAO.getInstance().openSession()
-		.createCriteria(QualityDimension.class);
+				.createCriteria(QualityDimension.class);
 		criteria2.add(Restrictions.in("code", qdsCHAR));
 		Collection<QualityDimension> qds = criteria2.list();
-		
+
 		criteria.add(Restrictions.eq("id.document", document));
 		criteria.add(Restrictions.in("id.qualityDimension", qds));
 		criteria.addOrder(Order.asc("id.qualityDimension"));
@@ -417,6 +417,92 @@ public class HelperAcessDB {
 				.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 		List<ContextQualityDimensionWeight> listCQDW = criteria.list();
 		return listCQDW;
+	}
+
+	public static double[] loadMinQDS_InIreval(DataSet dataSet,
+			Collection<String> qualityDimensions, Set<String> urlsIreval) {
+
+		Collection<char[]> qdsCHAR = new ArrayList<char[]>();
+		for (String qd : qualityDimensions) {
+			qdsCHAR.add(qd.toCharArray());
+		}
+		Criteria criteria2 = HibernateDAO.getInstance().openSession()
+				.createCriteria(QualityDimension.class);
+		criteria2.add(Restrictions.in("code", qdsCHAR));
+		criteria2.addOrder(Order.asc("id"));
+		Collection<QualityDimension> qds = criteria2.list();
+
+		Criteria criteria3 = HibernateDAO.getInstance().openSession()
+				.createCriteria(Document.class);
+		criteria3.add(Restrictions.in("url", urlsIreval));
+		Collection<Document> docs = criteria3.list();
+
+		double[] scoresVector = new double[qds.size()];
+		int i = 0;
+		for (QualityDimension qd : qds) {
+			Criteria criteria = HibernateDAO.getInstance().openSession()
+					.createCriteria(DocumentQualityDimension.class);
+			criteria
+					.add(Restrictions.in("id.document", loadDocuments(dataSet)));
+			criteria.add(Restrictions.in("id.document", docs));
+			criteria.add(Restrictions.eq("id.qualityDimension", qd));
+			criteria.addOrder(Order.asc("id.qualityDimension"));
+			criteria.setProjection(Projections.min("score"));
+			// criteria.setProjection(Projections.alias(Projections.max("score"),
+			// "scoreMax"));
+
+			Double score = (Double) criteria.uniqueResult();
+			if (score != null)
+				scoresVector[i++] = score.doubleValue();
+			else
+				scoresVector[i++] = 0;
+		}
+
+		return scoresVector;
+	}
+
+	public static double[] loadMaxQDS_InIreval(DataSet dataSet,
+			Collection<String> qualityDimensions, Set<String> urlsIreval) {
+
+		Collection<char[]> qdsCHAR = new ArrayList<char[]>();
+		for (String qd : qualityDimensions) {
+			qdsCHAR.add(qd.toCharArray());
+		}
+		Criteria criteria2 = HibernateDAO.getInstance().openSession()
+				.createCriteria(QualityDimension.class);
+		criteria2.add(Restrictions.in("code", qdsCHAR));
+		criteria2.addOrder(Order.asc("id"));
+		Collection<QualityDimension> qds = criteria2.list();
+
+		Criteria criteria3 = HibernateDAO.getInstance().openSession()
+				.createCriteria(Document.class);
+		criteria3.add(Restrictions.in("url", urlsIreval));
+		Collection<Document> docs = criteria3.list();
+
+		double[] scoresVector = new double[qds.size()];
+		int i = 0;
+		for (QualityDimension qd : qds) {
+			Criteria criteria = HibernateDAO.getInstance().openSession()
+					.createCriteria(DocumentQualityDimension.class);
+			criteria
+					.add(Restrictions.in("id.document", loadDocuments(dataSet)));
+			criteria.add(Restrictions.in("id.document", docs));
+			criteria.add(Restrictions.eq("id.qualityDimension", qd));
+			criteria.addOrder(Order.asc("id.qualityDimension"));
+			criteria.setProjection(Projections
+					.groupProperty("id.qualityDimension"));
+			// criteria.setProjection(Projections.alias(Projections.min("score"),
+			// "scoreMin"));
+			criteria.setProjection(Projections.max("score"));
+
+			Double score = (Double) criteria.uniqueResult();
+			if (score != null)
+				scoresVector[i++] = score.doubleValue();
+			else
+				scoresVector[i++] = 0;
+		}
+
+		return scoresVector;
 	}
 
 }

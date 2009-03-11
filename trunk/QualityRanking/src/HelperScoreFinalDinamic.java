@@ -70,12 +70,22 @@ public class HelperScoreFinalDinamic {
 		int o = JOptionPane.OK_OPTION;
 		Collection<Document> documents = HelperAcessDB.loadDocuments(dataSet);
 		Set<String> urlsIreval = HelperAcessDB.loadUrlsValidasFromIreval();
+
+		double[] mins = HelperAcessDB.loadMinQDS_InIreval(dataSet, mapWeights
+				.keySet(), urlsIreval);
+		double[] maxs = HelperAcessDB.loadMaxQDS_InIreval(dataSet, mapWeights
+				.keySet(), urlsIreval);
+
 		for (Document document : documents) {
 			if (!urlsIreval.contains(document.getUrl()))
 				continue;
 			double[] qds = HelperAcessDB
 					.loadDocumentQualityDimensionScoresOfQualityDimensions(
 							document, mapWeights.keySet());
+
+			for (int i = 0; i < qds.length; i++) {
+				qds[i] = (qds[i] - mins[i]) / (maxs[i] - mins[i]);
+			}
 
 			Double documentScore = null;
 			while (documentScore == null) {
