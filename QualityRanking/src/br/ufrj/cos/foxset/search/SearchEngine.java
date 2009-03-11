@@ -83,6 +83,11 @@ public abstract class SearchEngine {
 				return getURL().compareToIgnoreCase(r.getURL());
 			}
 		}
+		
+		@Override
+		public String toString() {			
+			return String.format("%s", getURL());
+		}
 	}
 
 	private String appID;
