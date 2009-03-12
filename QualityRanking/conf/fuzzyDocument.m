@@ -13,20 +13,20 @@ if (length(cdq)==QD && length(qds)==QD )
 	SQERPagina = zeros(TL, QD);
 	for i = 1:TL
 		for j = 1:QD
-			
-			funcs{i}(qds(j));
 			SQERPagina(i, j) = funcs{i}(qds(j));
 		end
 	end
 	
 	for i = 1:TL
 	    q=0;
-	    d=1;
+	    d=0;
 	    for j = 1:QD
 	        q = q + cdq(j)*SQERPagina(i,j);
 	        d = d + cdq(j);
-	    end
-	    CQER(i)=q/d;
+        end
+        if (d == 0) CQER(i) = 0;
+        else CQER(i) = q/d;
+        end
 	end
 	
 	x = [0:0.01:1];

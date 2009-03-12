@@ -13,13 +13,19 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import pt.tumba.links.WebGraph;
 
 import br.ufrj.cos.GraphInstance;
 import br.ufrj.cos.bean.Document;
@@ -40,10 +46,14 @@ public class HubAuthorityGrafao {
 	public static int qtdMaxBackLinks = 50;
 	public static int qtdLinks = 50;
 	public static int qtdLevels = 1;
-	public static boolean discardSameDomain = true;
+	public static boolean discardSameDomain = true, repeatZeros = false,
+			useJung = false, onlyHITS = true;
+	public static String usuario = "root", senha = "123";
 
-	private static Connection connIreval, connFoxset;
-	private static PreparedStatement psSelect, psUpdate;
+	private static Connection connIreval, connFoxset, connPajek;
+	private static PreparedStatement psFoxsetExisteURL,
+			psFoxsetAtualizarScores, psPajekExisteURL, psPajekInserirURL,
+			psPajekInserirLink, psPajekAtualizarURL, psPajekAtualizarScores;
 	private static PrintWriter pwResultado;
 	private static Set<String> urls = new HashSet<String>();
 	private static Map<String, Integer> docs = new HashMap<String, Integer>();
@@ -73,57 +83,81 @@ public class HubAuthorityGrafao {
 		return setURLS;
 	}
 
-	public static void getLinks(String url, int nivel, int max) {
+	public static void getLinks(int idPajek, String url, int nivel, int max) {
 		if (nivel > max) {
 			return;
 		}
 		try {
-			Integer id = docs.get(url);
 			WebDocument wf = new WebDocument(url);
 			Map<String, Integer> fl = wf.getForwardLinks();
+			int forwardLinks = fl.keySet().size();
 			System.out.println("Rec. " + nivel + ", FL = " + fl.size() + ": "
-					+ id + " - " + url);
+					+ idPajek + " - " + url);
 			int i = 0;
 			for (String filhoStr : fl.keySet()) {
 				String filho = tratarURL(filhoStr);
-				Integer idFilho = docs.get(filho);
-				if (idFilho == null) {
-					idFilho = ++idMax;
-					docs.put(filho, idFilho);
+				// Checa se existe nas urls
+				psPajekExisteURL.setString(1, filho);
+				ResultSet rsPajek = psPajekExisteURL.executeQuery();
+				if (!rsPajek.next()) {
+					psPajekInserirURL.setString(1, filho);
+					psPajekInserirURL.setNull(2, Types.INTEGER);
+					psPajekInserirURL.setNull(3, Types.INTEGER);
+					psPajekInserirURL.executeUpdate();
+					rsPajek = psPajekExisteURL.executeQuery();
+					rsPajek.next();
 				}
-				lines.add(id + " " + idFilho + " 1");
+				int idFilho = rsPajek.getInt("pajek_id");
+				try {
+					psPajekInserirLink.setInt(1, idPajek);
+					psPajekInserirLink.setInt(2, idFilho);
+					psPajekInserirLink.executeUpdate();
+				} catch (Exception e) {
+				}
 				// if (++i <= qtdLinks) {
-				getLinks(filho, nivel + 1, max);
+				getLinks(idFilho, filho, nivel + 1, max);
 				// }
 			}
 
-			Set<Result> results = null;
-			try {
-				results = getBackLinks(url, qtdMaxBackLinks, discardSameDomain);
-			} catch (Exception e) {
-				try {
-					Thread.sleep(1000);
-				} catch (Exception ee) {
-				}
-				results = getBackLinks(url, qtdMaxBackLinks, discardSameDomain);
-			}
+			Set<Result> results = getBackLinks(url, qtdMaxBackLinks,
+					discardSameDomain);
+			int backLinks = results.size();
 			System.out.println("Rec. " + nivel + ", BL = " + results.size()
-					+ ": " + id + " - " + url);
+					+ ": " + idPajek + " - " + url);
 			int j = 0;
 			for (Result r : results) {
 				// if (++j > 2)
 				// break;
 				String pai = tratarURL(r.getURL());
-				Integer idPai = docs.get(pai);
-				if (idPai == null) {
-					idPai = ++idMax;
-					docs.put(pai, idPai);
+				// Checa se existe nas urls
+				psPajekExisteURL.setString(1, pai);
+				ResultSet rsPajek = psPajekExisteURL.executeQuery();
+				if (!rsPajek.next()) {
+					psPajekInserirURL.setString(1, pai);
+					psPajekInserirURL.setNull(2, Types.INTEGER);
+					psPajekInserirURL.setNull(3, Types.INTEGER);
+					psPajekInserirURL.executeUpdate();
+					rsPajek = psPajekExisteURL.executeQuery();
+					rsPajek.next();
 				}
-				lines.add(idPai + " " + id + " 1");
+				int idPai = rsPajek.getInt("pajek_id");
+				try {
+					psPajekInserirLink.setInt(1, idPai);
+					psPajekInserirLink.setInt(2, idPajek);
+					psPajekInserirLink.executeUpdate();
+				} catch (Exception e) {
+				}
+
 				// if (++j <= qtdLinks) {
-				getLinks(pai, nivel + 1, max);
+				getLinks(idPai, pai, nivel + 1, max);
 				// }
 			}
+			psPajekAtualizarURL.setInt(1, backLinks);
+			psPajekAtualizarURL.setInt(2, forwardLinks);
+			psPajekAtualizarURL.setTimestamp(3, new Timestamp(new Date()
+					.getTime()));
+			psPajekAtualizarURL.setInt(4, idPajek);
+			psPajekAtualizarURL.executeUpdate();
 			wf = null;
 			System.gc();
 		} catch (Exception e) {
@@ -139,70 +173,36 @@ public class HubAuthorityGrafao {
 		if (newUrl.endsWith("/")) {
 			newUrl = newUrl.substring(0, newUrl.length() - 1);
 		}
-		try {
-			atualizarURL(url, newUrl);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		return newUrl;
-	}
-
-	private static void atualizarURL(String url, String newUrl)
-			throws Exception {
-		HibernateDAO dao = HibernateDAO.getInstance();
-		dao.openSession();
-
-		Connection cIreval = DriverManager
-				.getConnection("jdbc:mysql://localhost/ireval?user=foxset&password=xamusko");
-
-		PreparedStatement pUpdate = cIreval.prepareStatement("UPDATE document "
-				+ "SET url = ? WHERE url = ?");
-
-		List<Document> documents = (List<Document>) dao.loadByField(
-				Document.class, "url", url);
-		for (Document document : documents) {
-
-			try {
-				document.setUrl(newUrl);
-				dao.initTransaction();
-				dao.getSession().flush();
-				dao.getSession().clear();
-				dao.getSession().update(document);
-				dao.commitTransaction();
-				pUpdate.setString(1, newUrl);
-				pUpdate.setString(2, url); // Reputation
-				pUpdate.executeUpdate();
-			} catch (Exception e) {
-				dao.rollbackTransaction();
-				throw e;
-			}
-
-		}
-
-		if (dao.getSession().isOpen())
-			dao.closeSession();
 	}
 
 	public static void pajek() throws Exception {
 		PrintWriter writer = new PrintWriter(new FileWriter("pajek.txt"));
-		writer.println("*Vertices " + (docs.size() + 2));
-		for (String url : docs.keySet()) {
-			Integer id = docs.get(url);
-			writer.println(id + " \"" + url + "\"");
+		ResultSet rs = connPajek.createStatement().executeQuery(
+				"SELECT pajek_id FROM urls");
+		Set<Integer> ids = new HashSet<Integer>();
+		while (rs.next()) {
+			ids.add(rs.getInt("pajek_id"));
+		}
+		writer.println("*Vertices " + ids.size());
+		for (Integer id : ids) {
+			writer.println(id + " \"" + id + "\"");
 		}
 		writer.println("*Arcs");
-		for (String linha : lines) {
-			writer.println(linha);
+		rs = connPajek.createStatement().executeQuery(
+				"SELECT from_pajek_id, to_pajek_id FROM links");
+		while (rs.next()) {
+			writer.println(rs.getInt("from_pajek_id") + " "
+					+ rs.getInt("to_pajek_id") + " 1");
 		}
 		writer.close();
 	}
 
-	public static double getScore(HITS hits, String url) {
+	public static double getScore(HITS hits, int idPajek) {
 		List rankings = hits.getRankings();
-		int id = docs.get(url);
 		for (Object obj : rankings) {
 			NodeRanking ranking = (NodeRanking) obj;
-			if (ranking.originalPos == id) {
+			if (ranking.originalPos == idPajek) {
 				return (Double.isNaN(ranking.rankScore) ? 0 : ranking.rankScore);
 			}
 		}
@@ -211,50 +211,42 @@ public class HubAuthorityGrafao {
 	}
 
 	public static void jung() throws Exception {
-		if (urls == null || urls.size() == 0)
-			carregarUrls();
 		GraphInstance graphInstance = new GraphInstance();
 		Graph graph = graphInstance.load("pajek.txt");
 		HITS hitsAuthority = new HITS(graph, true);
 		hitsAuthority.evaluate();
 		HITS hitsHub = new HITS(graph, false);
 		hitsHub.evaluate();
-		for (String url : urls) {
-			double authority = getScore(hitsAuthority, url);
+		ResultSet rs = connPajek.createStatement().executeQuery(
+				"SELECT pajek_id, foxset_id, url FROM urls");
+		while (rs.next()) {
+			int idPajek = rs.getInt("pajek_id");
+			int idFoxset = rs.getInt("foxset_id");
+			String url = rs.getString("url");
+			double authority = getScore(hitsAuthority, idPajek);
 			System.out.println(String.format("Authority (%s):\n%.30f", url,
 					authority));
-			double hub = getScore(hitsHub, url);
+			double hub = getScore(hitsHub, idPajek);
 			System.out.println(String.format("Hub (%s):\n%.30f", url, hub));
-			pwResultado.println(authority + " " + hub + " " + url);
-			pwResultado.flush();
-			if (connFoxset == null) {
-				connFoxset = DriverManager
-						.getConnection("jdbc:mysql://localhost/foxset?user=foxset&password=xamusko");
-				psSelect = connFoxset
-						.prepareStatement("SELECT id FROM document "
-								+ "WHERE dataset_id = 578 AND url = ?");
-				psUpdate = connFoxset
-						.prepareStatement("UPDATE document_quality_dimension "
-								+ "SET score = ? WHERE document_id = ? AND quality_dimension_id = ?");
-			}
-			psSelect.setString(1, url);
-			ResultSet rs = psSelect.executeQuery();
-			if (rs.next()) {
-				int id = rs.getInt("id");
-				System.out.println("ID no FoxseT: " + id);
+			psPajekAtualizarScores.setDouble(1, authority);
+			psPajekAtualizarScores.setDouble(2, hub);
+			psPajekAtualizarScores.setInt(3, idPajek);
+			psPajekAtualizarScores.executeUpdate();
+			if (idFoxset > 0) {
+				System.out.println("ID no FoxseT: " + idFoxset);
 				System.out.println(String
 						.format("Authority : %.50f", authority));
-				psUpdate.setDouble(1, authority);
-				psUpdate.setInt(2, id);
-				psUpdate.setInt(3, 79); // Reputation
+				psFoxsetAtualizarScores.setDouble(1, authority);
+				psFoxsetAtualizarScores.setInt(2, idFoxset);
+				psFoxsetAtualizarScores.setInt(3, 79); // Reputation
 
-				int rows = psUpdate.executeUpdate();
+				int rows = psFoxsetAtualizarScores.executeUpdate();
 				System.out.println(String.format("Hub : %.50f", hub));
-				psUpdate.setDouble(1, hub);
-				psUpdate.setInt(2, id);
-				psUpdate.setInt(3, 81); // completeness
+				psFoxsetAtualizarScores.setDouble(1, hub);
+				psFoxsetAtualizarScores.setInt(2, idFoxset);
+				psFoxsetAtualizarScores.setInt(3, 81); // completeness
 
-				rows += psUpdate.executeUpdate();
+				rows += psFoxsetAtualizarScores.executeUpdate();
 				System.out.println("Rows afetadas pelos 2 updates: " + rows);
 			} else {
 				System.out.println("Nao ha URL no Foxset: " + url);
@@ -262,84 +254,150 @@ public class HubAuthorityGrafao {
 		}
 	}
 
-	private static void carregarUrls() throws IOException {
-		urls = new HashSet<String>();
-		docs = new HashMap<String, Integer>();
+	private static void tumba() throws Exception {
+		WebGraph wg = new WebGraph();
+		ResultSet rs = connPajek.createStatement().executeQuery(
+				"SELECT from_pajek_id, to_pajek_id FROM links");
+		while (rs.next()) {
+			wg.addLink(Integer.toString(rs.getInt("from_pajek_id")), Integer
+					.toString(rs.getInt("to_pajek_id")), 1.0);
+		}
+		pt.tumba.links.HITS hits = new pt.tumba.links.HITS(wg);
+		rs = connPajek.createStatement().executeQuery(
+				"SELECT pajek_id, foxset_id, url FROM urls");
+		while (rs.next()) {
+			int idPajek = rs.getInt("pajek_id");
+			int idFoxset = rs.getInt("foxset_id");
+			String url = rs.getString("url");
+			double authority = hits.authorityScore(Integer.toString(idPajek));
+			System.out.println(String.format("Authority (%s):\n%.30f", url,
+					authority));
+			double hub = hits.hubScore(Integer.toString(idPajek));
+			System.out.println(String.format("Hub (%s):\n%.30f", url, hub));
+			psPajekAtualizarScores.setDouble(1, authority);
+			psPajekAtualizarScores.setDouble(2, hub);
+			psPajekAtualizarScores.setInt(3, idPajek);
+			psPajekAtualizarScores.executeUpdate();
+			if (idFoxset > 0) {
+				System.out.println("ID no FoxseT: " + idFoxset);
+				System.out.println(String
+						.format("Authority : %.50f", authority));
+				psFoxsetAtualizarScores.setDouble(1, authority);
+				psFoxsetAtualizarScores.setInt(2, idFoxset);
+				psFoxsetAtualizarScores.setInt(3, 79); // Reputation
 
-		FileReader fReader = new FileReader(new File("pajek.txt"));
-		BufferedReader bReader = new BufferedReader(fReader);
-		String line = bReader.readLine();
-		while (line != null) {
-			if (!line.startsWith("*Vertices")) {
-				if (line.equals("*Arcs"))
-					break;
-				String[] words = line.split(" ");
-				int id = Integer.parseInt(words[0]);
-				String url = words[1].substring(1, words[1].length() - 1);
-				docs.put(url, id);
-				urls.add(url);
+				int rows = psFoxsetAtualizarScores.executeUpdate();
+				System.out.println(String.format("Hub : %.50f", hub));
+				psFoxsetAtualizarScores.setDouble(1, hub);
+				psFoxsetAtualizarScores.setInt(2, idFoxset);
+				psFoxsetAtualizarScores.setInt(3, 81); // completeness
+
+				rows += psFoxsetAtualizarScores.executeUpdate();
+				System.out.println("Rows afetadas pelos 2 updates: " + rows);
+			} else {
+				System.out.println("Nao ha URL no Foxset: " + url);
 			}
-			line = bReader.readLine();
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-		pwResultado = new PrintWriter(new FileWriter("resultado.txt"));
-		File objetos = null;
-		// se jah tiver o arquivo pajek.txt atribuir
-		// valor true, atribuir false caso contrário
-		boolean onlyJung = true;
-		if (!onlyJung) {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			connIreval = DriverManager
-					.getConnection("jdbc:mysql://localhost/ireval?user=foxset&password=xamusko");
-			Statement connStat = connIreval.createStatement();
+	private static void log(String log) {
+		System.out.print(log);
+	}
 
+	private static void logln(String log) {
+		System.out.println(log);
+	}
+
+	private static Connection connectDB(String db) throws SQLException {
+		return DriverManager.getConnection("jdbc:mysql://127.0.0.1/" + db
+				+ "?user=" + usuario + "&password=" + senha);
+	}
+
+	public static void main(String[] args) throws Exception {
+		log("Connecting DBs... ");
+		Class.forName("com.mysql.jdbc.Driver").newInstance();
+		connIreval = connectDB("ireval");
+		connFoxset = connectDB("foxset");
+		connPajek = connectDB("pajek");
+		logln("[Done]");
+		psPajekExisteURL = connPajek
+				.prepareStatement("SELECT pajek_id FROM urls WHERE url = ?");
+		psFoxsetExisteURL = connFoxset
+				.prepareStatement("SELECT id FROM document "
+						+ "WHERE dataset_id = 578 AND url = ?");
+		psPajekInserirURL = connPajek
+				.prepareStatement("INSERT INTO urls (url, ireval_id, foxset_id) VALUES (?, ?, ?)");
+		psPajekInserirLink = connPajek
+				.prepareStatement("INSERT INTO links (from_pajek_id, to_pajek_id) VALUES (?, ?)");
+		psPajekAtualizarURL = connPajek
+				.prepareStatement("UPDATE urls SET back_links = ?, forward_links = ?, last_attempt = ?, attempts = attempts + 1 WHERE pajek_id = ?");
+		psFoxsetAtualizarScores = connFoxset
+				.prepareStatement("UPDATE document_quality_dimension "
+						+ "SET score = ? WHERE document_id = ? AND quality_dimension_id = ?");
+		psPajekAtualizarScores = connPajek
+				.prepareStatement("UPDATE urls SET authority = ?, hub = ? WHERE pajek_id = ?");
+		if (!onlyHITS) {
+			log("Retrieving URLs from Ireval...");
+			Statement connStat = connIreval.createStatement();
 			connStat.setMaxRows(qtdPag);
-			ResultSet rs = connStat
+			ResultSet rsIreval = connStat
 					.executeQuery("SELECT d.id, d.url FROM document AS d "
 							+ "WHERE d.experiment_id = 1 AND "
 							+ "((SELECT COUNT(DISTINCT evaluator_id) FROM document_evaluation AS de "
 							+ "WHERE de.document_id = d.id AND de.linguistic_term_id IS NOT NULL) > 0)");
-			int i = 0, iAnt = -1;
-			objetos = new File("objetos.bin");
-			if (objetos.exists()) {
-				ObjectInputStream ois = new ObjectInputStream(
-						new FileInputStream(objetos));
-				iAnt = ois.readInt();
-				idMax = ois.readInt();
-				urls = (Set<String>) ois.readObject();
-				docs = (Map<String, Integer>) ois.readObject();
-				idMax = new TreeSet<Integer>(docs.values()).last();
-				lines = (Set<String>) ois.readObject();
-				ois.close();
-			}
-
-			while (rs.next()) {
-				System.out.println("i = " + ++i);
-				if (i <= iAnt) {
-					continue;
+			logln("[Done]");
+			ResultSet rsPajek, rsFoxset = null;
+			while (rsIreval.next()) {
+				String url = rsIreval.getString("url");
+				log("Checking for URL " + url + " in Pajek...");
+				psPajekExisteURL.setString(1, url);
+				rsPajek = psPajekExisteURL.executeQuery();
+				if (!rsPajek.next()) {
+					int idIreval = rsIreval.getInt("id");
+					psPajekInserirURL.setString(1, tratarURL(url));
+					psPajekInserirURL.setInt(2, idIreval);
+					psFoxsetExisteURL.setString(1, url);
+					rsFoxset = psFoxsetExisteURL.executeQuery();
+					if (rsFoxset.next()) {
+						int idFoxset = rsFoxset.getInt("id");
+						psPajekInserirURL.setInt(3, idFoxset);
+					} else {
+						psPajekInserirURL.setNull(3, Types.INTEGER);
+					}
+					psPajekInserirURL.executeUpdate();
+					logln("[Inserted]");
+				} else {
+					logln("[Already there]");
 				}
-				Integer idAtual = rs.getInt("id");
-				String urlAtual = tratarURL(rs.getString("url"));
-				System.out.println("Select: " + idAtual + " - " + urlAtual);
-				docs.put(urlAtual, ++idMax);
-				urls.add(urlAtual);
-				getLinks(urlAtual, 1, qtdLevels);
-				ObjectOutputStream oos = new ObjectOutputStream(
-						new FileOutputStream(objetos));
-				oos.writeInt(i);
-				oos.writeInt(idMax);
-				oos.writeObject(urls);
-				oos.writeObject(docs);
-				oos.writeObject(lines);
-				oos.close();
 			}
-			pajek();
+			if (repeatZeros) {
+				log("Retrieving URLs with no back or forward links...");
+				rsPajek = connPajek
+						.createStatement()
+						.executeQuery(
+								"SELECT pajek_id, url FROM urls WHERE ireval_id IS NOT NULL AND (back_links = 0 OR forward_links = 0)");
+				while (rsPajek.next()) {
+					int idPajek = rsPajek.getInt("pajek_id");
+					String url = rsPajek.getString("url");
+					getLinks(idPajek, url, 1, qtdLevels);
+				}
+			}
+			log("Retrieving URLs left to crawl...");
+			rsPajek = connPajek
+					.createStatement()
+					.executeQuery(
+							"SELECT pajek_id, url FROM urls WHERE ireval_id IS NOT NULL AND last_attempt IS NULL");
+			while (rsPajek.next()) {
+				int idPajek = rsPajek.getInt("pajek_id");
+				String url = rsPajek.getString("url");
+				getLinks(idPajek, url, 1, qtdLevels);
+			}
 		}
-		jung();
-		pwResultado.close();
-		// if (objetos != null)
-		// objetos.delete();
+		if (useJung) {
+			pajek();
+			jung();
+		} else {
+			tumba();
+		}
 	}
 }
