@@ -41,7 +41,7 @@ import br.ufrj.cos.enume.MetadataType;
  */
 public class HelperAcessDB {
 
-	public static List<DataSet> findDataSetsAutomaticEvaluated() {
+	public static List<DataSet> findDataSetsForManualEvaluationOrFinalized() {
 		Criteria criteria = HibernateDAO.getInstance().openSession()
 				.createCriteria(DataSet.class);
 
@@ -52,6 +52,22 @@ public class HelperAcessDB {
 				Restrictions.or(Restrictions.eq("status",
 						DataSet.STATUS_MANUAL_EVALUATION), Restrictions.eq(
 						"status", DataSet.STATUS_FINALIZED)));
+		criteria.addOrder(Order.asc("creationDate"));
+
+		List<DataSet> dataSets = criteria.list();
+		return dataSets;
+
+	}
+
+	public static List<DataSet> findDataSetsForAutomaticEvaluation() {
+		Criteria criteria = HibernateDAO.getInstance().openSession()
+				.createCriteria(DataSet.class);
+
+		criteria.add(
+				Restrictions.or(Restrictions.eq("method",
+						DataSet.CRAWLER_QUALITYFUZZY), Restrictions.eq(
+						"method", DataSet.SEARCH_QUALITYFUZZY))).add(
+				Restrictions.eq("status", DataSet.STATUS_AUTOMATIC_EVALUATION));
 		criteria.addOrder(Order.asc("creationDate"));
 
 		List<DataSet> dataSets = criteria.list();
@@ -445,6 +461,10 @@ public class HelperAcessDB {
 			criteria
 					.add(Restrictions.in("id.document", loadDocuments(dataSet)));
 			criteria.add(Restrictions.in("id.document", docs));
+			if (qd.getCodeStr().equalsIgnoreCase("GOO")
+					|| qd.getCodeStr().equalsIgnoreCase("YAH")
+					|| qd.getCodeStr().equalsIgnoreCase("LIV"))
+				criteria.add(Restrictions.gt("score", new Double(0)));
 			criteria.add(Restrictions.eq("id.qualityDimension", qd));
 			criteria.addOrder(Order.asc("id.qualityDimension"));
 			criteria.setProjection(Projections.min("score"));

@@ -4,6 +4,8 @@
  */
 package br.ufrj.cos.foxset.search;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +25,9 @@ public abstract class SearchEngine {
 
 		private String title, URL, summary;
 
-		private Date modificationDate;
+		private Date lastModified;
+
+		private double rank;
 
 		public String getURL() {
 			return URL;
@@ -49,18 +53,39 @@ public abstract class SearchEngine {
 			this.title = title;
 		}
 
-		public Date getModificationDate() {
-			return modificationDate;
+		public Date getLastModified() {
+			return lastModified;
 		}
 
-		public void setModificationDate(Date modificationDate) {
-			this.modificationDate = modificationDate;
+		public void setLastModified(Date lastModified) {
+			this.lastModified = lastModified;
 		}
 
-		public void setModificationDate(String modificationDateStrUnixTime) {
-			int unixTime = new Integer(modificationDateStrUnixTime).intValue();
+		public void setLastModified(String lastModifiedStr, String dateFormat)
+				throws ParseException {
+			setLastModified((new SimpleDateFormat(dateFormat))
+					.parse(lastModifiedStr));
+		}
+
+		public void setLastModifiedUnixTime(String lastModifiedStrUnixTime) {
+			int unixTime = new Integer(lastModifiedStrUnixTime).intValue();
 			long timestamp = unixTime * 1000; // msec
-			setModificationDate(new Date(timestamp));
+			setLastModified(new Date(timestamp));
+		}
+
+		/**
+		 * @return the rank
+		 */
+		public double getRank() {
+			return rank;
+		}
+
+		/**
+		 * @param rank
+		 *            the rank to set
+		 */
+		public void setRank(double rank) {
+			this.rank = rank;
 		}
 
 		@Override
@@ -83,11 +108,12 @@ public abstract class SearchEngine {
 				return getURL().compareToIgnoreCase(r.getURL());
 			}
 		}
-		
+
 		@Override
-		public String toString() {			
+		public String toString() {
 			return String.format("%s", getURL());
 		}
+
 	}
 
 	private String appID;

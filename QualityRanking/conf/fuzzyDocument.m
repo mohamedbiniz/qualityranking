@@ -7,7 +7,7 @@ fGood = @(x)(trimf(x, [3/6 4/6 5/6]));
 fExcellent = @(x)(trimf(x, [4/6 6/6 6/6]));
 
 funcs = {fPoor fBad fRegular fGood fExcellent};
-
+erroDefuzzy=0;
 xCentroid =0;
 if (length(cdq)==QD && length(qds)==QD )
 	SQERPagina = zeros(TL, QD);
@@ -47,7 +47,10 @@ if (length(cdq)==QD && length(qds)==QD )
 	
 	%plot(x,yPoor,':c',x,yBad,':c',x,yGood,':c',x,yExcellent,':c',x,yRegular,':c',x,yTotal,'b');
 	%axis([0,1,0,1]);
-	xCentroid = defuzz(x,yTotal,'centroid');
+    if (sum(yTotal) ~= 0)
+        xCentroid = defuzz(x,yTotal,'centroid');
+    end 
+
 	%text(xCentroid,0.05,['\downarrow Xcentroid = ',num2str(xCentroid),' '],'HorizontalAlignment','left'); 
 
 else
