@@ -45,48 +45,94 @@ public class ScoreFinalDinamic extends javax.swing.JFrame {
 				Integer weightREP = null;
 				Integer weightCOM = null;
 				Integer weightTIM = null;
+				Integer weightGOO = null;
+				Integer weightYAH = null;
+				Integer weightLIV = null;
 
-				if (!jTextFieldREP.getText().equals("")) {
+				if ((jTextFieldREP.isEnabled())
+						&& (!jTextFieldREP.getText().equals(""))) {
 					weightREP = Integer.parseInt(jTextFieldREP.getText());
 				}
-				if (!jTextFieldCOM.getText().equals("")) {
+				if ((jTextFieldCOM.isEnabled())
+						&& (!jTextFieldCOM.getText().equals(""))) {
 					weightCOM = Integer.parseInt(jTextFieldCOM.getText());
 				}
-				if (!jTextFieldTIM.getText().equals("")) {
+				if ((jTextFieldTIM.isEnabled())
+						&& (!jTextFieldTIM.getText().equals(""))) {
 					weightTIM = Integer.parseInt(jTextFieldTIM.getText());
+				}
+				if ((jTextFieldGOO.isEnabled())
+						&& (!jTextFieldGOO.getText().equals(""))) {
+					weightGOO = Integer.parseInt(jTextFieldGOO.getText());
+				}
+				if ((jTextFieldYAH.isEnabled())
+						&& (!jTextFieldYAH.getText().equals(""))) {
+					weightYAH = Integer.parseInt(jTextFieldYAH.getText());
+				}
+				if ((jTextFieldLIV.isEnabled())
+						&& (!jTextFieldLIV.getText().equals(""))) {
+					weightLIV = Integer.parseInt(jTextFieldLIV.getText());
 				}
 
 				String result = null;
 				try {
 					result = HelperScoreFinalDinamic.generateScores(idDataSet,
-							weightREP, weightCOM, weightTIM, this);
+							weightREP, weightCOM, weightTIM, weightGOO,
+							weightYAH, weightLIV, this);
 				} catch (Exception e) {
-					result = "Possível erro na conexão com o banco ireval";
+					result = "Possï¿½vel erro na conexï¿½o com o banco ireval";
 					e.printStackTrace();
 				}
 				jTextAreaResults.setText(result);
 			} catch (NullPointerException npe) {
 				JOptionPane.showMessageDialog(this, "Selecione um dataSet!",
-						"DataSet não selecionado", JOptionPane.WARNING_MESSAGE);
+						"DataSet nï¿½o selecionado",
+						JOptionPane.WARNING_MESSAGE);
 			} catch (NumberFormatException nfe) {
 				JOptionPane.showMessageDialog(this, "Insira pesos corretos!",
 						"Pesos incorretos", JOptionPane.WARNING_MESSAGE);
 			}
 		} else {
 			JOptionPane.showMessageDialog(this,
-					"Primeiramente é preciso listar os dataSets!",
+					"Primeiramente ï¿½ preciso listar os dataSets!",
 					"Listar DataSets", JOptionPane.WARNING_MESSAGE);
 		}
 
 	}
 
-	private void listarDataSets() {
+	private void listarDataSetsCRT() {
 		DefaultListModel listModel = new DefaultListModel();
-		dataSets = HelperAcessDB.findDataSetsAutomaticEvaluated();
+		dataSets = HelperAcessDB.findDataSetsForManualEvaluationOrFinalized();
 		for (DataSet dataSet : dataSets) {
 			listModel.addElement(dataSet.toString());
 		}
 		jListDataSets.setModel(listModel);
+	}
+
+	private void listarDataSetsGYL() {
+		DefaultListModel listModel = new DefaultListModel();
+		dataSets = HelperAcessDB.findDataSetsForAutomaticEvaluation();
+		for (DataSet dataSet : dataSets) {
+			listModel.addElement(dataSet.toString());
+		}
+		jListDataSets.setModel(listModel);
+	}
+
+	private void habilitarCRT() {
+		habilitaWeights(true);
+	}
+
+	private void habilitarGYL() {
+		habilitaWeights(false);
+	}
+
+	private void habilitaWeights(boolean enabled) {
+		jTextFieldREP.setEnabled(enabled);
+		jTextFieldCOM.setEnabled(enabled);
+		jTextFieldTIM.setEnabled(enabled);
+		jTextFieldGOO.setEnabled(!enabled);
+		jTextFieldYAH.setEnabled(!enabled);
+		jTextFieldLIV.setEnabled(!enabled);
 	}
 
 	/**
@@ -96,380 +142,345 @@ public class ScoreFinalDinamic extends javax.swing.JFrame {
 	 */
 	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="collapsed" desc="Generated
-	// Code">//GEN-BEGIN:initComponents
-	private void initComponents() {
+	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-		jPanel1 = new javax.swing.JPanel();
-		jScrollPane1 = new javax.swing.JScrollPane();
-		jTextAreaResults = new javax.swing.JTextArea();
-		jPanel2 = new javax.swing.JPanel();
-		jPanel3 = new javax.swing.JPanel();
-		jLabel1 = new javax.swing.JLabel();
-		jTextFieldCOM = new javax.swing.JTextField();
-		jLabel2 = new javax.swing.JLabel();
-		jTextFieldREP = new javax.swing.JTextField();
-		jLabel3 = new javax.swing.JLabel();
-		jTextFieldTIM = new javax.swing.JTextField();
-		jButton1 = new javax.swing.JButton();
-		jButton2 = new javax.swing.JButton();
-		jPanel4 = new javax.swing.JPanel();
-		jButtonListarDAtaSets = new javax.swing.JButton();
-		jScrollPane2 = new javax.swing.JScrollPane();
-		jListDataSets = new javax.swing.JList();
-		jLabel4 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextAreaResults = new javax.swing.JTextArea();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jTextFieldCOM = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jTextFieldREP = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jTextFieldTIM = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jTextFieldGOO = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jTextFieldYAH = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jTextFieldLIV = new javax.swing.JTextField();
+        jPanel4 = new javax.swing.JPanel();
+        jButtonListarDataSetsCRT = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jListDataSets = new javax.swing.JList();
+        jButtonListarDataSetsGYL = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
 
-		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-		addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosed(java.awt.event.WindowEvent evt) {
-				formWindowClosed(evt);
-			}
-		});
-		getContentPane().setLayout(new java.awt.GridLayout());
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
+        getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
-		jScrollPane1.setMinimumSize(new java.awt.Dimension(5, 5));
+        jPanel1.setMaximumSize(new java.awt.Dimension(1280, 1024));
+        jPanel1.setPreferredSize(new java.awt.Dimension(600, 500));
 
-		jTextAreaResults.setColumns(20);
-		jTextAreaResults.setEditable(false);
-		jTextAreaResults.setRows(5);
-		jTextAreaResults.addFocusListener(new java.awt.event.FocusAdapter() {
-			public void focusGained(java.awt.event.FocusEvent evt) {
-				jTextAreaResultsFocusGained(evt);
-			}
-		});
-		jScrollPane1.setViewportView(jTextAreaResults);
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(5, 5));
 
-		jLabel1.setText("Weight Completeness:");
+        jTextAreaResults.setColumns(20);
+        jTextAreaResults.setEditable(false);
+        jTextAreaResults.setRows(5);
+        jTextAreaResults.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTextAreaResultsFocusGained(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jTextAreaResults);
 
-		jTextFieldCOM.setText("0");
-		jTextFieldCOM.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jTextFieldCOMActionPerformed(evt);
-			}
-		});
-		jTextFieldCOM.addFocusListener(new java.awt.event.FocusAdapter() {
-			public void focusGained(java.awt.event.FocusEvent evt) {
-				jTextFieldCOMFocusGained(evt);
-			}
-		});
+        jPanel2.setPreferredSize(new java.awt.Dimension(700, 480));
 
-		jLabel2.setText("Weight Reputation:");
+        jLabel1.setText("Weight Completeness:");
 
-		jTextFieldREP.setText("0");
-		jTextFieldREP.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jTextFieldREPActionPerformed(evt);
-			}
-		});
-		jTextFieldREP.addFocusListener(new java.awt.event.FocusAdapter() {
-			public void focusGained(java.awt.event.FocusEvent evt) {
-				jTextFieldREPFocusGained(evt);
-			}
-		});
+        jTextFieldCOM.setText("0");
+        jTextFieldCOM.setEnabled(false);
+        jTextFieldCOM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldCOMActionPerformed(evt);
+            }
+        });
+        jTextFieldCOM.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTextFieldCOMFocusGained(evt);
+            }
+        });
 
-		jLabel3.setText("Weight Timeliness:");
+        jLabel2.setText("Weight Reputation:");
 
-		jTextFieldTIM.setText("0");
-		jTextFieldTIM.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jTextFieldTIMActionPerformed(evt);
-			}
-		});
-		jTextFieldTIM.addFocusListener(new java.awt.event.FocusAdapter() {
-			public void focusGained(java.awt.event.FocusEvent evt) {
-				jTextFieldTIMFocusGained(evt);
-			}
-		});
+        jTextFieldREP.setText("0");
+        jTextFieldREP.setEnabled(false);
+        jTextFieldREP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldREPActionPerformed(evt);
+            }
+        });
+        jTextFieldREP.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTextFieldREPFocusGained(evt);
+            }
+        });
 
-		jButton1.setText("Calcular Score");
-		jButton1.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jButton1ActionPerformed(evt);
-			}
-		});
+        jLabel3.setText("Weight Timeliness:");
 
-		jButton2.setText("Limpar");
-		jButton2.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jButton2ActionPerformed(evt);
-			}
-		});
+        jTextFieldTIM.setText("0");
+        jTextFieldTIM.setEnabled(false);
+        jTextFieldTIM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldTIMActionPerformed(evt);
+            }
+        });
+        jTextFieldTIM.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTextFieldTIMFocusGained(evt);
+            }
+        });
 
-		javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(
-				jPanel3);
-		jPanel3.setLayout(jPanel3Layout);
-		jPanel3Layout
-				.setHorizontalGroup(jPanel3Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel3Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel3Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addGroup(
-																jPanel3Layout
-																		.createSequentialGroup()
-																		.addGroup(
-																				jPanel3Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(
-																								jLabel2,
-																								javax.swing.GroupLayout.Alignment.TRAILING,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								216,
-																								Short.MAX_VALUE)
-																						.addComponent(
-																								jLabel1,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								216,
-																								Short.MAX_VALUE)
-																						.addComponent(
-																								jLabel3,
-																								javax.swing.GroupLayout.Alignment.TRAILING,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								216,
-																								Short.MAX_VALUE))
-																		.addGap(
-																				6,
-																				6,
-																				6))
-														.addGroup(
-																jPanel3Layout
-																		.createSequentialGroup()
-																		.addComponent(
-																				jButton1,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				216,
-																				Short.MAX_VALUE)
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-										.addGroup(
-												jPanel3Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																false)
-														.addGroup(
-																jPanel3Layout
-																		.createSequentialGroup()
-																		.addGroup(
-																				jPanel3Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING,
-																								false)
-																						.addComponent(
-																								jTextFieldREP)
-																						.addComponent(
-																								jTextFieldCOM,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								61,
-																								Short.MAX_VALUE)
-																						.addComponent(
-																								jTextFieldTIM,
-																								javax.swing.GroupLayout.Alignment.TRAILING,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								109,
-																								javax.swing.GroupLayout.PREFERRED_SIZE))
-																		.addContainerGap())
-														.addComponent(
-																jButton2,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																Short.MAX_VALUE))));
-		jPanel3Layout
-				.setVerticalGroup(jPanel3Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel3Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel3Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(
-																jTextFieldCOM,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(jLabel1))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												jPanel3Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(
-																jTextFieldREP,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(jLabel2))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												jPanel3Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(
-																jTextFieldTIM,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(jLabel3))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												jPanel3Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(jButton2)
-														.addComponent(jButton1))
-										.addContainerGap(
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)));
+        jButton1.setText("Calcular Score");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
-		jButtonListarDAtaSets
-				.setText("Listar DataSets Avaliados Atumaticamente");
-		jButtonListarDAtaSets
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						jButtonListarDAtaSetsActionPerformed(evt);
-					}
-				});
+        jButton2.setText("Limpar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
-		jListDataSets
-				.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-		jScrollPane2.setViewportView(jListDataSets);
+        jLabel5.setText("Weight GOOGLE:");
 
-		javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(
-				jPanel4);
-		jPanel4.setLayout(jPanel4Layout);
-		jPanel4Layout.setHorizontalGroup(jPanel4Layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING).addComponent(
-				jButtonListarDAtaSets, javax.swing.GroupLayout.DEFAULT_SIZE,
-				351, Short.MAX_VALUE).addComponent(jScrollPane2,
-				javax.swing.GroupLayout.Alignment.TRAILING,
-				javax.swing.GroupLayout.DEFAULT_SIZE, 351, Short.MAX_VALUE));
-		jPanel4Layout.setVerticalGroup(jPanel4Layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING).addGroup(
-				jPanel4Layout.createSequentialGroup().addComponent(
-						jButtonListarDAtaSets).addPreferredGap(
-						javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-						.addComponent(jScrollPane2,
-								javax.swing.GroupLayout.DEFAULT_SIZE, 322,
-								Short.MAX_VALUE)));
+        jTextFieldGOO.setText("0");
+        jTextFieldGOO.setEnabled(false);
+        jTextFieldGOO.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldGOOActionPerformed(evt);
+            }
+        });
+        jTextFieldGOO.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTextFieldGOOFocusGained(evt);
+            }
+        });
 
-		javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(
-				jPanel2);
-		jPanel2.setLayout(jPanel2Layout);
-		jPanel2Layout.setHorizontalGroup(jPanel2Layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING).addComponent(
-				jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE,
-				javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE,
-						javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-		jPanel2Layout
-				.setVerticalGroup(jPanel2Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
-								jPanel2Layout
-										.createSequentialGroup()
-										.addComponent(
-												jPanel4,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												jPanel3,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.PREFERRED_SIZE)));
+        jLabel6.setText("Weight YAHOO:");
 
-		jLabel4.setText("Score Final:");
+        jTextFieldYAH.setText("0");
+        jTextFieldYAH.setEnabled(false);
+        jTextFieldYAH.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldYAHActionPerformed(evt);
+            }
+        });
+        jTextFieldYAH.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTextFieldYAHFocusGained(evt);
+            }
+        });
 
-		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(
-				jPanel1);
-		jPanel1.setLayout(jPanel1Layout);
-		jPanel1Layout
-				.setHorizontalGroup(jPanel1Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel1Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(
-												jPanel2,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												jPanel1Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																jScrollPane1,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																298,
-																Short.MAX_VALUE)
-														.addComponent(
-																jLabel4,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																298,
-																Short.MAX_VALUE))
-										.addContainerGap()));
-		jPanel1Layout
-				.setVerticalGroup(jPanel1Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel1Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel1Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																false)
-														.addGroup(
-																javax.swing.GroupLayout.Alignment.LEADING,
-																jPanel1Layout
-																		.createSequentialGroup()
-																		.addComponent(
-																				jLabel4,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				21,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addComponent(
-																				jScrollPane1,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				Short.MAX_VALUE))
-														.addComponent(
-																jPanel2,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addContainerGap()));
+        jLabel7.setText("Weight LIVE:");
 
-		getContentPane().add(jPanel1);
+        jTextFieldLIV.setText("0");
+        jTextFieldLIV.setEnabled(false);
+        jTextFieldLIV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldLIVActionPerformed(evt);
+            }
+        });
+        jTextFieldLIV.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTextFieldLIVFocusGained(evt);
+            }
+        });
 
-		pack();
-	}// </editor-fold>//GEN-END:initComponents
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(jTextFieldLIV, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(jTextFieldYAH, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(jTextFieldGOO, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(jTextFieldTIM, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(jTextFieldREP, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(jTextFieldCOM, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldCOM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jTextFieldREP, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jTextFieldTIM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jTextFieldGOO, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(jTextFieldYAH, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jTextFieldLIV, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addGap(21, 21, 21))
+        );
+
+        jButtonListarDataSetsCRT.setText("Listar DataSets CRT");
+        jButtonListarDataSetsCRT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonListarDataSetsCRTActionPerformed(evt);
+            }
+        });
+
+        jListDataSets.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane2.setViewportView(jListDataSets);
+
+        jButtonListarDataSetsGYL.setText("Listar DataSets GYL");
+        jButtonListarDataSetsGYL.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonListarDataSetsGYLActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addComponent(jButtonListarDataSetsCRT, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonListarDataSetsGYL, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jPanel4Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButtonListarDataSetsCRT, jButtonListarDataSetsGYL});
+
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonListarDataSetsCRT)
+                    .addComponent(jButtonListarDataSetsGYL))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE))
+        );
+
+        jLabel4.setText("Score Final:");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
+        getContentPane().add(jPanel1);
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+	private void jButtonListarDataSetsGYLActionPerformed(
+			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonListarDataSetsGYLActionPerformed
+		habilitarGYL();
+		listarDataSetsGYL();
+	}// GEN-LAST:event_jButtonListarDataSetsGYLActionPerformed
+
+	private void jTextFieldGOOActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextFieldGOOActionPerformed
+		// TODO add your handling code here:
+	}// GEN-LAST:event_jTextFieldGOOActionPerformed
+
+	private void jTextFieldGOOFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_jTextFieldGOOFocusGained
+		jTextFieldGOO.selectAll();
+	}// GEN-LAST:event_jTextFieldGOOFocusGained
+
+	private void jTextFieldYAHActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextFieldYAHActionPerformed
+		// TODO add your handling code here:
+	}// GEN-LAST:event_jTextFieldYAHActionPerformed
+
+	private void jTextFieldYAHFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_jTextFieldYAHFocusGained
+		jTextFieldYAH.selectAll();
+	}// GEN-LAST:event_jTextFieldYAHFocusGained
+
+	private void jTextFieldLIVActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextFieldLIVActionPerformed
+		// TODO add your handling code here:
+	}// GEN-LAST:event_jTextFieldLIVActionPerformed
+
+	private void jTextFieldLIVFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_jTextFieldLIVFocusGained
+		jTextFieldLIV.selectAll();
+	}// GEN-LAST:event_jTextFieldLIVFocusGained
 
 	private void jTextFieldCOMActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextFieldCOMActionPerformed
 		// TODO add your handling code here:
@@ -489,11 +500,12 @@ public class ScoreFinalDinamic extends javax.swing.JFrame {
 
 	}// GEN-LAST:event_jButton1ActionPerformed
 
-	private void jButtonListarDAtaSetsActionPerformed(
-			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonListarDAtaSetsActionPerformed
+	private void jButtonListarDataSetsCRTActionPerformed(
+			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonListarDataSetsActionPerformed
 		// listar DataSets
-		listarDataSets();
-	}// GEN-LAST:event_jButtonListarDAtaSetsActionPerformed
+		habilitarCRT();
+		listarDataSetsCRT();
+	}// GEN-LAST:event_jButtonListarDataSetsActionPerformed
 
 	private void formWindowClosed(java.awt.event.WindowEvent evt) {// GEN-FIRST:event_formWindowClosed
 		System.exit(0);
@@ -531,24 +543,31 @@ public class ScoreFinalDinamic extends javax.swing.JFrame {
 		});
 	}
 
-	// Variables declaration - do not modify//GEN-BEGIN:variables
-	private javax.swing.JButton jButton1;
-	private javax.swing.JButton jButton2;
-	private javax.swing.JButton jButtonListarDAtaSets;
-	private javax.swing.JLabel jLabel1;
-	private javax.swing.JLabel jLabel2;
-	private javax.swing.JLabel jLabel3;
-	private javax.swing.JLabel jLabel4;
-	private javax.swing.JList jListDataSets;
-	private javax.swing.JPanel jPanel1;
-	private javax.swing.JPanel jPanel2;
-	private javax.swing.JPanel jPanel3;
-	private javax.swing.JPanel jPanel4;
-	private javax.swing.JScrollPane jScrollPane1;
-	private javax.swing.JScrollPane jScrollPane2;
-	private javax.swing.JTextArea jTextAreaResults;
-	private javax.swing.JTextField jTextFieldCOM;
-	private javax.swing.JTextField jTextFieldREP;
-	private javax.swing.JTextField jTextFieldTIM;
-	// End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButtonListarDataSetsCRT;
+    private javax.swing.JButton jButtonListarDataSetsGYL;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JList jListDataSets;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextArea jTextAreaResults;
+    private javax.swing.JTextField jTextFieldCOM;
+    private javax.swing.JTextField jTextFieldGOO;
+    private javax.swing.JTextField jTextFieldLIV;
+    private javax.swing.JTextField jTextFieldREP;
+    private javax.swing.JTextField jTextFieldTIM;
+    private javax.swing.JTextField jTextFieldYAH;
+    // End of variables declaration//GEN-END:variables
 }

@@ -37,11 +37,12 @@ public class HelperScoreFinalDinamic {
 	 * @throws InstantiationException
 	 */
 	public static String generateScores(Long idDataSet, Integer weightREP,
-			Integer weightCOM, Integer weightTIM, Component component)
+			Integer weightCOM, Integer weightTIM, Integer weightGOO,
+			Integer weightYAH, Integer weightLIV, Component component)
 			throws InstantiationException, IllegalAccessException,
 			ClassNotFoundException, SQLException {
 		HashMap<String, Integer> mapWeights = putWeights(weightREP, weightCOM,
-				weightTIM);
+				weightTIM, weightGOO, weightYAH, weightLIV);
 
 		DataSet dataSet = (DataSet) HibernateDAO.getInstance().loadById(
 				DataSet.class, idDataSet);
@@ -74,10 +75,11 @@ public class HelperScoreFinalDinamic {
 				.keySet(), urlsIreval);
 		double[] maxs = HelperAcessDB.loadMaxQDS_InIreval(dataSet, mapWeights
 				.keySet(), urlsIreval);
-
+		int count = 0;
 		for (Document document : documents) {
 			if (!urlsIreval.contains(document.getUrl()))
 				continue;
+			count++;
 			double[] qds = HelperAcessDB
 					.loadDocumentQualityDimensionScoresOfQualityDimensions(
 							document, mapWeights.keySet());
@@ -115,6 +117,7 @@ public class HelperScoreFinalDinamic {
 					+ String.format("%f\n", documentScore.doubleValue());
 		}
 		System.out.println(result);
+		System.out.println(count);
 		return result;
 	}
 
@@ -122,7 +125,8 @@ public class HelperScoreFinalDinamic {
 	 * @return
 	 */
 	private static HashMap<String, Integer> putWeights(Integer weightREP,
-			Integer weightCOM, Integer weightTIM) {
+			Integer weightCOM, Integer weightTIM, Integer weightGOO,
+			Integer weightYAH, Integer weightLIV) {
 		HashMap<String, Integer> mapWeights = new HashMap<String, Integer>();
 		if (weightREP != null)
 			mapWeights.put(QualityDimension.REP, new Integer(weightREP));
@@ -130,6 +134,12 @@ public class HelperScoreFinalDinamic {
 			mapWeights.put(QualityDimension.COM, new Integer(weightCOM));
 		if (weightTIM != null)
 			mapWeights.put(QualityDimension.TIM, new Integer(weightTIM));
+		if (weightGOO != null)
+			mapWeights.put(QualityDimension.GOO, new Integer(weightGOO));
+		if (weightYAH != null)
+			mapWeights.put(QualityDimension.YAH, new Integer(weightYAH));
+		if (weightLIV != null)
+			mapWeights.put(QualityDimension.LIV, new Integer(weightLIV));
 		return mapWeights;
 	}
 

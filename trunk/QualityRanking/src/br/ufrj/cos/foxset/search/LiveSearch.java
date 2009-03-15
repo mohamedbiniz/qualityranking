@@ -23,6 +23,8 @@ import org.w3c.dom.NodeList;
  */
 public class LiveSearch extends SearchEngine {
 
+	private static final String DATE_FORMAT_LIVE_SEARCH = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
 	@Override
 	public List<Result> searchImpl(String query) throws SearchException {
 		try {
@@ -67,6 +69,10 @@ public class LiveSearch extends SearchEngine {
 						.getTextContent());
 				result.setURL(elem.getElementsByTagName("Url").item(0)
 						.getTextContent());
+				result.setLastModified(elem.getElementsByTagName("DateTime")
+						.item(0).getTextContent(), DATE_FORMAT_LIVE_SEARCH);
+				result.setRank(Double.parseDouble(elem.getElementsByTagName(
+						"Rank").item(0).getTextContent()));
 				NodeList desc = elem.getElementsByTagName("Description");
 				if (desc.getLength() > 0)
 					result.setSummary(desc.item(0).getTextContent());

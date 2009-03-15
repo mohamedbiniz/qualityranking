@@ -30,6 +30,10 @@ public class QualityDimension implements Serializable,
 	public static final String TIM = "TIM";
 	public static final String SEC = "SEC";
 
+	public static final String GOO = "GOO";
+	public static final String YAH = "YAH";
+	public static final String LIV = "LIV";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;

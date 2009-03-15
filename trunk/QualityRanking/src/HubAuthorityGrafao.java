@@ -1,13 +1,6 @@
 //import br.ufrj.cos.bri.SearchEngine.Result;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -23,13 +16,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import pt.tumba.links.WebGraph;
-
 import br.ufrj.cos.GraphInstance;
-import br.ufrj.cos.bean.Document;
-import br.ufrj.cos.db.HibernateDAO;
 import br.ufrj.cos.foxset.search.GoogleSearch;
 import br.ufrj.cos.foxset.search.SearchEngine;
 import br.ufrj.cos.foxset.search.SearchException;
@@ -48,7 +37,7 @@ public class HubAuthorityGrafao {
 	public static int qtdLevels = 1;
 	public static boolean discardSameDomain = true, repeatZeros = false,
 			useJung = false, onlyHITS = true;
-	public static String usuario = "root", senha = "123";
+	public static String usuario = "foxset", senha = "xamusko";
 
 	private static Connection connIreval, connFoxset, connPajek;
 	private static PreparedStatement psFoxsetExisteURL,
@@ -168,7 +157,7 @@ public class HubAuthorityGrafao {
 		}
 	}
 
-	private static String tratarURL(String url) {
+	public static String tratarURL(String url) {
 		String newUrl = url.toLowerCase();
 		if (newUrl.endsWith("/")) {
 			newUrl = newUrl.substring(0, newUrl.length() - 1);

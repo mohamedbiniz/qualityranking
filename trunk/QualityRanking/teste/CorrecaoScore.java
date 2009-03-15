@@ -1,5 +1,3 @@
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -41,7 +39,7 @@ public class CorrecaoScore {
 		setDao(HibernateDAO.getInstance());
 		getDao().openSession();
 		DataSet dataSet = (DataSet) HibernateDAO.getInstance().loadById(
-				DataSet.class, new Long(578));
+				DataSet.class, new Long(577));
 		try {
 
 			// corrigirMetadataDate(dataSet);
@@ -76,7 +74,7 @@ public class CorrecaoScore {
 			throws Exception {
 		QualityDimension qualityDimension = HelperAcessDB.loadQualityDimension(
 				dataSet, qd);
-		
+
 		Collection<String> qualityDimensions = new ArrayList<String>();
 		qualityDimensions.add(qualityDimension.getCodeStr());
 

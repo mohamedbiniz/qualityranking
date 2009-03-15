@@ -116,7 +116,7 @@ public class YahooSearch extends SearchEngine {
 					.getTextContent());
 			result.setSummary(elem.getElementsByTagName("Summary").item(0)
 					.getTextContent());
-			result.setModificationDate(elem.getElementsByTagName(
+			result.setLastModifiedUnixTime(elem.getElementsByTagName(
 					"ModificationDate").item(0).getTextContent());
 			results.add(result);
 		}
@@ -133,7 +133,7 @@ public class YahooSearch extends SearchEngine {
 		List<Result> results = searchImpl(urlStr);
 		for (Result result : results) {
 			if (result.getURL().equalsIgnoreCase(urlStr)) {
-				return result.getModificationDate();
+				return result.getLastModified();
 			}
 		}
 		return null;
