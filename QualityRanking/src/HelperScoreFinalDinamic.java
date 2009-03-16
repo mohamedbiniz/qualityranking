@@ -69,7 +69,15 @@ public class HelperScoreFinalDinamic {
 
 		int o = JOptionPane.OK_OPTION;
 		Collection<Document> documents = HelperAcessDB.loadDocuments(dataSet);
-		Set<String> urlsIreval = HelperAcessDB.loadUrlsValidasFromIreval();
+		// quantidade de avaliações
+		int qtdAvaliacoesManuais = 1;
+		// true se quiser que retorne as paginas com exatamente a quantidade de
+		// avalições informada (==)
+		// false se quiser que retorne as paginas com pelo menos a quantidade de
+		// avalições informada (>=)
+		boolean exact = true;
+		Set<String> urlsIreval = HelperAcessDB.loadUrlsValidasFromIreval(
+				qtdAvaliacoesManuais, exact);
 
 		double[] mins = HelperAcessDB.loadMinQDS_InIreval(dataSet, mapWeights
 				.keySet(), urlsIreval);

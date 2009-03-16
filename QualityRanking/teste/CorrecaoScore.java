@@ -127,7 +127,7 @@ public class CorrecaoScore {
 		int a[] = new int[2];
 		a[0] = 0;
 		a[1] = 0;
-		Set<String> urlsIreval = HelperAcessDB.loadUrlsValidasFromIreval();
+		Set<String> urlsIreval = HelperAcessDB.loadUrlsValidasFromIreval(1, false);
 
 		List<Document> documents = HelperAcessDB.loadDocuments(dataSet);
 		for (Document document : documents) {
