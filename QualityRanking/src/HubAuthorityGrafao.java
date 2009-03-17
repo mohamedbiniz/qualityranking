@@ -2,6 +2,7 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -35,8 +36,8 @@ public class HubAuthorityGrafao {
 	public static int qtdMaxBackLinks = 50;
 	public static int qtdLinks = 50;
 	public static int qtdLevels = 1;
-	public static boolean discardSameDomain = true, repeatZeros = false,
-			useJung = false, onlyHITS = true;
+	public static boolean discardSameDomain = true, repeatZeros = true,
+			useJung = true, onlyHITS = false;
 	public static String usuario = "foxset", senha = "xamusko";
 
 	private static Connection connIreval, connFoxset, connPajek;
@@ -77,6 +78,7 @@ public class HubAuthorityGrafao {
 			return;
 		}
 		try {
+			String host = new URL(url).getHost();
 			WebDocument wf = new WebDocument(url);
 			Map<String, Integer> fl = wf.getForwardLinks();
 			int forwardLinks = fl.keySet().size();
@@ -85,6 +87,9 @@ public class HubAuthorityGrafao {
 			int i = 0;
 			for (String filhoStr : fl.keySet()) {
 				String filho = tratarURL(filhoStr);
+				if (discardSameDomain && new URL(filho).getHost().equals(host)) {
+					continue;
+				}
 				// Checa se existe nas urls
 				psPajekExisteURL.setString(1, filho);
 				ResultSet rsPajek = psPajekExisteURL.executeQuery();
@@ -118,6 +123,9 @@ public class HubAuthorityGrafao {
 				// if (++j > 2)
 				// break;
 				String pai = tratarURL(r.getURL());
+				if (discardSameDomain && new URL(pai).getHost().equals(host)) {
+					continue;
+				}
 				// Checa se existe nas urls
 				psPajekExisteURL.setString(1, pai);
 				ResultSet rsPajek = psPajekExisteURL.executeQuery();
