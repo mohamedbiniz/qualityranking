@@ -262,6 +262,18 @@ public class WebDocument {
 			System.out.println("URL desconsiderada = " + urlNowStr);
 			return true;
 		}
+		return discardURLSameDomain(urlNowStr, discardSameDomain, urlLinkStr);
+	}
+
+	/**
+	 * @param urlNowStr
+	 * @param discardSameDomain
+	 * @param urlLinkStr
+	 * @throws MalformedURLException
+	 */
+	public static boolean discardURLSameDomain(String urlNowStr,
+			boolean discardSameDomain, String urlLinkStr)
+			throws MalformedURLException {
 		if (discardSameDomain) {
 			URL urlNow = new URL(urlNowStr);
 			URL urlLink = new URL(urlLinkStr);
