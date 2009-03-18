@@ -87,7 +87,8 @@ public class HubAuthorityGrafao {
 			int i = 0;
 			for (String filhoStr : fl.keySet()) {
 				String filho = tratarURL(filhoStr);
-				if (discardSameDomain && new URL(filho).getHost().equals(host)) {
+				if (WebDocument.discardURLSameDomain(filho, discardSameDomain,
+						url)) {
 					continue;
 				}
 				// Checa se existe nas urls
@@ -123,7 +124,8 @@ public class HubAuthorityGrafao {
 				// if (++j > 2)
 				// break;
 				String pai = tratarURL(r.getURL());
-				if (discardSameDomain && new URL(pai).getHost().equals(host)) {
+				if (WebDocument.discardURLSameDomain(pai, discardSameDomain,
+						url)) {
 					continue;
 				}
 				// Checa se existe nas urls
