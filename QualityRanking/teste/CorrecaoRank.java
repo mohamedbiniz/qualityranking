@@ -25,7 +25,7 @@ import br.ufrj.cos.services.ServiceSearch;
  * @author Fabricio
  * 
  */
-public class TestLinks {
+public class CorrecaoRank {
 
 	/**
 	 * @param args
