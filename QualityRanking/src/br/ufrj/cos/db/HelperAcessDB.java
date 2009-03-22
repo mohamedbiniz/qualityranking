@@ -384,6 +384,21 @@ public class HelperAcessDB {
 		return metadata;
 	}
 
+	public static Collection<DocumentQualityDimension> loadDocumentQualityDimensions(
+			DataSet dataSet, QualityDimension qualityDimension) {
+		Criteria criteria = HibernateDAO.getInstance().openSession()
+				.createCriteria(DocumentQualityDimension.class);
+
+		criteria.createCriteria("id.document", "document");
+		criteria.add(Restrictions.eq("document.dataSet", dataSet));
+		criteria.add(Restrictions.eq("id.qualityDimension", qualityDimension));
+
+		Collection<DocumentQualityDimension> documentQualityDimensions = criteria
+				.list();
+
+		return documentQualityDimensions;
+	}
+
 	public static DocumentQualityDimension loadDocumentQualityDimension(
 			Document document, QualityDimension qualityDimension) {
 		Criteria criteria = HibernateDAO.getInstance().openSession()

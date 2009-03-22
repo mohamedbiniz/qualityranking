@@ -33,7 +33,9 @@ public class GoogleWebSearch extends SearchEngine {
 				start += 10;
 				Pattern pNext = Pattern.compile(Pattern
 						.quote("<img src=\"nav_next.gif\""));
-				Matcher mNext = pNext.matcher((String) wf.getContent());
+				String content = (String) wf.getContent();
+				System.out.println(content);
+				Matcher mNext = pNext.matcher(content);
 				hasNext = mNext.find();
 
 				Pattern p = Pattern.compile(Pattern.quote("<li class=g")

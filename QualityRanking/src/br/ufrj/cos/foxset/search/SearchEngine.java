@@ -34,7 +34,7 @@ public abstract class SearchEngine {
 		}
 
 		public void setURL(String URL) {
-			this.URL = URL.trim();
+			this.URL = WebDocument.tratarURL(URL);
 		}
 
 		public String getSummary() {

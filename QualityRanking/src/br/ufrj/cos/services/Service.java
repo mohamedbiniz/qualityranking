@@ -6,13 +6,11 @@ package br.ufrj.cos.services;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -225,6 +223,9 @@ public abstract class Service extends Thread {
 	 * @return the dao
 	 */
 	public static HibernateDAO getDao() {
+		if (dao == null) {
+			dao = HibernateDAO.getInstance();
+		}
 		return dao;
 	}
 

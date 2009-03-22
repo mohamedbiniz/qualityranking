@@ -4,6 +4,7 @@ import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
 import br.ufrj.cos.db.HelperAcessDB;
 import br.ufrj.cos.db.HibernateDAO;
+import br.ufrj.cos.foxset.search.WebDocument;
 
 /**
  * 
@@ -31,8 +32,7 @@ public class CorrigirURLs {
 			List<Document> documents = HelperAcessDB.loadDocuments(dataSet);
 
 			for (Document document : documents) {
-				document
-						.setUrl(HubAuthorityGrafao.tratarURL(document.getUrl()));
+				document.setUrl(WebDocument.tratarURL(document.getUrl()));
 				HibernateDAO.getInstance().update(document);
 			}
 		} catch (Exception e) {

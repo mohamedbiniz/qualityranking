@@ -4,7 +4,6 @@
 package br.ufrj.cos.services;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +60,8 @@ public abstract class ServiceSearch extends Service {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see br.ufrj.cos.bri.services.Service#execute(br.ufrj.cos.bri.bean.DataSet)
+	 * @see
+	 * br.ufrj.cos.bri.services.Service#execute(br.ufrj.cos.bri.bean.DataSet)
 	 */
 	@Override
 	protected final void execute(DataSet dataSet) throws Exception {
@@ -210,27 +210,6 @@ public abstract class ServiceSearch extends Service {
 		}
 	}
 
-	private void insertFirst(DataSet dataSet, List<Result> results,
-			QualityDimension qualityDimension) throws Exception {
-		System.gc();
-		Document document = new Document();
-		document.setDataSet(dataSet);
-		document.setUrl("http://www.shlomifish.org/lecture/PostgreSQL/");
-		Document documentPersisted = HelperAcessDB
-				.getPersistedDocument(document);
-		if (documentPersisted == null) {
-			getDao().create(document);
-			extractMetadatas(document);
-		} else {
-			document = documentPersisted;
-		}
-		if (qualityDimension != null) {
-			updateSearchRankingScore(document, qualityDimension,
-					results.size(), 0);
-		}
-		updateDocumentLinks(document);
-	}
-
 	private void updateDocumentLinks(Document document) throws Exception {
 		try {
 			WebFile wf = new WebFile(document.getUrl());
@@ -277,22 +256,22 @@ public abstract class ServiceSearch extends Service {
 		return fatherDocuments;
 	}
 
-	private void updateSearchRankingScore(Document document,
+	public static void updateSearchRankingScore(Document document,
 			QualityDimension qualityDimension, int sizeResults, int position)
 			throws Exception {
 		DocumentQualityDimension documentQualityDimension = null;
-		documentQualityDimension = new DocumentQualityDimension();
-		documentQualityDimension.setDocument(document);
-		documentQualityDimension.setQualityDimension(qualityDimension);
+		documentQualityDimension = HelperAcessDB.loadDocumentQualityDimension(
+				document, qualityDimension);
+		if (documentQualityDimension == null) {
+			documentQualityDimension = new DocumentQualityDimension();
+			documentQualityDimension.setDocument(document);
+			documentQualityDimension.setQualityDimension(qualityDimension);
+		}
 		double score = 0;
 		score = ((double) sizeResults - (double) position)
 				/ ((double) sizeResults);
 		documentQualityDimension.setScore(score);
-		try {
-			getDao().create(documentQualityDimension);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		getDao().createOrUpdate(documentQualityDimension);
 	}
 
 	private String getKeywords(DataSet dataSet) {

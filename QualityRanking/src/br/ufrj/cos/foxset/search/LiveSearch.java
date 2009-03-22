@@ -15,6 +15,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -57,6 +58,8 @@ public class LiveSearch extends SearchEngine {
 					.setAttribute("xsi:type", "xsd:string");
 			Document doc = msnLiveSearch.call();
 
+			System.out.println(doc);
+
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			NodeList nodes = (NodeList) xpath
 					.evaluate(
@@ -69,10 +72,17 @@ public class LiveSearch extends SearchEngine {
 						.getTextContent());
 				result.setURL(elem.getElementsByTagName("Url").item(0)
 						.getTextContent());
-				result.setLastModified(elem.getElementsByTagName("DateTime")
-						.item(0).getTextContent(), DATE_FORMAT_LIVE_SEARCH);
-				result.setRank(Double.parseDouble(elem.getElementsByTagName(
-						"Rank").item(0).getTextContent()));
+				Node elemLastModified = elem.getElementsByTagName("DateTime")
+						.item(0);
+				if (elemLastModified != null) {
+					result.setLastModified(elemLastModified.getTextContent(),
+							DATE_FORMAT_LIVE_SEARCH);
+				}
+				Node elemRank = elem.getElementsByTagName("Rank").item(0);
+				if (elemRank != null) {
+					result.setRank(Double
+							.parseDouble(elemRank.getTextContent()));
+				}
 				NodeList desc = elem.getElementsByTagName("Description");
 				if (desc.getLength() > 0)
 					result.setSummary(desc.item(0).getTextContent());
