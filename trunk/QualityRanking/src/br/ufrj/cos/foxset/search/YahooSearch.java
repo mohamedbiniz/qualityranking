@@ -97,7 +97,7 @@ public class YahooSearch extends SearchEngine {
 		List<Result> results = new ArrayList<Result>(MAX_RESULTS_LOOP);
 
 		String content = (String) new WebFile(urlSearch).getContent();
-		// System.out.println(content);
+		System.out.println(content);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(false);
 		DocumentBuilder builder = factory.newDocumentBuilder();

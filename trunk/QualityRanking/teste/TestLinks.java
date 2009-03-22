@@ -3,12 +3,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import br.ufrj.cos.foxset.search.GoogleSearch;
+import br.ufrj.cos.bean.DataSet;
+import br.ufrj.cos.bean.Document;
+import br.ufrj.cos.bean.QualityDimension;
+import br.ufrj.cos.db.HelperAcessDB;
+import br.ufrj.cos.db.HibernateDAO;
+import br.ufrj.cos.foxset.search.GoogleWebSearch;
+import br.ufrj.cos.foxset.search.LiveSearch;
 import br.ufrj.cos.foxset.search.SearchEngine;
 import br.ufrj.cos.foxset.search.SearchException;
 import br.ufrj.cos.foxset.search.WebDocument;
 import br.ufrj.cos.foxset.search.YahooSearch;
 import br.ufrj.cos.foxset.search.SearchEngine.Result;
+import br.ufrj.cos.services.ServiceSearch;
 
 /**
  * 
@@ -24,14 +31,57 @@ public class TestLinks {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		testLinks();
+		SearchEngine se = null;
+		int engine = 1;
+		if (engine == 0) {
+			se = new GoogleWebSearch();
+			se.setAppID("F4ZdLRNQFHKUvggiU+9+60sA8vc3fohb");
+		} else if (engine == 1) {
+			se = new YahooSearch();
+			se
+					.setAppID("j3ANBxbV34FKDH_U3kGw0Jwj5Zbc__TDAYAzRopuJMGa8WBt0mtZlj4n1odUtMR8hco-");
+		} else if (engine == 2) {
+			se = new LiveSearch();
+			se.setAppID("6F4477E8615644FDA81A62E15217B400B121E0A4");
+		}
 
+		HibernateDAO.getInstance().openSession();
+		DataSet dataSet = (DataSet) HibernateDAO.getInstance().loadById(
+				DataSet.class, new Long(577));
+		try {
+			testLinks(se, dataSet);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		HibernateDAO.getInstance().closeSession();
 	}
 
-	private static void testLinks() {
+	private static void testLinks(SearchEngine se, DataSet dataSet)
+			throws Exception {
+		if ((dataSet == null) || (se == null))
+			return;
 		Set<Result> links = null;
+		QualityDimension qualityDimension = HelperAcessDB.loadQualityDimension(
+				dataSet, se.getSearchEngineCode());
+		// Collection<DocumentQualityDimension> dqds = HelperAcessDB
+		// .loadDocumentQualityDimensions(dataSet, qualityDimension);
+		// for (DocumentQualityDimension documentQualityDimension : dqds) {
+		// documentQualityDimension.setScore(0);
+		// HibernateDAO.getInstance().update(documentQualityDimension);
+		// }
 		try {
-			links = getLinks("postgre", 5, false);
+			links = getLinks(se, "relational database", 1000, false);
+			int position = 0;
+			for (Result result : links) {
+				Document document = HelperAcessDB.loadDocumentByDataSetAndUrl(
+						dataSet, result.getURL());
+				if ((qualityDimension != null) && (document != null)) {
+					ServiceSearch.updateSearchRankingScore(document,
+							qualityDimension, links.size(), position);
+				}
+				position++;
+			}
 		} catch (SearchException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -47,18 +97,9 @@ public class TestLinks {
 
 	}
 
-	public static Set<Result> getLinks(String searchStr, int maxBackLinks,
-			boolean discardSameDomain) throws SearchException, IOException {
-		int engine = 1;
-		SearchEngine se = null;
-		if (engine == 0) {
-			se = new GoogleSearch();
-			se.setAppID("F4ZdLRNQFHKUvggiU+9+60sA8vc3fohb");
-		} else if (engine == 1) {
-			se = new YahooSearch();
-			se
-					.setAppID("j3ANBxbV34FKDH_U3kGw0Jwj5Zbc__TDAYAzRopuJMGa8WBt0mtZlj4n1odUtMR8hco-");
-		}
+	public static Set<Result> getLinks(SearchEngine se, String searchStr,
+			int maxBackLinks, boolean discardSameDomain)
+			throws SearchException, IOException {
 		se.setMaxResults(maxBackLinks);
 		List<Result> results = se.search(searchStr);
 		Set<Result> setURLS = new HashSet<Result>();

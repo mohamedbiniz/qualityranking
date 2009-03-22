@@ -86,7 +86,7 @@ public class HubAuthorityGrafao {
 					+ idPajek + " - " + url);
 			int i = 0;
 			for (String filhoStr : fl.keySet()) {
-				String filho = tratarURL(filhoStr);
+				String filho = WebDocument.tratarURL(filhoStr);
 				if (WebDocument.discardURLSameDomain(filho, discardSameDomain,
 						url)) {
 					continue;
@@ -123,7 +123,7 @@ public class HubAuthorityGrafao {
 			for (Result r : results) {
 				// if (++j > 2)
 				// break;
-				String pai = tratarURL(r.getURL());
+				String pai = WebDocument.tratarURL(r.getURL());
 				if (WebDocument.discardURLSameDomain(pai, discardSameDomain,
 						url)) {
 					continue;
@@ -165,14 +165,6 @@ public class HubAuthorityGrafao {
 			System.out.println("Nivel: " + nivel);
 			e.printStackTrace();
 		}
-	}
-
-	public static String tratarURL(String url) {
-		String newUrl = url.toLowerCase();
-		if (newUrl.endsWith("/")) {
-			newUrl = newUrl.substring(0, newUrl.length() - 1);
-		}
-		return newUrl;
 	}
 
 	public static void pajek() throws Exception {
@@ -353,7 +345,7 @@ public class HubAuthorityGrafao {
 				rsPajek = psPajekExisteURL.executeQuery();
 				if (!rsPajek.next()) {
 					int idIreval = rsIreval.getInt("id");
-					psPajekInserirURL.setString(1, tratarURL(url));
+					psPajekInserirURL.setString(1, WebDocument.tratarURL(url));
 					psPajekInserirURL.setInt(2, idIreval);
 					psFoxsetExisteURL.setString(1, url);
 					rsFoxset = psFoxsetExisteURL.executeQuery();

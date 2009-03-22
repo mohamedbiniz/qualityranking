@@ -195,7 +195,7 @@ public class WebDocument {
 				return forwardLinks;
 			}
 			Matcher m = p.matcher(str);
-			int j = 0;
+
 			while (m.find()/* && (j++<=qtdLinks) */) {
 				String matchedURL = m.group(1).trim();
 
@@ -282,5 +282,13 @@ public class WebDocument {
 			}
 		}
 		return false;
+	}
+
+	public static String tratarURL(String url) {
+		String newUrl = url.trim().toLowerCase();
+		if (newUrl.endsWith("/")) {
+			newUrl = newUrl.substring(0, newUrl.length() - 1);
+		}
+		return newUrl;
 	}
 }
