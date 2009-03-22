@@ -80,6 +80,8 @@ public class CorrecaoRank {
 		// -------------------
 		try {
 			links = getLinks(se, "relational database", 1000, false);
+			if (links == null)
+				return;
 			int position = 0;
 			for (Result result : links) {
 				Document document = HelperAcessDB.loadDocumentByDataSetAndUrl(
@@ -96,12 +98,10 @@ public class CorrecaoRank {
 			e.printStackTrace();
 		}
 
-		if (links != null) {
-			for (Result result : links) {
-				System.out.println(result);
-			}
-			System.out.println(links.size());
+		for (Result result : links) {
+			System.out.println(result);
 		}
+		System.out.println(links.size());
 
 	}
 
