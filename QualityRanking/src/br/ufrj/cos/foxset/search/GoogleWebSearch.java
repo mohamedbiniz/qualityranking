@@ -4,7 +4,6 @@
  */
 package br.ufrj.cos.foxset.search;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,8 +27,7 @@ public class GoogleWebSearch extends SearchEngine {
 			boolean hasNext = false;
 			do {
 				WebFile wf = new WebFile("http://www.google.com/search?q="
-						+ URLEncoder.encode(query, "utf-8") + "&hl=en&start="
-						+ start);
+						+ query + "&hl=en&start=" + start);
 				start += 10;
 				Pattern pNext = Pattern.compile(Pattern
 						.quote("<img src=\"nav_next.gif\""));

@@ -11,7 +11,6 @@ package br.ufrj.cos.foxset.search;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,8 +43,6 @@ public class YahooSearch extends SearchEngine {
 			List<Result> results = new ArrayList<Result>(
 					(getMaxResults() > FINISHING_POSITION ? FINISHING_POSITION
 							: getMaxResults()));
-
-			query = URLEncoder.encode(query, CHARSET_UTF_8);
 
 			int qtdLoops = (getMaxResults() / MAX_RESULTS_LOOP);
 

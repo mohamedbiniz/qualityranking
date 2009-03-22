@@ -4,6 +4,8 @@
  */
 package br.ufrj.cos.foxset.search;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -135,9 +137,10 @@ public abstract class SearchEngine {
 		this.maxResults = maxResults;
 	}
 
-	public final List<Result> search(String query) throws SearchException {
+	public final List<Result> search(String query) throws SearchException,
+			UnsupportedEncodingException {
 		setPropertiesForSearch();
-		return searchImpl(query);
+		return searchImpl(URLEncoder.encode(query, "utf-8"));
 	}
 
 	protected static void setPropertiesForSearch() {

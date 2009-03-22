@@ -44,14 +44,14 @@ public class CorrecaoRank {
 					.setAppID("j3ANBxbV34FKDH_U3kGw0Jwj5Zbc__TDAYAzRopuJMGa8WBt0mtZlj4n1odUtMR8hco-");
 		} else if (engine == 2) {
 			se = new LiveSearch();
-			se.setAppID("6F4477E8615644FDA81A62E15217B400B121E0A4");
+			se.setAppID("A458FF1E859B9A702FCF17ADB54F92FEE3A32A04");
 		}
 
 		HibernateDAO.getInstance().openSession();
 		DataSet dataSet = (DataSet) HibernateDAO.getInstance().loadById(
 				DataSet.class, new Long(577));
 		try {
-			testLinks(se, dataSet);
+			testLinks(se, dataSet, 1000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,8 +59,8 @@ public class CorrecaoRank {
 		HibernateDAO.getInstance().closeSession();
 	}
 
-	private static void testLinks(SearchEngine se, DataSet dataSet)
-			throws Exception {
+	private static void testLinks(SearchEngine se, DataSet dataSet,
+			int maxBackLinks) throws Exception {
 		if ((dataSet == null) || (se == null))
 			return;
 		Set<Result> links = null;
@@ -68,18 +68,10 @@ public class CorrecaoRank {
 				dataSet, se.getSearchEngineCode());
 		// -------------------
 		// Zerando os scores atuais antes de atualizar com a nova consulta na SE
-		Collection<Document> docs = HelperAcessDB.loadDocuments(dataSet);
-		for (Document d : docs) {
-			DocumentQualityDimension documentQualityDimension = HelperAcessDB
-					.loadDocumentQualityDimension(d, qualityDimension);
-			if (documentQualityDimension != null) {
-				documentQualityDimension.setScore(0);
-				HibernateDAO.getInstance().update(documentQualityDimension);
-			}
-		}
+		zerarScores(dataSet, qualityDimension);
 		// -------------------
 		try {
-			links = getLinks(se, "relational database", 1000, false);
+			links = getLinks(se, "relational database", maxBackLinks, false);
 			if (links == null)
 				return;
 			int position = 0;
@@ -103,6 +95,24 @@ public class CorrecaoRank {
 		}
 		System.out.println(links.size());
 
+	}
+
+	/**
+	 * @param dataSet
+	 * @param qualityDimension
+	 * @throws Exception
+	 */
+	private static void zerarScores(DataSet dataSet,
+			QualityDimension qualityDimension) throws Exception {
+		Collection<Document> docs = HelperAcessDB.loadDocuments(dataSet);
+		for (Document d : docs) {
+			DocumentQualityDimension documentQualityDimension = HelperAcessDB
+					.loadDocumentQualityDimension(d, qualityDimension);
+			if (documentQualityDimension != null) {
+				documentQualityDimension.setScore(0);
+				HibernateDAO.getInstance().update(documentQualityDimension);
+			}
+		}
 	}
 
 	public static Set<Result> getLinks(SearchEngine se, String searchStr,
