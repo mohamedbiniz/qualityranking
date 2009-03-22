@@ -1,10 +1,12 @@
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import br.ufrj.cos.bean.DataSet;
 import br.ufrj.cos.bean.Document;
+import br.ufrj.cos.bean.DocumentQualityDimension;
 import br.ufrj.cos.bean.QualityDimension;
 import br.ufrj.cos.db.HelperAcessDB;
 import br.ufrj.cos.db.HibernateDAO;
@@ -64,12 +66,18 @@ public class CorrecaoRank {
 		Set<Result> links = null;
 		QualityDimension qualityDimension = HelperAcessDB.loadQualityDimension(
 				dataSet, se.getSearchEngineCode());
-		// Collection<DocumentQualityDimension> dqds = HelperAcessDB
-		// .loadDocumentQualityDimensions(dataSet, qualityDimension);
-		// for (DocumentQualityDimension documentQualityDimension : dqds) {
-		// documentQualityDimension.setScore(0);
-		// HibernateDAO.getInstance().update(documentQualityDimension);
-		// }
+		// -------------------
+		// Zerando os scores atuais antes de atualizar com a nova consulta na SE
+		Collection<Document> docs = HelperAcessDB.loadDocuments(dataSet);
+		for (Document d : docs) {
+			DocumentQualityDimension documentQualityDimension = HelperAcessDB
+					.loadDocumentQualityDimension(d, qualityDimension);
+			if (documentQualityDimension != null) {
+				documentQualityDimension.setScore(0);
+				HibernateDAO.getInstance().update(documentQualityDimension);
+			}
+		}
+		// -------------------
 		try {
 			links = getLinks(se, "relational database", 1000, false);
 			int position = 0;
