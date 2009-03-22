@@ -53,7 +53,6 @@ public class CorrecaoRank {
 		try {
 			testLinks(se, dataSet, 1000);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		HibernateDAO.getInstance().closeSession();
