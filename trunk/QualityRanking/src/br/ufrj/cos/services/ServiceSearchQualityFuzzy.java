@@ -114,4 +114,10 @@ public class ServiceSearchQualityFuzzy extends ServiceSearch {
 		fuzzyDataSet(dataSet);
 	}
 
+	@Override
+	protected void searchAndPersistLinks(DataSet dataSet) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
