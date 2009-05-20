@@ -74,6 +74,8 @@ public abstract class ServiceSearch extends Service {
 		for (int i = 0; i < se.length; i++) {
 			searchAndPersistPages(dataSet, se[i], keyWords);
 		}
+		searchAndPersistLinks(dataSet);
+
 		mathDocumentAndQualityDimension(dataSet);
 
 		fuzzyDataSet(dataSet);
@@ -85,6 +87,8 @@ public abstract class ServiceSearch extends Service {
 		applyFinalRanking(dataSetChild);
 
 	}
+
+	protected abstract void searchAndPersistLinks(DataSet dataSet);
 
 	private void toDiscardDataSet(DataSet dataSet) {
 		// TODO Auto-generated method stub

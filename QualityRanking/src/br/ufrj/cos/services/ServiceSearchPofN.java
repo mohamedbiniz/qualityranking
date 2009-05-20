@@ -76,4 +76,10 @@ public class ServiceSearchPofN extends ServiceSearch {
 
 	}
 
+	@Override
+	protected void searchAndPersistLinks(DataSet dataSet) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
