@@ -1,0 +1,14 @@
+/* 
+ * $RCSfile: FootballPlayer.java,v $
+ * Tag : $Name:  $
+ * $Revision: 1.1 $
+ * $Author: cvs $
+ * $Date: 2006/01/11 12:33:54 $
+ * 
+ * Copyright 2003 Cetip
+ */
+package com.dialogy.odb.test.vo.inheritance;
+
+public class FootballPlayer extends OutdoorPlayer {
+    private int role;
+}
