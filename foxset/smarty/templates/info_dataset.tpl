@@ -1,1 +1,0 @@
-<span class="titulo1">{$ds.context} </span><br>{$ds.description} <br><br><b>Active:</b> {$ds.active} <br><b>Min. pages:</b> {$ds.min_pages} <br><b>Language:</b> {$ds.language} <br><b>Creation date/time:</b> {$ds.creation_datetime} <br><br><b>Coordinators:</b><br> {$ds.user}
