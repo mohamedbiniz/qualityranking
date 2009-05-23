@@ -1,3 +1,0 @@
-content foxset chrome/content/
-skin foxset classic/1.0 chrome/skin/
-overlay chrome://browser/content/browser.xul chrome://foxset/content/foxset.xul
