@@ -1,0 +1,20 @@
+Instalação:
+- Rodar script de criação do banco FoxSet (foxset.sql)
+- Rodar script de criação do banco do crawler (esquemaTabelas.sql)
+- Instalar plugin Firefox (foxset.xpi)
+- Instalar suporte ao PHP no IIS (php5isapi.dll)
+- Inserir documento index.php como um dos documentos default do IIS
+- Copiar conteúdo da pasta php\www do foxset para C:\inetpub\wwwroot
+- Copiar as outras pastas dentro de php\ para c:\inetpub
+- Copiar arquivo FoxSetMATLAB.m para a pasta work do MATLAB
+
+Configuração:
+- config.php tem as configurações de BD usadas na interface web
+- hibernate.cfg.xml tem as configurações de BD usadas no crawler
+- hibernate_annotation.cfg.xml tem as configurações de BD usadas no serviço Java
+- FoxSetMATLAB.m tem o caminho para o projeto Java (deve ser alterado se o caminho mudar)
+
+Execução:
+- Executar o src\Main.java do projeto QualityRanking (usar compatibilidade para Java 1.5 na compilação)
+- Executar o MATLAB e digitar o comando FoxSetMATLAB
+- Usar o FoxSet pela extensão do Firefox ou web (login e senha = foxset)

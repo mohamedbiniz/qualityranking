@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="br.ufrj.htmlbase">
+  <class name="PageCrawler" table="PAGE_CRAWLER">
+    <id column="ID" name="id" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property column="IdDataSet" name="idDataSet" type="long"/>
+    <property column="page_id" name="idPage" type="long"/>
+    <property column="ordem_download" name="ordemDownload" type="long"/>
+    <property column="SCORE" name="score" type="double"/>
+    <property column="VERSION" name="version" type="long"/>
+    <property column="URL" name="url" type="java.lang.String"/>
+    <property column="CONTENT" name="content" type="java.lang.String"/>
+    <property column="PATH_PAGE" name="pathPage" type="java.lang.String"/>
+    <property column="DATE_CREATE" name="dateCreate" type="java.util.Date"/>
+    <property column="LAST_MODIFIED" name="lastModified" type="java.util.Date"/>
+    <set cascade="all" inverse="true" lazy="false" name="agregatedLinks">
+      <key column="ID"/>
+      <one-to-many class="br.ufrj.htmlbase.OutputLinkCrawler"/>
+    </set>
+  </class>
+</hibernate-mapping>
+<!--                            
+<hibernate-mapping package="br.ufrj.htmlbase">
+
+    <class name="Page" table="PAGES" >
+ 
+ 		<id name="id" column="ID" >
+ 			<generator class="assigned" />
+ 		</id>
+        
+        <property name="content" column="CONTENT" type="java.lang.String" />
+        <property name="url" column="URL" type="java.lang.String" />
+        <property name="path" column="PATH_PAGE" type="java.lang.String" />
+        
+    </class>
+    
+</hibernate-mapping>
+-->
