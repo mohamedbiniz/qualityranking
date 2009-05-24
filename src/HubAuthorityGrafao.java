@@ -36,14 +36,23 @@ public class HubAuthorityGrafao {
 	public static int qtdMaxBackLinks = 50;
 	public static int qtdLinks = 50;
 	public static int qtdLevels = 1;
-	public static boolean discardSameDomain = true, repeatZeros = true,
-			useJung = true, onlyHITS = false;
-	public static String usuario = "foxset", senha = "xamusko";
+	public static boolean discardSameDomain = true;
+	public static boolean repeatZeros = true;
+	public static boolean useJung = true;
+	public static boolean onlyHITS = false;
+	public static String usuario = "foxset";
+	public static String senha = "xamusko";
 
-	private static Connection connIreval, connFoxset, connPajek;
-	private static PreparedStatement psFoxsetExisteURL,
-			psFoxsetAtualizarScores, psPajekExisteURL, psPajekInserirURL,
-			psPajekInserirLink, psPajekAtualizarURL, psPajekAtualizarScores;
+	private static Connection connIreval;
+	private static Connection connFoxset;
+	private static Connection connPajek;
+	private static PreparedStatement psFoxsetExisteURL;
+	private static PreparedStatement psFoxsetAtualizarScores;
+	private static PreparedStatement psPajekExisteURL;
+	private static PreparedStatement psPajekInserirURL;
+	private static PreparedStatement psPajekInserirLink;
+	private static PreparedStatement psPajekAtualizarURL;
+	private static PreparedStatement psPajekAtualizarScores;
 	private static PrintWriter pwResultado;
 	private static Set<String> urls = new HashSet<String>();
 	private static Map<String, Integer> docs = new HashMap<String, Integer>();
@@ -59,15 +68,13 @@ public class HubAuthorityGrafao {
 			se.setAppID("F4ZdLRNQFHKUvggiU+9+60sA8vc3fohb");
 		} else if (engine == 1) {
 			se = new YahooSearch();
-			se
-					.setAppID("j3ANBxbV34FKDH_U3kGw0Jwj5Zbc__TDAYAzRopuJMGa8WBt0mtZlj4n1odUtMR8hco-");
+			se.setAppID("j3ANBxbV34FKDH_U3kGw0Jwj5Zbc__TDAYAzRopuJMGa8WBt0mtZlj4n1odUtMR8hco-");
 		}
 		se.setMaxResults(maxBackLinks);
 		List<Result> results = se.search("link:" + url);
 		Set<Result> setURLS = new HashSet<Result>();
 		for (Result result : results) {
-			if (!WebDocument
-					.discardUrl(result.getURL(), discardSameDomain, url))
+			if (!WebDocument.discardUrl(result.getURL(), discardSameDomain, url))
 				setURLS.add(result);
 		}
 		return setURLS;
@@ -153,8 +160,7 @@ public class HubAuthorityGrafao {
 			}
 			psPajekAtualizarURL.setInt(1, backLinks);
 			psPajekAtualizarURL.setInt(2, forwardLinks);
-			psPajekAtualizarURL.setTimestamp(3, new Timestamp(new Date()
-					.getTime()));
+			psPajekAtualizarURL.setTimestamp(3, new Timestamp(new Date().getTime()));
 			psPajekAtualizarURL.setInt(4, idPajek);
 			psPajekAtualizarURL.executeUpdate();
 			wf = null;
