@@ -89,6 +89,21 @@ public class JobSend implements Serializable {
 		this.cdq = cdq;
 	}
 
+	/**
+	 * @return the qds
+	 */
+	public double[] getQds() {
+		return qds;
+	}
+
+	/**
+	 * @param qds
+	 *            the qds to set
+	 */
+	public void setQds(double[] qds) {
+		this.qds = qds;
+	}
+
 	@Override
 	public String toString() {
 
@@ -107,18 +122,4 @@ public class JobSend implements Serializable {
 		return result;
 	}
 
-	/**
-	 * @return the qds
-	 */
-	public double[] getQds() {
-		return qds;
-	}
-
-	/**
-	 * @param qds
-	 *            the qds to set
-	 */
-	public void setQds(double[] qds) {
-		this.qds = qds;
-	}
 }
