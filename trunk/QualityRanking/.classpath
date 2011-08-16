@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="conf"/>
 	<classpathentry kind="src" path="teste"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/QUALITY_RANKING"/>
 	<classpathentry kind="lib" path="lib/matlab/org/netbeans.jar"/>
 	<classpathentry kind="lib" path="lib/matlab/org/openide.jar"/>
 	<classpathentry kind="lib" path="lib/matlab/toolbox/matlab/audiovideo.jar"/>
