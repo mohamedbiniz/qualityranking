@@ -1,0 +1,1 @@
+Projeto que incrementa a avaliação da qualidade de metados para ranquear um resultado de uma busca.
